@@ -13,6 +13,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Button Content="Install" Command="{Binding FullInstallCommand}" />
+        <mah:ProgressRing Grid.Row="0" IsActive="{Binding IsBusy}"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
         <TextBox Grid.Row="1" x:Name="LoggingTextBox" />
     </Grid>
 </Window>

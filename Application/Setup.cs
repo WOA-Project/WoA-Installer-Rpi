@@ -1,7 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Serilog;
-using Serilog.Core;
-using Serilog.Events;
 
 namespace Install
 {
@@ -16,13 +14,46 @@ namespace Install
 
         public async Task FullInstall(InstallOptions options)
         {
-            Log.Information("Checking partitions...");
-            await lowLevelApi.EnsurePartitionsAreMounted();
+            await PerformSanityCheck();
             await BasicInstall();
             Log.Information("Done!");
         }
 
-        private Task BasicInstall()
+        private async Task PerformSanityCheck()
+        {
+            Log.Information("Checking partitions...");
+            await lowLevelApi.EnsurePartitionsAreMounted();
+        }
+
+        private async Task BasicInstall()
+        {
+            await DeployUefi();
+            await SetupBcd();
+            await CreateDeveloperMenu();
+            await InstallWindows();
+            await EnableDualBoot();
+        }
+
+        private Task EnableDualBoot()
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task InstallWindows()
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task CreateDeveloperMenu()
+        {
+            return Task.CompletedTask;        }
+
+        private Task SetupBcd()
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task DeployUefi()
         {
             return Task.CompletedTask;
         }
