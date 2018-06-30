@@ -1,4 +1,6 @@
+using System;
 using System.Reactive;
+using System.Windows;
 using ReactiveUI;
 
 namespace Install
@@ -10,6 +12,7 @@ namespace Install
         public MainViewModel(ISetup setup)
         {
             FullInstallCommand = ReactiveCommand.CreateFromTask(() => setup.FullInstall(new InstallOptions()));
+            FullInstallCommand.ThrownExceptions.Subscribe(e => { MessageBox.Show($"Error: {e}"); });
             isBusyHelper = FullInstallCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
         }
 

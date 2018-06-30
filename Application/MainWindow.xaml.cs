@@ -10,7 +10,8 @@ namespace Install
         {
             InitializeComponent();
 
-            this.DataContext = new MainViewModel(new Setup(new LowLevelApi()));
+            var config = 
+            this.DataContext = new MainViewModel(new Setup());
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Observers(events => events.Subscribe(x => LoggingTextBox.Text +=  x.RenderMessage() + Environment.NewLine))
