@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Install
+namespace Installer.Core
 {
     public class BcdConfigurator
     {
-        private readonly StaticDriveConfig config;
+        private readonly Config config;
         private readonly BcdInvoker invoker;
         private readonly string bcdEdit;
 
-        public BcdConfigurator(StaticDriveConfig config, BcdInvoker invoker)
+        public BcdConfigurator(Config config, BcdInvoker invoker)
         {
             this.config = config;
             this.invoker = invoker;
@@ -33,7 +33,7 @@ namespace Install
         private void SetupBootShim(Guid guid)
         {
             invoker.Invoke($@"/set {{{guid}}} path \EFI\boot\BootShim.efi");
-            invoker.Invoke($@"/set {{{guid}}} device partition={config.EfiespDrive.RootDirectory.Name}");
+            invoker.Invoke($@"/set {{{guid}}} device volume={config.EfiespDrive.RootDirectory.Name}");
             invoker.Invoke($@"/set {{{guid}}} testsigning on");
             invoker.Invoke($@"/set {{{guid}}} nointegritychecks on");
         }

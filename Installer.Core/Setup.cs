@@ -1,50 +1,41 @@
 ﻿using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
 
-namespace Install
+namespace Installer.Core
 {
     public class Setup : ISetup
     {
-        private readonly StaticDriveConfig config;
-        private readonly LowLevelApi lowLevelApi;
-        private readonly BcdInvoker bcdInvoker;
+        private readonly ILowLevelApi lowLevelApi;
 
-        public Setup()
+        public Setup(ILowLevelApi lowLevelApi)
         {
-            config = StaticDriveConfig.Create();
-            lowLevelApi = new LowLevelApi();   
-            bcdInvoker = new BcdInvoker(config);
+            this.lowLevelApi = lowLevelApi;
         }
-       
+
         public async Task FullInstall(InstallOptions options)
         {
-            await PerformSanityCheck();
+            var configStore = new ConfigStore(lowLevelApi);
+
+            var config = await configStore.Retrieve();
             await DeployUefi(config);
+            var bcdInvoker = new BcdInvoker(config);
             new BcdConfigurator(config, bcdInvoker).SetupBcd();
-            await AddDeveloperMenu();
-            await new WindowsDeployment().Execute();
+            await AddDeveloperMenu(config, bcdInvoker);
+            await new WindowsDeployment(lowLevelApi, config).Execute();
         }
 
-        private async Task AddDeveloperMenu()
+        private async Task AddDeveloperMenu(Config config, BcdInvoker bcdInvoker)
         {
             var destination = Path.Combine(config.EfiespDrive.RootDirectory.Name, "Windows", "System32", "BOOT");
             await FileUtils.CopyDirectory(new DirectoryInfo(Path.Combine("Files", "Developer Menu")), new DirectoryInfo(destination));
             var guid = FormattingUtils.GetGuid(bcdInvoker.Invoke(@"/create /d ""Developer Menu"" /application BOOTAPP"));
             bcdInvoker.Invoke($@"/set {{{guid}}} path \Windows\System32\BOOT\developermenu.efi");
             var driveLetter = config.EfiespDrive.RootDirectory.Name;
-            bcdInvoker.Invoke($@"/set {{{guid}}} device partition={driveLetter}");
+            bcdInvoker.Invoke($@"/set {{{guid}}} device volume={driveLetter}");
             bcdInvoker.Invoke($@"/displayorder {{{guid}}} /addlast");
         }
 
-        private async Task PerformSanityCheck()
-        {
-            Log.Information("Checking partitions...");
-            await lowLevelApi.EnsurePartitionsAreMounted();
-        }
-        
-        private async Task DeployUefi(StaticDriveConfig config)
+        private async Task DeployUefi(Config config)
         {
             await FileUtils.Copy(Path.Combine("Files", "Core", "UEFI.elf"), Path.Combine(config.EfiespDrive.RootDirectory.Name, "UEFI.elf"));
             await FileUtils.Copy(Path.Combine("Files", "Core", "emmc_appsboot.mbn"), Path.Combine(config.EfiespDrive.RootDirectory.Name, "emmc_appsboot.mbn"));

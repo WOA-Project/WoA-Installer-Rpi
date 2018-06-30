@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Install
+namespace Installer.Core
 {
     public static class FileUtils
     {
@@ -48,8 +48,6 @@ namespace Install
                 var destFileName = Path.Combine(target.FullName, file.Name);
                 await Copy(file.FullName, destFileName);
             }
-        }
-
-        
+        }        
     }
 }

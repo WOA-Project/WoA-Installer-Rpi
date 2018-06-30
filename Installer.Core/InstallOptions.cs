@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Install
+namespace Installer.Core
 {
     public class InstallOptions
     {

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Windows;
 using Serilog;
 
-namespace Install
+namespace Intaller.Wpf
 {
     public partial class MainWindow
     {
@@ -11,7 +10,7 @@ namespace Install
             InitializeComponent();
 
             var config = 
-            this.DataContext = new MainViewModel(new Setup());
+            this.DataContext = new MainViewModel();
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Observers(events => events.Subscribe(x => LoggingTextBox.Text +=  x.RenderMessage() + Environment.NewLine))

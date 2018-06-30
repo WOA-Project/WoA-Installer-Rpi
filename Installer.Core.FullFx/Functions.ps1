@@ -1,8 +1,16 @@
-﻿Function GetAvailableDriveLetter()
+﻿function GetAvailableDriveLetter()
 {
 	$normalizedName = ls function:[d-z]: -n | ?{ !(test-path $_) } | select -First 1
 	$letter = $normalizedName[0]
 	return $letter;
+}
+
+function GetAvailableSpace()
+{
+	param($diskNumber) 
+
+	$disk = Get-Disk -Number $diskNumber
+	return $($disk.Size) -$($disk.AllocatedSize)
 }
 
 function EnsurePartitionsAreMounted() 
@@ -256,22 +264,100 @@ function Get-SystemInfo
   $info.'System Locale'|%{$_.split(';')[0]}
 }
 
-function PerformSanityChecks()
+function RemovePartition() 
 {
-	EnsurePartitionsAreMounted
-	EnsureCorrectFilesFolder
+	param([string] $label, [string] $fileSytemFormat)
+
+	try 
+	{
+		$vol = GetVolume $label $fileSytemFormat
+		$vol | Get-Partition | Remove-Partition -Confirm:$false
+	}
+	catch 
+	{
+		Write-Host "The $($label) partition couldn't be removed. It might not exist."
+	}
 }
 
-function Step
+function RemoveReserved() 
 {
-	param([string]$message) 	
-	Write-Host "$($message)`nPress [ENTER] to continue."
-	Read-Host
+	try 
+	{
+		$part = GetReservedPartition
+		$part | Remove-Partition -Confirm:$false
+	} 
+	catch 
+	{
+		Write-Host "The Reserved partition couldn't be removed. It might not exist."
+	}	
 }
 
-function Function-Step
+function RemoveExistingWindowsPartitions() 
 {
-	param([string]$message,[ScriptBlock]$block) 	
-	Step $message
-	$block.Invoke()
+	RemoveReserved
+	RemovePartition 'BOOT' 'FAT32'
+	RemovePartition 'WindowsARM' 'NTFS'
+}
+
+function RemoveExistingWindowsPartitions() 
+{
+	RemoveReserved
+	RemovePartition 'BOOT' 'FAT32'
+	RemovePartition 'WindowsARM' 'NTFS'
+}
+
+function GetAvailableSpace()
+{
+	param($disk) 
+
+	return $($disk.Size) -$($disk.AllocatedSize)		
+}
+
+function IsMoreSpaceNeeded() 
+{
+	Param ([switch]$verbose)
+	$requiredGBs = 18
+	$availableSpace = GetAvailableSpace $disk
+	$spaceNeeded = $requiredGBs * 1000000000
+
+	Write-Verbose "Available space: $($availableSpace)" 
+	Write-Verbose "Required space: $($spaceNeeded)" 
+	
+	return $availableSpace -lt $spaceNeeded
+}
+
+function ShrinkDataPartition()
+{
+	$volume = GetDataVolume
+	$driveLetter = $volume.DriveLetter
+
+	Step "We are going to resize the Data partition at drive $($driveLetter) to 7.5GB. Please, verify the drive letter is correct."
+
+	Write-Host "Working..."
+
+	Resize-Partition -DriveLetter $driveLetter -Size 7.5GB
+
+	Write-Host "Done!"
+}
+
+
+function GetPartitions()
+{
+	param($diskNumber)
+
+	Get-Disk -Number $diskNumber | Get-Partition
+}
+
+function GetVolume()
+{
+	param($partitionId)
+
+	Get-Partition -UniqueId $partitionId | Get-Volume
+}
+
+function ResizePartition()
+{
+	param($diskNumber, $partitionNumber, $sizeInBytes)
+
+	Resize-Partition -DiskNumber $diskNumber -PartitionNumber $partitionNumber -Size $sizeInBytes
 }

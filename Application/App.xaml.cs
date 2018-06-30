@@ -1,9 +1,6 @@
-﻿using System;
-using System.Reactive.Linq;
-using System.Windows;
-using Serilog;
+﻿using System.Windows;
 
-namespace Install
+namespace Intaller.Wpf
 {
     /// <summary>
     /// Lógica de interacción para App.xaml

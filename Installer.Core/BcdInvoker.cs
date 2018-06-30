@@ -1,14 +1,12 @@
-﻿namespace Install
+﻿namespace Installer.Core
 {
     public class BcdInvoker
     {
-        private readonly StaticDriveConfig config;
         private readonly string commonArgs;
         private readonly string bcdEdit;
 
-        public BcdInvoker(StaticDriveConfig config)
+        public BcdInvoker(Config config)
         {
-            this.config = config;
             bcdEdit = @"c:\Windows\SysNative\bcdedit.exe";
             commonArgs = $"/STORE {config.BcdFileName}";
         }

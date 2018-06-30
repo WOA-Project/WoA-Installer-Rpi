@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Install
+namespace Installer.Core
 {
     public interface ISetup
     {

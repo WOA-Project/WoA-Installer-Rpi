@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Install
+namespace Installer.Core
 {
     public static class CmdUtils 
     {

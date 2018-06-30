@@ -1,4 +1,4 @@
-﻿namespace Install
+﻿namespace Installer.Core
 {
     public class Disk
     {

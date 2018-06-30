@@ -1,12 +1,12 @@
-﻿<Window x:Class="Install.MainWindow"
+﻿<Window x:Class="Intaller.Wpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Install"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:wpf="clr-namespace:Intaller.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
+        Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance wpf:MainViewModel}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

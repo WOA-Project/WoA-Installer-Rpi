@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Install
+namespace Installer.Core
 {
     internal static class FormattingUtils
     {
