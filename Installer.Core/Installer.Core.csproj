@@ -8,4 +8,10 @@
     <PackageReference Include="System.Reactive" Version="4.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Serilog">
+      <HintPath>..\..\..\..\.nuget\packages\serilog\2.0.0\lib\net45\Serilog.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

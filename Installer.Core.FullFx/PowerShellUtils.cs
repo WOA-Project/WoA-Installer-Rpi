@@ -6,7 +6,7 @@ namespace Installer.Core.FullFx
     {
         private static readonly CimInstanceAdapter adapter = new CimInstanceAdapter();
 
-        public static object GetValue(this object obj, string propertyName)
+        public static object GetPropertyValue(this object obj, string propertyName)
         {
             return adapter.GetPropertyValue(adapter.GetProperty(obj, propertyName));
         }

@@ -4,6 +4,6 @@ namespace Installer.Core
 {
     public class InstallOptions
     {
-        public Uri Uri { get; set; }
+        public string ImagePath { get; set; }
     }
 }

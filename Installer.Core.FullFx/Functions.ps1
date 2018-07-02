@@ -10,7 +10,7 @@ function GetAvailableSpace()
 	param($diskNumber) 
 
 	$disk = Get-Disk -Number $diskNumber
-	return $($disk.Size) -$($disk.AllocatedSize)
+	$disk.Size - $disk.AllocatedSize
 }
 
 function EnsurePartitionsAreMounted() 
@@ -48,7 +48,7 @@ function EnsurePartitionMountedForVolume
 	param([string]$label,[string]$fileSystemType) 
 	Write-Host "Ensuring the required Phone partitions are mounted..."
 
-	$vol = GetVolume $label $fileSystemType
+	$vol = GetVolumeByLabelAndFileSystemType $label $fileSystemType
 	
 	if ($vol -eq $null) 
 	{
@@ -108,7 +108,7 @@ function GetMainOS()
 	throw 'Could not obtain the MainOS Volume. Please, verify that your phone is in Mass Storage Mode'		
 }
 
-function GetVolume() 
+function GetVolumeByLabelAndFileSystemType() 
 {
 	param([string]$label,[string]$fileSystemType) 
 

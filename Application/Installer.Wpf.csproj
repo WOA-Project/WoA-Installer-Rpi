@@ -58,6 +58,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <None Include="..\Installer.Core.FullFx\Functions.ps1">
+      <Link>Functions.ps1</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="bin\Debug\Files\Core\BootShim.efi">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

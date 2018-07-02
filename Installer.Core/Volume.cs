@@ -5,5 +5,6 @@
         public string Label { get; set; }
         public uint Size { get; set; }
         public Partition Partition { get; set; }
+        public char Letter { get; set; }
     }
 }

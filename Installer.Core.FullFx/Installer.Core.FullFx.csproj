@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DismImageService.cs" />
     <Compile Include="LowLevelApi.cs" />
     <Compile Include="PowerShellUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

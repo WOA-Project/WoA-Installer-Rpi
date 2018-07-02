@@ -63,9 +63,13 @@ namespace Application.Tests
         {
             var sut = new LowLevelApi();
             var partitions = await sut.GetPartitions(await sut.GetPhoneDisk());
-            var volumes = await partitions.ToObservable().SelectMany(x => sut.GetVolume(x)).ToList();
+            var volumes = await partitions.ToObservable()
+                .Select(x => Observable.FromAsync(() => sut.GetVolume(x)))
+                .Merge(1)
+                .ToList();
+
             var volumeToResize = volumes.First(x => x.Label == "Data");
-            var sizeInBytes = (int)(0.5 * 1_000_000_000);
+            var sizeInBytes = 2 * (ulong)1_000_000_000;
             await sut.ResizePartition(volumeToResize.Partition, sizeInBytes);
         }
     }

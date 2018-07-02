@@ -10,7 +10,7 @@ namespace Installer.Core
         Task EnsurePartitionMounted(string label, string filesystemType);
         Task RemoveExistingWindowsPartitions();
         Task<double> GetAvailableFreeSpace(Disk disk);
-        Task ResizePartition(Partition partition, long sizeInBytes);
+        Task ResizePartition(Partition partition, ulong sizeInBytes);
         Task<List<Partition>> GetPartitions(Disk disk);
         Task<Volume> GetVolume(Partition partition);
     }

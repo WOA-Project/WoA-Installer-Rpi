@@ -13,8 +13,8 @@ namespace Intaller.Wpf
 
         public MainViewModel()
         {
-            FullInstallCommand = ReactiveCommand.CreateFromTask(() => new Setup(new LowLevelApi()).FullInstall(new InstallOptions()));
-            FullInstallCommand.ThrownExceptions.Subscribe(e => { MessageBox.Show($"Error: {e}"); });
+            FullInstallCommand = ReactiveCommand.CreateFromTask(() => new Setup(new LowLevelApi(), new DismImageService()).FullInstall(new InstallOptions()));
+            FullInstallCommand.ThrownExceptions.Subscribe(e => { MessageBox.Show($"Error: {e.Message}"); });
             isBusyHelper = FullInstallCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
         }
 

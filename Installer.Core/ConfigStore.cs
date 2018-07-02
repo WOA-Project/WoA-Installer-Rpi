@@ -35,7 +35,11 @@ namespace Installer.Core
         private async Task<IList<Volume>> GetVolumes()
         {
             var partitions = await api.GetPartitions(await api.GetPhoneDisk());
-            var volumes = await partitions.ToObservable().SelectMany(x => api.GetVolume(x)).ToList();
+            var selectMany = partitions.ToObservable()
+                .Select(x => Observable.FromAsync(() => api.GetVolume(x)))
+                .Merge(1);
+
+            var volumes = await selectMany.ToList();
             return volumes;
         }
     }

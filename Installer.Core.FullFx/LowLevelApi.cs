@@ -4,21 +4,18 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Threading.Tasks;
-using Microsoft.PowerShell.Cim;
 
 namespace Installer.Core.FullFx
 {
     public class LowLevelApi : ILowLevelApi
     {
         private readonly PowerShell ps;
-        private readonly CimInstanceAdapter adapter;
 
         public LowLevelApi()
         {
             ps = PowerShell.Create();
             ps.AddScript(File.ReadAllText("Functions.ps1"));
             ps.Invoke();
-            adapter = new CimInstanceAdapter();
         }
 
         public Volume GetVolume(string label, string fileSystemFormat)
@@ -39,9 +36,17 @@ namespace Installer.Core.FullFx
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
             var disk = results.First().ImmediateBaseObject;
-            var diskNumber = (uint)adapter.GetPropertyValue(adapter.GetProperty(disk, "Number"));
 
-            return new Disk(diskNumber);
+            return ToDisk(disk);
+        }
+
+        private static Disk ToDisk(object disk)
+        {
+            var number = (uint) disk.GetPropertyValue("Number");
+            var size = (ulong) disk.GetPropertyValue("Size");
+            var allocatedSize = (ulong) disk.GetPropertyValue("AllocatedSize");
+            
+            return new Disk(number, size, allocatedSize);
         }
 
         public Task EnsurePartitionMounted(string label, string filesystemType)
@@ -74,15 +79,20 @@ namespace Installer.Core.FullFx
         }
 
 
-        public Task ResizePartition(Partition partition, long sizeInBytes)
+        public async Task ResizePartition(Partition partition, ulong sizeInBytes)
         {
             ps.Commands.Clear();
+
             ps.AddCommand("ResizePartition")
                 .AddParameter("diskNumber", partition.Disk.Number)
                 .AddParameter("partitionNumber", partition.Number)
                 .AddParameter("sizeInBytes", sizeInBytes);
 
-            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+            await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+            if (ps.HadErrors)
+            {
+                throw new InvalidOperationException(@"Cannot resize the partition");
+            }
         }
 
         public async Task<List<Partition>> GetPartitions(Disk disk)
@@ -98,8 +108,9 @@ namespace Installer.Core.FullFx
                 .Select(x => new Partition
                 {
                     Disk = disk,
-                    Number = (uint)x.GetValue("PartitionNumber"),
-                    Id = (string)x.GetValue("UniqueId"),
+                    Number = (uint)x.GetPropertyValue("PartitionNumber"),
+                    Id = (string)x.GetPropertyValue("UniqueId"),
+                    Letter = (char)x.GetPropertyValue("DriveLetter")
                 });
 
             return volumes.ToList();
@@ -117,8 +128,9 @@ namespace Installer.Core.FullFx
             return new Volume()
             {
                 Partition = partition,
-                Label = (string)volume.GetValue("FileSystemLabel"),
-                Size = Convert.ToUInt32(volume.GetValue("Size"))
+                Label = (string)volume.GetPropertyValue("FileSystemLabel"),
+                Size = Convert.ToUInt32(volume.GetPropertyValue("Size")),
+                Letter = (char)volume.GetPropertyValue("DriveLetter")
             };
         }
     }
