@@ -48,7 +48,7 @@ namespace Installer.Core
 
         private Task RemoveExistingWindowsPartitions()
         {
-            Log.Information("Removing existing partitions...");
+            Log.Information("Cleaning existing Windows ARM64 partitions...");
 
             return lowLevelApi.RemoveExistingWindowsPartitions();
         }
@@ -75,20 +75,20 @@ namespace Installer.Core
 
             var bootPartition = await lowLevelApi.CreatePartition(disk, 100 * 1_000_000);
             var bootVolume = await lowLevelApi.GetVolume(bootPartition);
-            await lowLevelApi.Format(bootVolume, FileSystemFormat.Fat32, "BOOT");
             await lowLevelApi.AssignDriveLetter(bootVolume, await lowLevelApi.GetFreeDriveLetter());
+            await lowLevelApi.Format(bootVolume, FileSystemFormat.Fat32, "BOOT");
             
             var windowsPartition = await lowLevelApi.CreatePartition(disk, ulong.MaxValue);
             var winVolume = await lowLevelApi.GetVolume(windowsPartition);
-            await lowLevelApi.Format(winVolume, FileSystemFormat.Ntfs, "WindowsARM");
             await lowLevelApi.AssignDriveLetter(winVolume, await lowLevelApi.GetFreeDriveLetter());
+            await lowLevelApi.Format(winVolume, FileSystemFormat.Ntfs, "WindowsARM");
             
             return new WindowsVolumes(await lowLevelApi.GetVolume(bootPartition), await lowLevelApi.GetVolume(windowsPartition));
         }
 
         private async Task AllocateSpace()
         {
-            Log.Information("Verifying the available space");
+            Log.Information("Verifying the available space...");
 
             var disk = (await configProvider.Retrieve()).PhoneDisk;
             var available = disk.Size - disk.AllocatedSize;

@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.IO;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -13,6 +14,11 @@ namespace Installer.Core.FullFx
 
         public async Task ApplyImage(Volume volume, string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null)
         {
+            if (!File.Exists(imagePath))
+            {
+                throw new FileNotFoundException($"Image not found: {imagePath}. Please, verify that the file exists and it's accessible.");
+            }
+
             var procObs = CmdUtils.RunProcessAsync("DISM", $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}");
 
             IDisposable stdOutputSubscription = null;
@@ -33,6 +39,11 @@ namespace Installer.Core.FullFx
 
         private double GetPercentage(string dismOutput)
         {
+            if (dismOutput == null)
+            {
+                return double.NaN;
+            }
+
             var matches = percentRegex.Match(dismOutput);
 
             if (matches.Success)

@@ -9,33 +9,49 @@
         Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance wpf:MainViewModel}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Button Padding="8" FontSize="18" Command="{Binding FullInstallCommand}" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Button.Content>
-                <Grid Width="100">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="10*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="5*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Install" TextAlignment="Center" VerticalAlignment="Center" />
-                    <mah:ProgressRing Width="Auto" Height="Auto" Grid.Column="2" IsActive="{Binding IsBusy}"   />
-                </Grid>
-            </Button.Content>
-        </Button>
+        <Grid/>
+        <StackPanel Margin="20" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Width="200">
+            <Button Margin="10"  Padding="12,5" Content="Install" FontSize="18" Command="{Binding FullInstallCommand}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <mah:ProgressRing Margin="20,0,0,0" Height="Auto" Width="Auto" HorizontalAlignment="Center" IsActive="{Binding IsBusy}"    />
+        </StackPanel>
 
-        <TextBox Grid.Row="1" x:Name="LoggingTextBox" />
+        <ListView Grid.Row="1" ItemsSource="{Binding Events}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Message}"/>
+                </DataTemplate >
+            </ListView.ItemTemplate>
+        </ListView>
 
         <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock Text="{Binding Status.Message}" />
+            </StatusBarItem>
             <StatusBarItem HorizontalContentAlignment="Stretch">
-                <ProgressBar Value="{Binding Progress, Mode=OneWay}"  Height="15"/>
+                <Grid>
+                    <ProgressBar Minimum="0" 
+                                 Maximum="100" 
+                                 Value="{Binding Progress, Mode=OneWay}" x:Name="ProgressBar" />
+                    <TextBlock Text="{Binding ElementName=ProgressBar, Path=Value, StringFormat={}{P}}" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" />
+                </Grid>
             </StatusBarItem>
         </StatusBar>
     </Grid>
 </Window>
+
+
+
+
+
+
+
+
 
 
 

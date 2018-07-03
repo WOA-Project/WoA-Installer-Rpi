@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Linq;
 using Serilog;
+using Serilog.Events;
 
 namespace Intaller.Wpf
 {
@@ -10,14 +11,15 @@ namespace Intaller.Wpf
         {
             InitializeComponent();
 
-            var config = 
-            this.DataContext = new MainViewModel();
+            IObservable<LogEvent> events = null;
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Observers(events => events
-                    .ObserveOnDispatcher()
-                    .Subscribe(x => LoggingTextBox.Text +=  x.RenderMessage() + Environment.NewLine))
-                .CreateLogger();            
+                .WriteTo.Observers(x => events = x)                    
+                .CreateLogger();   
+
+            var config =  this.DataContext = new MainViewModel(events);
+
+                    
         }
     }
 }

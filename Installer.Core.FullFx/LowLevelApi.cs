@@ -178,7 +178,7 @@ namespace Installer.Core.FullFx
         public Task Format(Volume volume, FileSystemFormat fileSystemFormat, string fileSystemLabel)
         {
             ps.Commands.Clear();
-            var cmd = $@"Get-Partition -UniqueId ""{volume.Partition.Id}"" | Get-Volume | Format-Volume -FileSystem {fileSystemFormat.Moniker} -NewFileSystemLabel {fileSystemLabel} -Force -Confirm:$false";
+            var cmd = $@"Get-Partition -UniqueId ""{volume.Partition.Id}"" | Get-Volume | Format-Volume -FileSystem {fileSystemFormat.Moniker} -NewFileSystemLabel ""{fileSystemLabel}"" -Force -Confirm:$false";
             ps.AddScript(cmd);
 
             return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
