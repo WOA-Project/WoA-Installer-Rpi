@@ -8,7 +8,13 @@ namespace Installer.Core.FullFx
 
         public static object GetPropertyValue(this object obj, string propertyName)
         {
-            return adapter.GetPropertyValue(adapter.GetProperty(obj, propertyName));
+            var psAdaptedProperty = adapter.GetProperty(obj, propertyName);
+            if (psAdaptedProperty == null)
+            {
+                return null;
+            }
+
+            return adapter.GetPropertyValue(psAdaptedProperty);
         }
     }
 }

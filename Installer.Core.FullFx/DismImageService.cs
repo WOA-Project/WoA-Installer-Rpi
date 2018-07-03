@@ -1,18 +1,60 @@
 using System;
+using System.Globalization;
+using System.Reactive.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Installer.Core.FullFx
 {
     public class DismImageService : IWindowsImageService
     {
-        public Task ApplyImage(string imagePath, Partition windowsPartition)
+        private readonly Regex percentRegex = new Regex(@"(\d*.\d*)%");
+
+        public async Task ApplyImage(Volume volume, string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null)
         {
-            throw new NotImplementedException();
+            var procObs = CmdUtils.RunProcessAsync("DISM", $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}");
+
+            IDisposable stdOutputSubscription = null;
+            if (progressObserver != null)
+            {
+                stdOutputSubscription = procObs.StdObs
+                    .Select(x => GetPercentage(x.EventArgs.Data))
+                    .Where(d => !double.IsNaN(d))
+                    .Subscribe(progressObserver.OnNext);
+            }
+
+            await procObs.ExitObs;
+
+            stdOutputSubscription?.Dispose();
+
+            CmdUtils.Run("DISM", $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:1 /ApplyDir:{volume.RootDir.Name}");
         }
 
-        public Task InjectDrivers(string path, Partition windowsPartition)
+        private double GetPercentage(string dismOutput)
         {
-            throw new NotImplementedException();
+            var matches = percentRegex.Match(dismOutput);
+
+            if (matches.Success)
+            {
+                var value = matches.Groups[1].Value;
+                try
+                {
+                    var percentage = double.Parse(value, CultureInfo.InvariantCulture);
+                    return percentage;
+                }
+                catch (FormatException)
+                {
+                    Log.Warning($"Cannot convert {value} to double");                    
+                }
+            }
+
+            return double.NaN;
         }
+
+        public Task InjectDrivers(string path, Volume volume)
+        {
+            CmdUtils.Run("DISM", $@"/Add-Driver /Image:{volume.RootDir.Name} /Driver:""{path}"" /Recurse /ForceUnsigned");
+            return Task.CompletedTask;        }
     }
 }

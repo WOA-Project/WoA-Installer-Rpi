@@ -1,4 +1,6 @@
-﻿namespace Installer.Core
+﻿using System;
+
+namespace Installer.Core
 {
     public class Partition
     {
@@ -6,5 +8,6 @@
         public uint Number { get; set; }
         public string Id { get; set; }
         public char Letter { get; set; }
+        public Guid GptType { get; set; }
     }
 }

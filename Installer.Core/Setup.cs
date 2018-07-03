@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Serilog;
 
@@ -15,17 +16,17 @@ namespace Installer.Core
             this.imageService = imageService;
         }
 
-        public async Task FullInstall(InstallOptions options)
+        public async Task FullInstall(InstallOptions options, IObserver<double> progressObserver)
         {
-            var configStore = new ConfigStore(lowLevelApi);
+            var configProvider = new ConfigProvider(lowLevelApi);
 
             Log.Information("Retrieving information from Phone Disk/partitions...");
-            var config = await configStore.Retrieve();
+            var config = await configProvider.Retrieve();
             await DeployUefi(config);
             var bcdInvoker = new BcdInvoker(config);
             new BcdConfigurator(config, bcdInvoker).SetupBcd();
             await AddDeveloperMenu(config, bcdInvoker);
-            await new WindowsDeployer(lowLevelApi, config, imageService).Deploy(options.ImagePath);
+            await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, 1, progressObserver);
         }
 
         private async Task AddDeveloperMenu(Config config, BcdInvoker bcdInvoker)

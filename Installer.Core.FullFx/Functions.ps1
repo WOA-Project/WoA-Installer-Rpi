@@ -270,7 +270,7 @@ function RemovePartition()
 
 	try 
 	{
-		$vol = GetVolume $label $fileSytemFormat
+		$vol = GetVolumeByLabelAndFileSystemType $label $fileSytemFormat
 		$vol | Get-Partition | Remove-Partition -Confirm:$false
 	}
 	catch 
@@ -290,13 +290,6 @@ function RemoveReserved()
 	{
 		Write-Host "The Reserved partition couldn't be removed. It might not exist."
 	}	
-}
-
-function RemoveExistingWindowsPartitions() 
-{
-	RemoveReserved
-	RemovePartition 'BOOT' 'FAT32'
-	RemovePartition 'WindowsARM' 'NTFS'
 }
 
 function RemoveExistingWindowsPartitions() 

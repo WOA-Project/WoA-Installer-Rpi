@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Installer.Core;
 using Installer.Core.FullFx;
-using Intaller.Wpf;
 using Xunit;
 
 namespace Application.Tests
@@ -35,6 +35,37 @@ namespace Application.Tests
         }
 
         [Fact]
+        public async Task Format()
+        {
+            var sut = new LowLevelApi();
+            var phoneDisk = await sut.GetPhoneDisk();
+            var partitionToFormat = (await sut.GetPartitions(phoneDisk)).Single(x => x.Number == 6);
+            var toFormat = await sut.GetVolume(partitionToFormat);
+            
+            await sut.Format(toFormat, FileSystemFormat.Ntfs, "Test");            
+        }
+
+        [Fact]
+        public async Task AssignLetter()
+        {
+            var sut = new LowLevelApi();
+            var phoneDisk = await sut.GetPhoneDisk();
+            var partitionToFormat = (await sut.GetPartitions(phoneDisk)).Single(x => x.Number == 6);
+            var toAssign = await sut.GetVolume(partitionToFormat);
+            
+            await sut.AssignDriveLetter(toAssign, 'I');            
+        }
+
+        [Fact]
+        public async Task DeployWindows()
+        {
+            var api = new LowLevelApi();
+            var deployer = new WindowsDeployer(new LowLevelApi(), new ConfigProvider(api), new DismImageService());
+            await deployer.Deploy(@"F:\sources\install.wim");
+        }
+
+
+        [Fact]
         public async Task RemoveExistingWindowsPartitions()
         {
             var sut = new LowLevelApi();
@@ -53,9 +84,16 @@ namespace Application.Tests
         public async Task GetVolume()
         {
             var sut = new LowLevelApi();
-            var partition = (await sut.GetPartitions(await sut.GetPhoneDisk())).First();
+            var partition = (await sut.GetPartitions(await sut.GetPhoneDisk())).Skip(2).First();
             var volume = await sut.GetVolume(partition);
             Assert.NotNull(volume);
+        }
+
+        [Fact]
+        public async Task GetAvailableLetter()
+        {
+            var sut = new LowLevelApi();
+            var letter = await sut.GetFreeDriveLetter();
         }
 
         [Fact]

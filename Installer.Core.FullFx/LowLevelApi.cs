@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Threading.Tasks;
 
 namespace Installer.Core.FullFx
@@ -18,17 +19,6 @@ namespace Installer.Core.FullFx
             ps.Invoke();
         }
 
-        public Volume GetVolume(string label, string fileSystemFormat)
-        {
-
-            ps.Commands.Clear();
-            ps.AddCommand("GetVolume")
-                .AddParameter("label", "Sistema")
-                .AddParameter("fileSystemType", "NTFS");
-
-            return new Volume();
-        }
-
         public async Task<Disk> GetPhoneDisk()
         {
             ps.Commands.Clear();
@@ -42,10 +32,10 @@ namespace Installer.Core.FullFx
 
         private static Disk ToDisk(object disk)
         {
-            var number = (uint) disk.GetPropertyValue("Number");
-            var size = (ulong) disk.GetPropertyValue("Size");
-            var allocatedSize = (ulong) disk.GetPropertyValue("AllocatedSize");
-            
+            var number = (uint)disk.GetPropertyValue("Number");
+            var size = (ulong)disk.GetPropertyValue("Size");
+            var allocatedSize = (ulong)disk.GetPropertyValue("AllocatedSize");
+
             return new Disk(number, size, allocatedSize);
         }
 
@@ -110,7 +100,8 @@ namespace Installer.Core.FullFx
                     Disk = disk,
                     Number = (uint)x.GetPropertyValue("PartitionNumber"),
                     Id = (string)x.GetPropertyValue("UniqueId"),
-                    Letter = (char)x.GetPropertyValue("DriveLetter")
+                    Letter = (char)x.GetPropertyValue("DriveLetter"),
+                    GptType = Guid.Parse((string)x.GetPropertyValue("GptType")),
                 });
 
             return volumes.ToList();
@@ -119,19 +110,101 @@ namespace Installer.Core.FullFx
         public async Task<Volume> GetVolume(Partition partition)
         {
             ps.Commands.Clear();
-            ps.AddCommand("GetVolume")
-                .AddParameter("partitionId", partition.Id);
+            ps.AddScript($@"Get-Partition -UniqueId ""{partition.Id}"" | Get-Volume", true);
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
             var volume = results.First().ImmediateBaseObject;
 
-            return new Volume()
+            return new Volume
             {
                 Partition = partition,
+                Size = Convert.ToUInt64(volume.GetPropertyValue("Size")),
                 Label = (string)volume.GetPropertyValue("FileSystemLabel"),
-                Size = Convert.ToUInt32(volume.GetPropertyValue("Size")),
-                Letter = (char)volume.GetPropertyValue("DriveLetter")
+                Letter = (char?)volume.GetPropertyValue("DriveLetter")
             };
+        }
+
+        public async Task<Partition> CreateReservedPartition(Disk disk, ulong sizeInBytes)
+        {
+            ps.Commands.Clear();
+            ps.AddCommand("New-Partition")
+                .AddParameter("DiskNumber", disk.Number)
+                .AddParameter("GptType", "{e3c9e316-0b5c-4db8-817d-f92df00215ae}")
+                .AddParameter("Size", sizeInBytes);
+
+            var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+            var partition = results.First().ImmediateBaseObject;
+
+            return ToPartition(disk, partition);
+        }
+
+        public async Task<Partition> CreatePartition(Disk disk, ulong sizeInBytes)
+        {
+            ps.Commands.Clear();
+            ps.AddCommand("New-Partition")
+                .AddParameter("DiskNumber", disk.Number);
+
+            if (sizeInBytes == ulong.MaxValue)
+            {
+                ps.AddParameter("UseMaximumSize");
+            }
+            else
+            {
+                ps.AddParameter("Size", sizeInBytes);
+            }
+
+            var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+            var partition = results.First().ImmediateBaseObject;
+
+            return ToPartition(disk, partition);
+        }
+
+        private static Partition ToPartition(Disk disk, object partition)
+        {
+            return new Partition
+            {
+                Disk = disk,
+                Number = (uint)partition.GetPropertyValue("PartitionNumber"),
+                Id = (string)partition.GetPropertyValue("UniqueId"),
+                Letter = (char)partition.GetPropertyValue("DriveLetter")
+            };
+        }
+
+        public Task<Partition> SetPartitionType(Partition partition, PartitionType partitionType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Format(Volume volume, FileSystemFormat fileSystemFormat, string fileSystemLabel)
+        {
+            ps.Commands.Clear();
+            var cmd = $@"Get-Partition -UniqueId ""{volume.Partition.Id}"" | Get-Volume | Format-Volume -FileSystem {fileSystemFormat.Moniker} -NewFileSystemLabel {fileSystemLabel} -Force -Confirm:$false";
+            ps.AddScript(cmd);
+
+            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+        }
+
+        public Task AssignDriveLetter(Volume volume, char driverLetter)
+        {
+            ps.Commands.Clear();
+            var cmd = $@"Set-Partition -DiskNumber {volume.Partition.Disk.Number} -PartitionNumber {volume.Partition.Number} -NewDriveLetter {driverLetter}";
+            ps.AddScript(cmd);
+
+            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+        }
+
+        public async Task<char> GetFreeDriveLetter()
+        {
+            ps.Commands.Clear();
+            var cmd = $@"$normalizedName = ls function:[d-z]: -n | ?{{ !(test-path $_) }} | select -First 1
+	                    $letter = $normalizedName[0]
+	                    return $letter";
+
+            ps.AddScript(cmd);
+
+            var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+            
+            return (char)results.First().ImmediateBaseObject;
         }
     }
 }

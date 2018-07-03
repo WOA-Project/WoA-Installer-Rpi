@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Installer.Core
 {
-    public class ConfigStore
+    public class ConfigProvider : IConfigProvider
     {
         private readonly ILowLevelApi api;
 
-        public ConfigStore(ILowLevelApi api)
+        public ConfigProvider(ILowLevelApi api)
         {
             this.api = api;
         }
@@ -24,9 +24,12 @@ namespace Installer.Core
             try
             {
                 var efiespDrive = drives.First(x => x.DriveFormat == "FAT" && x.VolumeLabel == "EFIESP");
-                return new Config(efiespDrive, await api.GetPhoneDisk(), (await GetVolumes()).First(x => x.Label == "Data"));
+                var phoneDisk = await api.GetPhoneDisk();
+                var volumes = await GetVolumes();
+
+                return new Config(efiespDrive, phoneDisk, volumes.First(x => x.Label == "Data"));
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 throw new InvalidOperationException("Cannot access Phone partitions");
             }            
@@ -34,13 +37,21 @@ namespace Installer.Core
 
         private async Task<IList<Volume>> GetVolumes()
         {
-            var partitions = await api.GetPartitions(await api.GetPhoneDisk());
+            var disk = await api.GetPhoneDisk();
+            var partitions = await api.GetPartitions(disk);
             var selectMany = partitions.ToObservable()
+                .Where(IsMountable)
                 .Select(x => Observable.FromAsync(() => api.GetVolume(x)))
                 .Merge(1);
 
             var volumes = await selectMany.ToList();
             return volumes;
+        }
+
+        private static bool IsMountable(Partition partition)
+        {
+            var reserved = PartitionType.Reserved;
+            return partition.GptType.Equals(reserved.Guid);
         }
     }
 }

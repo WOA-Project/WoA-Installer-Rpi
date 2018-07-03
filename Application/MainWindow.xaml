@@ -11,12 +11,35 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Button Content="Install" Command="{Binding FullInstallCommand}" />
-        <mah:ProgressRing Grid.Row="0" IsActive="{Binding IsBusy}"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+        <Button Padding="8" FontSize="18" Command="{Binding FullInstallCommand}" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button.Content>
+                <Grid Width="100">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="5*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Install" TextAlignment="Center" VerticalAlignment="Center" />
+                    <mah:ProgressRing Width="Auto" Height="Auto" Grid.Column="2" IsActive="{Binding IsBusy}"   />
+                </Grid>
+            </Button.Content>
+        </Button>
+
         <TextBox Grid.Row="1" x:Name="LoggingTextBox" />
+
+        <StatusBar Grid.Row="2">
+            <StatusBarItem HorizontalContentAlignment="Stretch">
+                <ProgressBar Value="{Binding Progress, Mode=OneWay}"  Height="15"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>
+
+
+
+
 
 
 
