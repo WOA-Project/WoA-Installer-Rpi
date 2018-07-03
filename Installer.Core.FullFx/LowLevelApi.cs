@@ -95,13 +95,18 @@ namespace Installer.Core.FullFx
 
             var volumes = results
                 .Select(x => x.ImmediateBaseObject)
-                .Select(x => new Partition
+                .Select(x =>
                 {
-                    Disk = disk,
-                    Number = (uint)x.GetPropertyValue("PartitionNumber"),
-                    Id = (string)x.GetPropertyValue("UniqueId"),
-                    Letter = (char)x.GetPropertyValue("DriveLetter"),
-                    GptType = Guid.Parse((string)x.GetPropertyValue("GptType")),
+                    var hasType = Guid.TryParse((string) x.GetPropertyValue("GptType"), out var guid);
+
+                    return new Partition
+                    {
+                        Disk = disk,
+                        Number = (uint) x.GetPropertyValue("PartitionNumber"),
+                        Id = (string) x.GetPropertyValue("UniqueId"),
+                        Letter = (char) x.GetPropertyValue("DriveLetter"),
+                        GptType = hasType ? guid : (Guid?)null,
+                    };
                 });
 
             return volumes.ToList();

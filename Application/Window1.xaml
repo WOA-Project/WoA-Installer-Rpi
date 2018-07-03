@@ -1,0 +1,40 @@
+﻿<mah:MetroWindow x:Class="Intaller.Wpf.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Intaller.Wpf"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Windows On ARM Installer for Lumia 950 XL" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl>
+            <TabItem Header="Full Install">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <local:FullInstallPart />
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Windows deployment" ToolTip="Use this " />
+        </TabControl>
+        <Expander Grid.Row="1" Header="Log" IsExpanded="False" MaxHeight="400">
+            <local:LogPart />
+        </Expander>
+        <local:StatusPart Grid.Row="2" />
+        <Grid Grid.Row="0">
+            <mah:ProgressRing Grid.Row="0" IsActive="{Binding IsBusy}" />
+        </Grid>
+    </Grid>
+</mah:MetroWindow>
+
+    
+
+    
+
+    
+
+    

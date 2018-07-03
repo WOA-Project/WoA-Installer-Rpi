@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="Intaller.Wpf.FullInstallPart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Intaller.Wpf"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
+    <StackPanel>
+        <GroupBox Header="Windows Image (.WIM)">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox VerticalAlignment="Center" Text="{Binding WimPath, Mode=TwoWay}" Padding="4" />
+                    <Button Command="{Binding PickWimCommand}" Margin="8" Padding="4" Content="Browse..." Grid.Column="1" />
+                </Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Text="Index" TextAlignment="Center"/>
+                    <mah:NumericUpDown Margin="10,0" Value="{Binding WimIndex, Mode=TwoWay}"/>
+                </StackPanel>
+
+            </StackPanel>
+        </GroupBox>
+        <Button Margin="10" Padding="12,5" Content="Install" FontSize="18" Command="{Binding FullInstallCommand}"
+                HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </StackPanel>
+
+</UserControl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -9,24 +9,29 @@ namespace Installer.Core
     {
         private readonly ILowLevelApi lowLevelApi;
         private readonly IWindowsImageService imageService;
+        private readonly ConfigProvider configProvider;
 
         public Setup(ILowLevelApi lowLevelApi, IWindowsImageService imageService)
         {
             this.lowLevelApi = lowLevelApi;
             this.imageService = imageService;
+            configProvider = new ConfigProvider(lowLevelApi);
         }
 
         public async Task FullInstall(InstallOptions options, IObserver<double> progressObserver)
         {
-            var configProvider = new ConfigProvider(lowLevelApi);
-
             Log.Information("Retrieving information from Phone Disk/partitions...");
             var config = await configProvider.Retrieve();
             await DeployUefi(config);
             var bcdInvoker = new BcdInvoker(config);
             new BcdConfigurator(config, bcdInvoker).SetupBcd();
             await AddDeveloperMenu(config, bcdInvoker);
-            await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, 1, progressObserver);
+            await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
+        }
+
+        public async Task WindowsInstall(InstallOptions options, IObserver<double> progressObserver)
+        {
+            await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
         }
 
         private async Task AddDeveloperMenu(Config config, BcdInvoker bcdInvoker)

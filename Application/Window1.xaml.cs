@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Reactive.Linq;
+using Intaller.Wpf.UIServices;
 using Serilog;
 using Serilog.Events;
 
 namespace Intaller.Wpf
 {
-    public partial class MainWindow
+    public partial class Window1
     {
-        public MainWindow()
+        public Window1()
         {
             InitializeComponent();
 
@@ -17,9 +17,7 @@ namespace Intaller.Wpf
                 .WriteTo.Observers(x => events = x)                    
                 .CreateLogger();   
 
-            var config =  this.DataContext = new MainViewModel(events);
-
-                    
+            DataContext = new MainViewModel(events, new WpfOpenFileService());       
         }
     }
 }
