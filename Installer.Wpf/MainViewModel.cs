@@ -34,15 +34,15 @@ namespace Intaller.Wpf
             setup = new Setup(new LowLevelApi(), new DismImageService());
 
             this.messageBoxService = messageBoxService;
-            var canFullInstall = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
+            var canDeploy = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
 
             SetupPickWimCommand(openFileService);
 
-            FullInstallCommand = ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canFullInstall);
-            FullInstallCommand.ThrownExceptions.Subscribe(e => { HandleException(e); });
+            FullInstallCommand = ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canDeploy);
+            FullInstallCommand.ThrownExceptions.Subscribe(HandleException);
 
-            WindowsInstallCommand = ReactiveCommand.CreateFromTask(DeployWindows, canFullInstall);
-            WindowsInstallCommand.ThrownExceptions.Subscribe(e => { HandleException(e); });
+            WindowsInstallCommand = ReactiveCommand.CreateFromTask(DeployWindows, canDeploy);
+            WindowsInstallCommand.ThrownExceptions.Subscribe(HandleException);
 
             isBusyHelper = FullInstallCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
             progressHelper = progresSubject

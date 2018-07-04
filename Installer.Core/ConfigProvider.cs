@@ -20,32 +20,50 @@ namespace Installer.Core
         public async Task<Config> Retrieve()
         {
             Log.Verbose("Trying to get all the drives in the system");
-            var drives = DriveInfo.GetDrives();
+            
             Log.Verbose("Drives queried successfully");
-            await api.EnsurePartitionMounted("EFIESP", "FAT");
-
+            
             try
             {
-                var efiespDrive = drives.First(x =>
-                {
-                    var isReady = x.IsReady;
-                    if (!isReady)
-                    {
-                        Log.Warning("Drive {Drive} is not ready", x);
-                    }
-
-                    return isReady && x.DriveFormat == "FAT" && x.VolumeLabel == "EFIESP";
-                });
-
+                await api.EnsurePartitionMounted("EFIESP", "FAT");
+                var efiespDrive = await Observable.Defer(() => Observable.Return(GetEfiespDrive())).RetryWithBackoffStrategy();
+                
+                await api.EnsurePartitionMounted("Data", "NTFS");
                 var phoneDisk = await api.GetPhoneDisk();
-                var volumes = await api.GetVolumes(phoneDisk);
+                var dataVolume = await Observable.Defer(() => Observable.FromAsync(() => GetDataVolume(phoneDisk))).RetryWithBackoffStrategy();
 
-                return new Config(efiespDrive, phoneDisk, volumes.First(x => x.Label == "Data"));
+                return new Config(efiespDrive, phoneDisk, dataVolume);
             }
             catch (InvalidOperationException)
             {
                 throw new InvalidOperationException("Cannot access Phone partitions");
             }            
+        }
+
+        private async Task<Volume> GetDataVolume(Disk phoneDisk)
+        {
+            
+            var volumes = await api.GetVolumes(phoneDisk);
+            var dataVolume = volumes.First(x => x.Label == "Data");
+            return dataVolume;
+        }
+
+        private static DriveInfo GetEfiespDrive()
+        {
+            var drives = DriveInfo.GetDrives();
+
+            var efiespDrive = drives.First(x =>
+            {
+                var isReady = x.IsReady;
+                if (!isReady)
+                {
+                    Log.Warning("Drive {Drive} is not ready", x);
+                }
+
+                return isReady && x.DriveFormat == "FAT" && x.VolumeLabel == "EFIESP";
+            });
+
+            return efiespDrive;
         }
 
         private async Task<IList<Volume>> GetVolumes()

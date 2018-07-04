@@ -17,12 +17,19 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TabControl IsEnabled="{Binding IsBusy, Converter={StaticResource BoolNegationConverter}}">
-            <TabItem Header="Full Install" ToolTip="Use this if have just unlocked the bootloader of your phone">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock ToolTip="Use this if have just unlocked the bootloader of your phone">Full Install</TextBlock>
+                </TabItem.Header>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <sections:FullInstallPart />
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Windows deployment" ToolTip="Use this to install or re-install Windows ARM">
+            <TabItem >
+                <TabItem.Header>
+                    <TextBlock ToolTip="Use this to install or re-install Windows ARM">Windows deployment</TextBlock>
+                </TabItem.Header>
+
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <sections:WindowsPart />
                 </ScrollViewer>

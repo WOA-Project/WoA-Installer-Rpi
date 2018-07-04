@@ -65,6 +65,9 @@
     <Compile Include="Parts\LogPart.xaml.cs">
       <DependentUpon>LogPart.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Parts\Sections\WimOptionsPart.xaml.cs">
+      <DependentUpon>WimOptionsPart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RenderedLogEvent.cs" />
     <Compile Include="Parts\StatusPart.xaml.cs">
       <DependentUpon>StatusPart.xaml</DependentUpon>
@@ -99,6 +102,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Parts\Sections\WimOptionsPart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Parts\StatusPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -48,6 +48,11 @@ namespace Installer.Core
                 var destFileName = Path.Combine(target.FullName, file.Name);
                 await Copy(file.FullName, destFileName);
             }
-        }        
+        }
+
+        public static bool TestPath(string path)
+        {
+            return File.Exists(path) || Directory.Exists(path);
+        }
     }
 }

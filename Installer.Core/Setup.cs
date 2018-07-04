@@ -20,6 +20,8 @@ namespace Installer.Core
 
         public async Task DeployUefiAndWindows(InstallOptions options, IObserver<double> progressObserver)
         {
+            EnsureValidFilesRepository();
+
             Log.Information("Retrieving information from Phone Disk/partitions...");
 
             var config = await configProvider.Retrieve();
@@ -32,8 +34,35 @@ namespace Installer.Core
             Log.Information("Full installation complete!");
         }
 
+        private void EnsureValidFilesRepository()
+        {
+            Log.Information(@"Ensuring we have a correct Files repository under ""Files folder""");
+
+            var paths = new[]
+            {
+                @"Core\BootShim.efi",
+                @"Core\UEFI.elf",
+                @"Drivers",
+                @"Developer Menu"
+            };
+
+            foreach (var path in paths)
+            {
+                Log.Verbose("Testing path {Path}", path);
+                if (!FileUtils.TestPath(Path.Combine("Files", path)))
+                {
+                    throw new InvalidFileRepositoryException(Resources.EnsureValidFilesRepository);
+                }
+            }
+
+            Log.Information(@"Files folder seems to be valid");
+
+        }
+
         public async Task DeployWindows(InstallOptions options, IObserver<double> progressObserver)
         {
+            EnsureValidFilesRepository();
+
             await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
 
             Log.Information("Windows deployment succeeded!");
