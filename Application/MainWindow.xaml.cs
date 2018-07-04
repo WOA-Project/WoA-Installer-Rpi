@@ -5,9 +5,9 @@ using Serilog.Events;
 
 namespace Intaller.Wpf
 {
-    public partial class Window1
+    public partial class MainWindow
     {
-        public Window1()
+        public MainWindow()
         {
             InitializeComponent();
 
@@ -17,7 +17,7 @@ namespace Intaller.Wpf
                 .WriteTo.Observers(x => events = x)                    
                 .CreateLogger();   
 
-            DataContext = new MainViewModel(events, new WpfOpenFileService());       
+            DataContext = new MainViewModel(events, new WpfOpenFileService(), new WpfMessageBoxService());       
         }
     }
 }

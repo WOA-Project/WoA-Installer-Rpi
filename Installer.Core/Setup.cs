@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Serilog;
 
@@ -21,9 +22,10 @@ namespace Installer.Core
         public async Task FullInstall(InstallOptions options, IObserver<double> progressObserver)
         {
             Log.Information("Retrieving information from Phone Disk/partitions...");
+
             var config = await configProvider.Retrieve();
             await DeployUefi(config);
-            var bcdInvoker = new BcdInvoker(config);
+            var bcdInvoker = new BcdInvoker(config.BcdFileName);
             new BcdConfigurator(config, bcdInvoker).SetupBcd();
             await AddDeveloperMenu(config, bcdInvoker);
             await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
@@ -42,8 +44,8 @@ namespace Installer.Core
             await FileUtils.CopyDirectory(new DirectoryInfo(Path.Combine("Files", "Developer Menu")), new DirectoryInfo(destination));
             var guid = FormattingUtils.GetGuid(bcdInvoker.Invoke(@"/create /d ""Developer Menu"" /application BOOTAPP"));
             bcdInvoker.Invoke($@"/set {{{guid}}} path \Windows\System32\BOOT\developermenu.efi");
-            var driveLetter = config.EfiespDrive.RootDirectory.Name;
-            bcdInvoker.Invoke($@"/set {{{guid}}} device volume={driveLetter}");
+            var partition = config.EfiespDrive.RootDirectory.Name;
+            bcdInvoker.Invoke($@"/set {{{guid}}} device partition={partition}");
             bcdInvoker.Invoke($@"/displayorder {{{guid}}} /addlast");
         }
 

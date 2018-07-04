@@ -5,10 +5,10 @@
         private readonly string commonArgs;
         private readonly string bcdEdit;
 
-        public BcdInvoker(Config config)
+        public BcdInvoker(string store)
         {
             bcdEdit = @"c:\Windows\SysNative\bcdedit.exe";
-            commonArgs = $"/STORE {config.BcdFileName}";
+            commonArgs = $@"/STORE ""{store}""";
         }
 
         public string Invoke(string command)

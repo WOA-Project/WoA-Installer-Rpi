@@ -1,13 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Installer.Core;
 using Installer.Core.FullFx;
+using Serilog;
 using Xunit;
 
 namespace Application.Tests
 {
-    
+
     public class LowLevelApiSpecs
     {
         [Fact]
@@ -41,8 +43,8 @@ namespace Application.Tests
             var phoneDisk = await sut.GetPhoneDisk();
             var partitionToFormat = (await sut.GetPartitions(phoneDisk)).Single(x => x.Number == 6);
             var toFormat = await sut.GetVolume(partitionToFormat);
-            
-            await sut.Format(toFormat, FileSystemFormat.Ntfs, "Test");            
+
+            await sut.Format(toFormat, FileSystemFormat.Ntfs, "Test");
         }
 
         [Fact]
@@ -52,15 +54,15 @@ namespace Application.Tests
             var phoneDisk = await sut.GetPhoneDisk();
             var partitionToFormat = (await sut.GetPartitions(phoneDisk)).Single(x => x.Number == 6);
             var toAssign = await sut.GetVolume(partitionToFormat);
-            
-            await sut.AssignDriveLetter(toAssign, 'I');            
+
+            await sut.AssignDriveLetter(toAssign, 'I');
         }
 
         [Fact]
         public async Task DeployWindows()
         {
             var api = new LowLevelApi();
-            var deployer = new WindowsDeployer(new LowLevelApi(), new ConfigProvider(api), new DismImageService());
+            var deployer = new WindowsDeployer(new LowLevelApi(), new ConfigProvider(api), new Installer.Core.FullFx.DismImageService());
             await deployer.Deploy(@"F:\sources\install.wim");
         }
 
@@ -70,6 +72,17 @@ namespace Application.Tests
         {
             var sut = new LowLevelApi();
             await sut.RemoveExistingWindowsPartitions();
+        }
+
+        [Fact]
+        public async Task SetPartitionType()
+        {
+            var sut = new LowLevelApi();
+            var disk = await sut.GetPhoneDisk();
+            var volumes = await sut.GetVolumes(disk);
+            var volume = volumes.Single(x => x.Label == "BOOT");
+
+            await sut.SetPartitionType(volume.Partition, PartitionType.Esp);
         }
 
         [Fact]

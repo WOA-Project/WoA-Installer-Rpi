@@ -15,9 +15,10 @@ namespace Installer.Core
         Task<Volume> GetVolume(Partition partition);
         Task<Partition> CreateReservedPartition(Disk disk, ulong sizeInBytes);
         Task<Partition> CreatePartition(Disk disk, ulong sizeInBytes);
-        Task<Partition> SetPartitionType(Partition partition, PartitionType partitionType);
+        Task SetPartitionType(Partition partition, PartitionType partitionType);
         Task Format(Volume partition, FileSystemFormat ntfs, string fileSystemLabel);
         Task<char> GetFreeDriveLetter();
         Task AssignDriveLetter(Volume volume, char letter);
+        Task<IList<Volume>> GetVolumes(Disk disk);
     }
 }

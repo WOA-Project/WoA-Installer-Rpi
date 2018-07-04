@@ -7,12 +7,12 @@ namespace Installer.Core
 {
     public class WindowsDeployer : IWindowsDeployer
     {
-        private const ulong SpaceNeeded = 18 * (ulong) 1_000_000_000;
+        private const ulong SpaceNeeded = 19 * (ulong) 1_000_000_000;
         private readonly IConfigProvider configProvider;
         private readonly DriverLocations driverLocations = new DriverLocations();
         private readonly ILowLevelApi lowLevelApi;
         private readonly IWindowsImageService windowsImageService;
-        private BcdInvoker2 bcd;
+        private BcdInvoker bcd;
 
         public WindowsDeployer(ILowLevelApi lowLevelApi, IConfigProvider configProvider, IWindowsImageService windowsImageService)
         {
@@ -34,14 +34,16 @@ namespace Installer.Core
             await MakeBootable(partitions);
         }
 
-        private Task MakeBootable(WindowsVolumes volumes)
+        public Task MakeBootable(WindowsVolumes volumes)
         {
             Log.Information("Making Windows installation bootable...");
 
-            bcd = new BcdInvoker2(Path.Combine(volumes.Boot.RootDir.Name, "EFI", "Microsoft", "Boot"));
+            var bcdPath = Path.Combine(volumes.Boot.RootDir.Name, "EFI", "Microsoft", "Boot", "BCD");
+            bcd = new BcdInvoker(bcdPath);
             CmdUtils.Run(@"c:\Windows\SysNative\bcdboot.exe", $@"{Path.Combine(volumes.Windows.RootDir.Name, "Windows")} /f UEFI /s {volumes.Boot.Letter}:");
             bcd.Invoke("/set {default} testsigning on");
             bcd.Invoke("/set {default} nointegritychecks on");
+            lowLevelApi.SetPartitionType(volumes.Boot.Partition, PartitionType.Esp);
 
             return Task.CompletedTask;
         }
@@ -95,8 +97,9 @@ namespace Installer.Core
 
             if (available < SpaceNeeded)
             {
-                Log.Warning("Currently, there's not enough space in the phone");
+                Log.Warning("There's not enough space in the phone");
                 await TakeSpaceFromDataPartition();
+                Log.Information("Data partition resized");
             }
         }
 
@@ -104,17 +107,17 @@ namespace Installer.Core
         {
             var dataVolume = (await configProvider.Retrieve()).DataVolume;
 
-            Log.Warning("Trying to resize Data partition...");
+            Log.Warning("We will try to resize the Data partition to get the required space...");
             var finalSize = dataVolume.Size - SpaceNeeded;
             await lowLevelApi.ResizePartition(dataVolume.Partition, finalSize);
         }
 
-        private class WindowsVolumes
+        public class WindowsVolumes
         {
-            public WindowsVolumes(Volume bootPartition, Volume windowsPartition)
+            public WindowsVolumes(Volume bootVolume, Volume windowsVolume)
             {
-                Boot = bootPartition;
-                Windows = windowsPartition;
+                Boot = bootVolume;
+                Windows = windowsVolume;
             }
 
             public Volume Boot { get; }

@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Installer.Core.FullFx
 {
@@ -28,6 +30,31 @@ namespace Installer.Core.FullFx
             var disk = results.First().ImmediateBaseObject;
 
             return ToDisk(disk);
+        }
+
+        public async Task<IList<Volume>> GetVolumes(Disk disk)
+        {
+            var partitions = await GetPartitions(disk);
+            var partitionsObs = partitions.ToObservable();
+
+            var volumes = partitionsObs
+                .Select(x => Observable.FromAsync(async () =>
+                {
+                    try
+                    {
+                        return await GetVolume(x);
+                    }
+                    catch (Exception)
+                    {
+                        Log.Warning($"Cannot get volume for partition {x}");
+                        return null;
+                    }
+                }))
+                .Merge(1)
+                .Where(v => v != null)
+                .ToList();
+
+            return await volumes;
         }
 
         private static Disk ToDisk(object disk)
@@ -97,14 +124,14 @@ namespace Installer.Core.FullFx
                 .Select(x => x.ImmediateBaseObject)
                 .Select(x =>
                 {
-                    var hasType = Guid.TryParse((string) x.GetPropertyValue("GptType"), out var guid);
+                    var hasType = Guid.TryParse((string)x.GetPropertyValue("GptType"), out var guid);
 
                     return new Partition
                     {
                         Disk = disk,
-                        Number = (uint) x.GetPropertyValue("PartitionNumber"),
-                        Id = (string) x.GetPropertyValue("UniqueId"),
-                        Letter = (char) x.GetPropertyValue("DriveLetter"),
+                        Number = (uint)x.GetPropertyValue("PartitionNumber"),
+                        Id = (string)x.GetPropertyValue("UniqueId"),
+                        Letter = (char)x.GetPropertyValue("DriveLetter"),
                         GptType = hasType ? guid : (Guid?)null,
                     };
                 });
@@ -175,9 +202,13 @@ namespace Installer.Core.FullFx
             };
         }
 
-        public Task<Partition> SetPartitionType(Partition partition, PartitionType partitionType)
+        public Task SetPartitionType(Partition partition, PartitionType partitionType)
         {
-            throw new NotImplementedException();
+            ps.Commands.Clear();
+            var cmd = $@"Set-Partition -PartitionNumber {partition.Number} -DiskNumber {partition.Disk.Number} -GptType ""{{{partitionType.Guid}}}""";
+            ps.AddScript(cmd);
+
+            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
         }
 
         public Task Format(Volume volume, FileSystemFormat fileSystemFormat, string fileSystemLabel)
@@ -208,7 +239,7 @@ namespace Installer.Core.FullFx
             ps.AddScript(cmd);
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
-            
+
             return (char)results.First().ImmediateBaseObject;
         }
     }

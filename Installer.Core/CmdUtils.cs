@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
@@ -36,31 +35,41 @@ namespace Installer.Core
         }
 
 
-        public static ObservableProcess RunProcessAsync(string fileName, string args)
+        public static async Task<int> RunProcessAsync(string fileName, string args = "", IObserver<string> outputObserver = null, IObserver<string> errorObserver = null)
         {
             using (var process = new Process
             {
                 StartInfo =
                 {
-                    FileName = fileName, Arguments = args,
-                    UseShellExecute = false, CreateNoWindow = true,
-                    RedirectStandardOutput = true, RedirectStandardError = true
+                    FileName = fileName,
+                    Arguments = args,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
                 },
                 EnableRaisingEvents = true
             })
             {
-                return RunProcessAsync(process);
+                return await RunProcessAsync(process, outputObserver, errorObserver).ConfigureAwait(false);
             }
         }
 
-        private static ObservableProcess RunProcessAsync(Process process)
+        private static Task<int> RunProcessAsync(Process process, IObserver<string> outputObserver, IObserver<string> errorObserver)
         {
             var tcs = new TaskCompletionSource<int>();
 
-            var stdObs = Observable.FromEventPattern<DataReceivedEventHandler, DataReceivedEventArgs>(x => process.OutputDataReceived += x, x => process.OutputDataReceived -= x);
-            var errObs = Observable.FromEventPattern<DataReceivedEventHandler, DataReceivedEventArgs>(x => process.ErrorDataReceived += x, x => process.ErrorDataReceived -= x);
-            var exitObs = Observable.FromEventPattern<EventHandler, EventArgs>(x => process.Exited += x, x => process.Exited -= x);
+            process.Exited += (s, ea) => tcs.SetResult(process.ExitCode);
 
+            if (outputObserver != null)
+            {
+                process.OutputDataReceived += (s, ea) => outputObserver.OnNext(ea.Data);
+            }
+
+            if (errorObserver != null)
+            {
+                process.ErrorDataReceived += (s, ea) => errorObserver?.OnNext(ea.Data);
+            }
 
             bool started = process.Start();
             if (!started)
@@ -73,21 +82,7 @@ namespace Installer.Core
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
 
-            return new ObservableProcess(exitObs, stdObs, errObs);
-        }
-    }
-
-    public class ObservableProcess
-    {
-        public IObservable<EventPattern<EventArgs>> ExitObs { get; }
-        public IObservable<EventPattern<DataReceivedEventArgs>> StdObs { get; }
-        public IObservable<EventPattern<DataReceivedEventArgs>> ErrObs { get; }
-
-        public ObservableProcess(IObservable<EventPattern<EventArgs>> exitObs, IObservable<EventPattern<DataReceivedEventArgs>> stdObs, IObservable<EventPattern<DataReceivedEventArgs>> errObs)
-        {
-            ExitObs = exitObs;
-            StdObs = stdObs;
-            ErrObs = errObs;
+            return tcs.Task;
         }
     }
 }

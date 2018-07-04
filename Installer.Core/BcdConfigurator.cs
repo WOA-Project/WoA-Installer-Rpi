@@ -33,7 +33,7 @@ namespace Installer.Core
         private void SetupBootShim(Guid guid)
         {
             invoker.Invoke($@"/set {{{guid}}} path \EFI\boot\BootShim.efi");
-            invoker.Invoke($@"/set {{{guid}}} device volume={config.EfiespDrive.RootDirectory.Name}");
+            invoker.Invoke($@"/set {{{guid}}} device partition={config.EfiespDrive.RootDirectory.Name}");
             invoker.Invoke($@"/set {{{guid}}} testsigning on");
             invoker.Invoke($@"/set {{{guid}}} nointegritychecks on");
         }
@@ -41,13 +41,15 @@ namespace Installer.Core
         private void SetupBootMgr()
         {
             invoker.Invoke($@"/set {{bootmgr}} displaybootmenu on");
+            invoker.Invoke($@"/deletevalue {{bootmgr}} customactions");
             invoker.Invoke($@"/deletevalue {{bootmgr}} custom:54000001");
             invoker.Invoke($@"/deletevalue {{bootmgr}} custom:54000002");
         }
         
         private Guid CreateBootShim()
         {
-            return FormattingUtils.GetGuid(CmdUtils.Run(bcdEdit, $@"/STORE {config.BcdFileName} /create /d ""Windows 10"" /application BOOTAPP"));
+            var run = CmdUtils.Run(bcdEdit, $@"/STORE {config.BcdFileName} /create /d ""Windows 10"" /application BOOTAPP");
+            return FormattingUtils.GetGuid(run);
         }
     }
 }

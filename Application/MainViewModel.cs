@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Windows;
+using CinchExtended.Services.Interfaces;
 using DynamicData;
 using Installer.Core;
 using Installer.Core.FullFx;
@@ -16,6 +17,7 @@ namespace Intaller.Wpf
 {
     public class MainViewModel : ReactiveObject
     {
+        private readonly IMessageBoxService messageBoxService;
         private readonly ObservableAsPropertyHelper<bool> isBusyHelper;
         private readonly ReadOnlyObservableCollection<RenderedLogEvent> logEvents;
         private readonly ObservableAsPropertyHelper<double> progressHelper;
@@ -25,8 +27,9 @@ namespace Intaller.Wpf
         private string wimPath;
         private int wimIndex;
 
-        public MainViewModel(IObservable<LogEvent> events, IOpenFileService openFileService)
+        public MainViewModel(IObservable<LogEvent> events, IOpenFileService openFileService, IMessageBoxService messageBoxService)
         {
+            this.messageBoxService = messageBoxService;
             var canFullInstall = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
 
             SetupPickWimCommand(openFileService);
@@ -35,7 +38,7 @@ namespace Intaller.Wpf
             FullInstallCommand.ThrownExceptions.Subscribe(e => { MessageBox.Show($"Error: {e.Message}"); });
 
             WindowsInstallCommand = ReactiveCommand.CreateFromTask(RunWindowsInstall, canFullInstall);
-            WindowsInstallCommand.ThrownExceptions.Subscribe(e => { MessageBox.Show($"Error: {e.Message}"); });
+            WindowsInstallCommand.ThrownExceptions.Subscribe(e => { messageBoxService.ShowError($"Error: {e.Message}"); });
 
             isBusyHelper = FullInstallCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
             progressHelper = progresSubject
@@ -52,6 +55,7 @@ namespace Intaller.Wpf
                 .ToProperty(this, x => x.Status);
 
             logLoader = events
+                .Where(x => x.Level == LogEventLevel.Information)
                 .ToObservableChangeSet()
                 .Transform(x => new RenderedLogEvent
                 {
@@ -90,7 +94,7 @@ namespace Intaller.Wpf
 
         public ReactiveCommand<Unit, string> PickWimCommand { get; set; }
 
-        private Task RunFullInstall()
+        private async Task RunFullInstall()
         {
             var installOptions = new InstallOptions
             {
@@ -98,10 +102,12 @@ namespace Intaller.Wpf
                 ImageIndex = WimIndex,
             };
 
-            return new Setup(new LowLevelApi(), new DismImageService()).FullInstall(installOptions, progresSubject);
+            var setup = new Setup(new LowLevelApi(), new DismImageService());
+            await setup.FullInstall(installOptions, progresSubject);
+            messageBoxService.ShowInformation(@"Done!\nYou can now reboot your phone and choose ""Windows 10"" to start the Windows 10 ARM Setup.\nEnjoy!");
         }
 
-        private Task RunWindowsInstall()
+        private async Task RunWindowsInstall()
         {
             var installOptions = new InstallOptions
             {
@@ -109,7 +115,9 @@ namespace Intaller.Wpf
                 ImageIndex = WimIndex,
             };
 
-            return new Setup(new LowLevelApi(), new DismImageService()).WindowsInstall(installOptions, progresSubject);
+            var setup = new Setup(new LowLevelApi(), new DismImageService());
+            await setup.WindowsInstall(installOptions, progresSubject);
+            messageBoxService.ShowInformation(@"Done!\nYou can now reboot your phone and choose ""Windows 10"" to start the Windows 10 ARM Setup.\nEnjoy!");
         }
 
         public int WimIndex

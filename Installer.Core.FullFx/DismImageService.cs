@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
@@ -19,22 +20,23 @@ namespace Installer.Core.FullFx
                 throw new FileNotFoundException($"Image not found: {imagePath}. Please, verify that the file exists and it's accessible.");
             }
 
-            var procObs = CmdUtils.RunProcessAsync("DISM", $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}");
-
+            ISubject<string> outputSubject = new Subject<string>();
             IDisposable stdOutputSubscription = null;
             if (progressObserver != null)
             {
-                stdOutputSubscription = procObs.StdObs
-                    .Select(x => GetPercentage(x.EventArgs.Data))
+                stdOutputSubscription = outputSubject
+                    .Select(GetPercentage)
                     .Where(d => !double.IsNaN(d))
-                    .Subscribe(progressObserver.OnNext);
+                    .Subscribe(progressObserver);
             }
 
-            await procObs.ExitObs;
+            var resultCode = await CmdUtils.RunProcessAsync("DISM", $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}", outputObserver: outputSubject);
+            if (resultCode != 0)
+            {
+                throw new DeploymentException($"There has been a problem during deployment: DISM exited with code {resultCode}.");
+            }
 
             stdOutputSubscription?.Dispose();
-
-            CmdUtils.Run("DISM", $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:1 /ApplyDir:{volume.RootDir.Name}");
         }
 
         private double GetPercentage(string dismOutput)
@@ -51,12 +53,12 @@ namespace Installer.Core.FullFx
                 var value = matches.Groups[1].Value;
                 try
                 {
-                    var percentage = double.Parse(value, CultureInfo.InvariantCulture);
+                    var percentage = double.Parse(value, CultureInfo.InvariantCulture) / 100D;
                     return percentage;
                 }
                 catch (FormatException)
                 {
-                    Log.Warning($"Cannot convert {value} to double");                    
+                    Log.Warning($"Cannot convert {value} to double");
                 }
             }
 
@@ -65,7 +67,7 @@ namespace Installer.Core.FullFx
 
         public Task InjectDrivers(string path, Volume volume)
         {
-            CmdUtils.Run("DISM", $@"/Add-Driver /Image:{volume.RootDir.Name} /Driver:""{path}"" /Recurse /ForceUnsigned");
-            return Task.CompletedTask;        }
+            return CmdUtils.RunProcessAsync("DISM", $@"/Add-Driver /Image:{volume.RootDir.Name} /Driver:""{path}"" /Recurse /ForceUnsigned");
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace Installer.Core
             {
                 var efiespDrive = drives.First(x => x.DriveFormat == "FAT" && x.VolumeLabel == "EFIESP");
                 var phoneDisk = await api.GetPhoneDisk();
-                var volumes = await GetVolumes();
+                var volumes = await api.GetVolumes(phoneDisk);
 
                 return new Config(efiespDrive, phoneDisk, volumes.First(x => x.Label == "Data"));
             }

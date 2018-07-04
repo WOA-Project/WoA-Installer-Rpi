@@ -13,9 +13,9 @@
         <StatusBarItem HorizontalContentAlignment="Stretch">
             <Grid>
                 <ProgressBar Minimum="0" 
-                             Maximum="100" 
-                             Value="{Binding Progress, Mode=OneWay}" x:Name="ProgressBar" />
-                <TextBlock Text="{Binding ElementName=ProgressBar, Path=Value, StringFormat={}{P}}" 
+                             Maximum="1" 
+                             Value="{Binding Progress, Mode=OneWay}" x:Name="ProgressBar" Height="20" />
+                <TextBlock Text="{Binding ElementName=ProgressBar, Path=Value, StringFormat={}{0:P0}}" 
                            HorizontalAlignment="Center" 
                            VerticalAlignment="Center" />
             </Grid>
