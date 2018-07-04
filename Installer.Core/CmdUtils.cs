@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Installer.Core
 {
@@ -71,7 +72,10 @@ namespace Installer.Core
                 process.ErrorDataReceived += (s, ea) => errorObserver?.OnNext(ea.Data);
             }
 
+            Log.Verbose("Starting process {@Process}", process.StartInfo);
             bool started = process.Start();
+            Log.Verbose("Process started sucessfully");
+
             if (!started)
             {
                 //you may allow for the process to be re-used (started = false) 

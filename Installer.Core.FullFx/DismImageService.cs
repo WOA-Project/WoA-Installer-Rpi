@@ -29,8 +29,11 @@ namespace Installer.Core.FullFx
                     .Where(d => !double.IsNaN(d))
                     .Subscribe(progressObserver);
             }
-
-            var resultCode = await CmdUtils.RunProcessAsync("DISM", $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}", outputObserver: outputSubject);
+            
+            var dismName = "DISM";
+            var args = $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}";
+            Log.Verbose("We are about to run DISM: {ExecName} {Parameters}", dismName, args);
+            var resultCode = await CmdUtils.RunProcessAsync(dismName, args, outputObserver: outputSubject);
             if (resultCode != 0)
             {
                 throw new DeploymentException($"There has been a problem during deployment: DISM exited with code {resultCode}.");

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Installer.Core
 {
@@ -18,12 +19,24 @@ namespace Installer.Core
 
         public async Task<Config> Retrieve()
         {
+            Log.Verbose("Trying to get all the drives in the system");
             var drives = DriveInfo.GetDrives();
+            Log.Verbose("Drives queried successfully");
             await api.EnsurePartitionMounted("EFIESP", "FAT");
 
             try
             {
-                var efiespDrive = drives.First(x => x.DriveFormat == "FAT" && x.VolumeLabel == "EFIESP");
+                var efiespDrive = drives.First(x =>
+                {
+                    var isReady = x.IsReady;
+                    if (!isReady)
+                    {
+                        Log.Warning("Drive {Drive} is not ready", x);
+                    }
+
+                    return isReady && x.DriveFormat == "FAT" && x.VolumeLabel == "EFIESP";
+                });
+
                 var phoneDisk = await api.GetPhoneDisk();
                 var volumes = await api.GetVolumes(phoneDisk);
 

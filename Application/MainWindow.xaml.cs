@@ -14,14 +14,15 @@ namespace Intaller.Wpf
             IObservable<LogEvent> events = null;
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Observers(x => events = x)                    
+                .WriteTo.Observers(x => events = x, LogEventLevel.Information) 
+                .WriteTo.RollingFile(@"Logs\{Date}.txt")
                 .CreateLogger();
 
             var wpfMessageBoxService = new WpfMessageBoxService();
 
             wpfMessageBoxService.ShowInformation(Properties.Resources.WarningNotice);
 
-            DataContext = new MainViewModel(events, new WpfOpenFileService(), wpfMessageBoxService);       
+            DataContext = new MainViewModel(events, new WpfOpenFileService(), wpfMessageBoxService);
         }
     }
 }

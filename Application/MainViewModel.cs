@@ -11,6 +11,7 @@ using Installer.Core.FullFx;
 using Intaller.Wpf.Properties;
 using Intaller.Wpf.UIServices;
 using ReactiveUI;
+using Serilog;
 using Serilog.Events;
 
 namespace Intaller.Wpf
@@ -38,10 +39,10 @@ namespace Intaller.Wpf
             SetupPickWimCommand(openFileService);
 
             FullInstallCommand = ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canFullInstall);
-            FullInstallCommand.ThrownExceptions.Subscribe(e => { MessageBox.Show($"Error: {e.Message}"); });
+            FullInstallCommand.ThrownExceptions.Subscribe(e => { HandleException(e); });
 
             WindowsInstallCommand = ReactiveCommand.CreateFromTask(DeployWindows, canFullInstall);
-            WindowsInstallCommand.ThrownExceptions.Subscribe(e => { messageBoxService.ShowError($"Error: {e.Message}"); });
+            WindowsInstallCommand.ThrownExceptions.Subscribe(e => { HandleException(e); });
 
             isBusyHelper = FullInstallCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
             progressHelper = progresSubject
@@ -71,6 +72,12 @@ namespace Intaller.Wpf
 
             WimIndex = 1;
             WimPath = "";
+        }
+
+        private static void HandleException(Exception e)
+        {
+            Log.Error(e, "An error has ocurred");
+            MessageBox.Show($"Error: {e.Message}");            
         }
 
         public ReactiveCommand<Unit, Unit> WindowsInstallCommand { get; set; }
