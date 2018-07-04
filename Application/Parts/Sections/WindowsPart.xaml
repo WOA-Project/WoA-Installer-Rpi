@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Intaller.Wpf.WindowsPart"
+﻿<UserControl x:Class="Intaller.Wpf.Parts.Sections.WindowsPart"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +8,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
     <StackPanel>
-        <GroupBox Header="Windows Image (.WIM)">
+        <StackPanel.Resources>
+          
+        </StackPanel.Resources>
+        <TextBlock Style="{StaticResource TitleStyle}">Install/Reinstall Windows ARM64</TextBlock>
+        <TextBlock Margin="12">
+            <Span>
+                This will <Bold>ONLY</Bold> install or reinstall <Bold>Windows 64 ARM into your Phone</Bold>. <LineBreak />
+                Take into account that this will <Bold>DELETE</Bold> any existing installation of Windows ARM 64.
+            </Span>
+        </TextBlock>
+        <GroupBox Margin="8" Header="Windows Image (.WIM)">
             <StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>

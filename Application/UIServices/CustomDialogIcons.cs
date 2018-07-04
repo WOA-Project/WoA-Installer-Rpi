@@ -1,4 +1,4 @@
-﻿namespace CinchExtended.Services.Interfaces
+﻿namespace Intaller.Wpf.UIServices
 {
     /// <summary>
     /// Available Icon options.

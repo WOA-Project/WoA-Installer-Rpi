@@ -55,14 +55,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FullInstallPart.xaml.cs">
+    <Compile Include="Parts\Sections\FullInstallPart.xaml.cs">
       <DependentUpon>FullInstallPart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LogPart.xaml.cs">
+    <Compile Include="Parts\LogPart.xaml.cs">
       <DependentUpon>LogPart.xaml</DependentUpon>
     </Compile>
     <Compile Include="RenderedLogEvent.cs" />
-    <Compile Include="StatusPart.xaml.cs">
+    <Compile Include="Parts\StatusPart.xaml.cs">
       <DependentUpon>StatusPart.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIServices\CustomDialogButtons.cs" />
@@ -75,7 +75,7 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WindowsPart.xaml.cs">
+    <Compile Include="Parts\Sections\WindowsPart.xaml.cs">
       <DependentUpon>WindowsPart.xaml</DependentUpon>
     </Compile>
     <None Include="..\Installer.Core.FullFx\Functions.ps1">
@@ -222,11 +222,11 @@
     <None Include="bin\Debug\Files\Misc\Lumia 950 XL - WOABattery.reg" />
     <None Include="bin\Debug\Files\Misc\QcUsbFnSsFilter8994.sys" />
     <Compile Include="MainViewModel.cs" />
-    <Page Include="FullInstallPart.xaml">
+    <Page Include="Parts\Sections\FullInstallPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LogPart.xaml">
+    <Page Include="Parts\LogPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -234,7 +234,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="StatusPart.xaml">
+    <Page Include="Parts\StatusPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -242,7 +242,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WindowsPart.xaml">
+    <Page Include="Parts\Sections\WindowsPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

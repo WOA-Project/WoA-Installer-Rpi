@@ -15,9 +15,13 @@ namespace Intaller.Wpf
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Observers(x => events = x)                    
-                .CreateLogger();   
+                .CreateLogger();
 
-            DataContext = new MainViewModel(events, new WpfOpenFileService(), new WpfMessageBoxService());       
+            var wpfMessageBoxService = new WpfMessageBoxService();
+
+            wpfMessageBoxService.ShowInformation(Properties.Resources.WarningNotice);
+
+            DataContext = new MainViewModel(events, new WpfOpenFileService(), wpfMessageBoxService);       
         }
     }
 }

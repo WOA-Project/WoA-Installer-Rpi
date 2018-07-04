@@ -5,6 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Intaller.Wpf"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:sections="clr-namespace:Intaller.Wpf.Parts.Sections"
+        xmlns:parts="clr-namespace:Intaller.Wpf.Parts"
+        WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
         Title="Windows On ARM Installer for Lumia 950 XL" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
     <Grid>
@@ -16,19 +19,19 @@
         <TabControl IsEnabled="{Binding IsBusy, Converter={StaticResource BoolNegationConverter}}">
             <TabItem Header="Full Install" ToolTip="Use this if have just unlocked the bootloader of your phone">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <local:FullInstallPart />
+                    <sections:FullInstallPart />
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Windows deployment" ToolTip="Use this to install or re-install Windows ARM">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <local:FullInstallPart />
+                    <sections:WindowsPart />
                 </ScrollViewer>
             </TabItem>
         </TabControl>
         <Expander Grid.Row="1" Header="Log" IsExpanded="False" MaxHeight="400">
-            <local:LogPart />
+            <parts:LogPart />
         </Expander>
-        <local:StatusPart Grid.Row="2" />
+        <parts:StatusPart Grid.Row="2" />
         <mah:ProgressRing Grid.Row="0" IsActive="{Binding IsBusy}" />
     </Grid>
 </mah:MetroWindow>

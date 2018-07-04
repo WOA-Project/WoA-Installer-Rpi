@@ -114,4 +114,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="WindowsDeployedSuccessfully" xml:space="preserve">
+    <value>Done!
+You can now reboot your phone and choose "Windows 10" to start the Windows 10 ARM Setup.
+Enjoy!</value>
+  </data>
+  <data name="WarningNotice" xml:space="preserve">
+    <value>Hey, if you destroy your device, it's your fault, not mine!</value>
+  </data>
 </root>

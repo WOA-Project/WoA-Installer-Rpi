@@ -5,10 +5,10 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Windows;
-using CinchExtended.Services.Interfaces;
 using DynamicData;
 using Installer.Core;
 using Installer.Core.FullFx;
+using Intaller.Wpf.Properties;
 using Intaller.Wpf.UIServices;
 using ReactiveUI;
 using Serilog.Events;
@@ -26,18 +26,21 @@ namespace Intaller.Wpf
         private IDisposable logLoader;
         private string wimPath;
         private int wimIndex;
+        private Setup setup;
 
         public MainViewModel(IObservable<LogEvent> events, IOpenFileService openFileService, IMessageBoxService messageBoxService)
         {
+            setup = new Setup(new LowLevelApi(), new DismImageService());
+
             this.messageBoxService = messageBoxService;
             var canFullInstall = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
 
             SetupPickWimCommand(openFileService);
 
-            FullInstallCommand = ReactiveCommand.CreateFromTask(RunFullInstall, canFullInstall);
+            FullInstallCommand = ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canFullInstall);
             FullInstallCommand.ThrownExceptions.Subscribe(e => { MessageBox.Show($"Error: {e.Message}"); });
 
-            WindowsInstallCommand = ReactiveCommand.CreateFromTask(RunWindowsInstall, canFullInstall);
+            WindowsInstallCommand = ReactiveCommand.CreateFromTask(DeployWindows, canFullInstall);
             WindowsInstallCommand.ThrownExceptions.Subscribe(e => { messageBoxService.ShowError($"Error: {e.Message}"); });
 
             isBusyHelper = FullInstallCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
@@ -94,7 +97,7 @@ namespace Intaller.Wpf
 
         public ReactiveCommand<Unit, string> PickWimCommand { get; set; }
 
-        private async Task RunFullInstall()
+        private async Task DeployEufiAndWindows()
         {
             var installOptions = new InstallOptions
             {
@@ -102,12 +105,11 @@ namespace Intaller.Wpf
                 ImageIndex = WimIndex,
             };
 
-            var setup = new Setup(new LowLevelApi(), new DismImageService());
-            await setup.FullInstall(installOptions, progresSubject);
-            messageBoxService.ShowInformation(@"Done!\nYou can now reboot your phone and choose ""Windows 10"" to start the Windows 10 ARM Setup.\nEnjoy!");
+            await setup.DeployUefiAndWindows(installOptions, progresSubject);
+            messageBoxService.ShowInformation(@"Resources.WindowsDeployedSuccessfully");            
         }
 
-        private async Task RunWindowsInstall()
+        private async Task DeployWindows()
         {
             var installOptions = new InstallOptions
             {
@@ -115,9 +117,8 @@ namespace Intaller.Wpf
                 ImageIndex = WimIndex,
             };
 
-            var setup = new Setup(new LowLevelApi(), new DismImageService());
-            await setup.WindowsInstall(installOptions, progresSubject);
-            messageBoxService.ShowInformation(@"Done!\nYou can now reboot your phone and choose ""Windows 10"" to start the Windows 10 ARM Setup.\nEnjoy!");
+            await setup.DeployWindows(installOptions, progresSubject);
+            messageBoxService.ShowInformation(Resources.WindowsDeployedSuccessfully);
         }
 
         public int WimIndex

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using CinchExtended.Services.Interfaces;
 
 namespace Intaller.Wpf.UIServices
 {

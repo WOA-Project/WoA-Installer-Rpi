@@ -32,20 +32,20 @@ namespace Installer.Core
             await DeployWindows(partitions, imagePath, imageIndex, progressObserver);
             await InjectBasicDrivers(partitions.Windows);
             await MakeBootable(partitions);
+
+            Log.Information("Windows Image deployed");
         }
 
-        public Task MakeBootable(WindowsVolumes volumes)
+        public async Task MakeBootable(WindowsVolumes volumes)
         {
             Log.Information("Making Windows installation bootable...");
 
             var bcdPath = Path.Combine(volumes.Boot.RootDir.Name, "EFI", "Microsoft", "Boot", "BCD");
             bcd = new BcdInvoker(bcdPath);
-            CmdUtils.Run(@"c:\Windows\SysNative\bcdboot.exe", $@"{Path.Combine(volumes.Windows.RootDir.Name, "Windows")} /f UEFI /s {volumes.Boot.Letter}:");
+            await CmdUtils.RunProcessAsync(@"c:\Windows\SysNative\bcdboot.exe", $@"{Path.Combine(volumes.Windows.RootDir.Name, "Windows")} /f UEFI /s {volumes.Boot.Letter}:");
             bcd.Invoke("/set {default} testsigning on");
             bcd.Invoke("/set {default} nointegritychecks on");
-            lowLevelApi.SetPartitionType(volumes.Boot.Partition, PartitionType.Esp);
-
-            return Task.CompletedTask;
+            await lowLevelApi.SetPartitionType(volumes.Boot.Partition, PartitionType.Esp);
         }
 
         private Task RemoveExistingWindowsPartitions()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Serilog;
 
@@ -19,7 +18,7 @@ namespace Installer.Core
             configProvider = new ConfigProvider(lowLevelApi);
         }
 
-        public async Task FullInstall(InstallOptions options, IObserver<double> progressObserver)
+        public async Task DeployUefiAndWindows(InstallOptions options, IObserver<double> progressObserver)
         {
             Log.Information("Retrieving information from Phone Disk/partitions...");
 
@@ -29,11 +28,15 @@ namespace Installer.Core
             new BcdConfigurator(config, bcdInvoker).SetupBcd();
             await AddDeveloperMenu(config, bcdInvoker);
             await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
+
+            Log.Information("Full installation complete!");
         }
 
-        public async Task WindowsInstall(InstallOptions options, IObserver<double> progressObserver)
+        public async Task DeployWindows(InstallOptions options, IObserver<double> progressObserver)
         {
             await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
+
+            Log.Information("Windows deployment succeeded!");
         }
 
         private async Task AddDeveloperMenu(Config config, BcdInvoker bcdInvoker)

@@ -15,7 +15,15 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <valueConverters:BoolNegationConverter x:Key="BoolNegationConverter" />
+
+            <Style x:Key="TitleStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="22" />
+                <Setter Property="TextAlignment" Value="Center" />
+                <Setter Property="Margin" Value="20" />
+            </Style>
+
         </ResourceDictionary>
+
     </Application.Resources>
 
 </Application>
