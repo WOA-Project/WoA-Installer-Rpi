@@ -91,7 +91,7 @@ namespace Intaller.Wpf
             });
 
             PickWimCommand
-                .Where(string.IsNullOrEmpty)
+                .Where(s => !string.IsNullOrEmpty(s))
                 .Subscribe(path => { WimPath = path; });
         }
 
