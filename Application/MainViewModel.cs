@@ -70,7 +70,7 @@ namespace Intaller.Wpf
                 .Subscribe();
 
             WimIndex = 1;
-            WimPath = @"J:\sources\install.wim";
+            WimPath = "";
         }
 
         public ReactiveCommand<Unit, Unit> WindowsInstallCommand { get; set; }
