@@ -6,11 +6,30 @@
              xmlns:local="clr-namespace:Intaller.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
-    <ListView Grid.Row="1" ItemsSource="{Binding Events}">
+    <ListView ItemsSource="{Binding Events}" ToolTip="For a full detailed log, check inside the Logs folder of this tool">
         <ListView.ItemTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding Message}"/>
             </DataTemplate >
         </ListView.ItemTemplate>
+
+        <ListView.Style>
+            <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListView}}">
+                <Style.Triggers>
+                    <DataTrigger 
+                        Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=Items.Count}" 
+                        Value="0">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <TextBlock>No items to display</TextBlock>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+        </ListView.Style>
     </ListView>
 </UserControl>

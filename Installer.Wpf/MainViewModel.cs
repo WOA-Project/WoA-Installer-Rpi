@@ -4,50 +4,61 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using System.Windows;
 using DynamicData;
 using Installer.Core;
 using Installer.Core.FullFx;
 using Intaller.Wpf.Properties;
 using Intaller.Wpf.UIServices;
+using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
 using Serilog;
 using Serilog.Events;
 
 namespace Intaller.Wpf
 {
-    public class MainViewModel : ReactiveObject
+    public class MainViewModel : ReactiveObject, IDisposable
     {
-        private readonly IMessageBoxService messageBoxService;
+        private readonly IDialogCoordinator dlgCoord;
         private readonly ObservableAsPropertyHelper<bool> isBusyHelper;
         private readonly ReadOnlyObservableCollection<RenderedLogEvent> logEvents;
         private readonly ObservableAsPropertyHelper<double> progressHelper;
-        private readonly ISubject<double> progresSubject = new Subject<double>();
+        private readonly ISubject<double> progressSubject = new Subject<double>();
         private readonly ObservableAsPropertyHelper<RenderedLogEvent> statusHelper;
-        private IDisposable logLoader;
+        private readonly IDisposable logLoader;
         private string wimPath;
         private int wimIndex;
-        private Setup setup;
+        private readonly Setup setup;
+        private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
 
-        public MainViewModel(IObservable<LogEvent> events, IOpenFileService openFileService, IMessageBoxService messageBoxService)
+        public MainViewModel(IObservable<LogEvent> events, IOpenFileService openFileService, IDialogCoordinator dlgCoord)
         {
             setup = new Setup(new LowLevelApi(), new DismImageService());
 
-            this.messageBoxService = messageBoxService;
+            this.dlgCoord = dlgCoord;
             var canDeploy = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
+
+            ShowWarningCommand = ReactiveCommand.CreateFromTask(() => dlgCoord.ShowMessageAsync(this, "Warning", Resources.WarningNotice));
 
             SetupPickWimCommand(openFileService);
 
             FullInstallCommand = ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canDeploy);
-            FullInstallCommand.ThrownExceptions.Subscribe(HandleException);
+            FullInstallCommand.ThrownExceptions.Subscribe(async exception => await HandleException(exception));
 
             WindowsInstallCommand = ReactiveCommand.CreateFromTask(DeployWindows, canDeploy);
-            WindowsInstallCommand.ThrownExceptions.Subscribe(HandleException);
+            WindowsInstallCommand.ThrownExceptions.Subscribe(async exception => await HandleException(exception));
 
-            isBusyHelper = FullInstallCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
-            progressHelper = progresSubject
+            isBusyHelper = FullInstallCommand.IsExecuting
+                .Merge(WindowsInstallCommand.IsExecuting)
+                .ToProperty(this, model => model.IsBusy);
+
+            progressHelper = progressSubject
+                .Where(d => !double.IsNaN(d))
                 .ObserveOnDispatcher()
                 .ToProperty(this, model => model.Progress);
+
+            isProgressVisibleHelper = progressSubject
+                    .Select(d => !double.IsNaN(d))
+                    .ToProperty(this, x => x.IsProgressVisible);
 
             statusHelper = events
                 .Where(x => x.Level == LogEventLevel.Information)
@@ -74,10 +85,14 @@ namespace Intaller.Wpf
             WimPath = "";
         }
 
-        private static void HandleException(Exception e)
+        public ReactiveCommand<Unit, MessageDialogResult> ShowWarningCommand { get; set; }
+
+        public bool IsProgressVisible => isProgressVisibleHelper.Value;
+
+        private async Task HandleException(Exception e)
         {
             Log.Error(e, "An error has ocurred");
-            MessageBox.Show($"Error: {e.Message}");            
+            await dlgCoord.ShowMessageAsync(this, "Error", $"{e.Message}");   
         }
 
         public ReactiveCommand<Unit, Unit> WindowsInstallCommand { get; set; }
@@ -112,8 +127,8 @@ namespace Intaller.Wpf
                 ImageIndex = WimIndex,
             };
 
-            await setup.DeployUefiAndWindows(installOptions, progresSubject);
-            messageBoxService.ShowInformation(@"Resources.WindowsDeployedSuccessfully");            
+            await setup.DeployUefiAndWindows(installOptions, progressSubject);
+            await dlgCoord.ShowMessageAsync(this, "Finished", Resources.WindowsDeployedSuccessfully);
         }
 
         private async Task DeployWindows()
@@ -124,8 +139,8 @@ namespace Intaller.Wpf
                 ImageIndex = WimIndex,
             };
 
-            await setup.DeployWindows(installOptions, progresSubject);
-            messageBoxService.ShowInformation(Resources.WindowsDeployedSuccessfully);
+            await setup.DeployWindows(installOptions, progressSubject);
+            await dlgCoord.ShowMessageAsync(this, "Finished", Resources.WindowsDeployedSuccessfully);
         }
 
         public int WimIndex
@@ -147,6 +162,18 @@ namespace Intaller.Wpf
         {
             get => wimPath;
             set => this.RaiseAndSetIfChanged(ref wimPath, value);
+        }
+
+        public void Dispose()
+        {
+            isBusyHelper?.Dispose();
+            progressHelper?.Dispose();
+            statusHelper?.Dispose();
+            logLoader?.Dispose();
+            isProgressVisibleHelper?.Dispose();
+            WindowsInstallCommand?.Dispose();
+            PickWimCommand?.Dispose();
+            FullInstallCommand?.Dispose();
         }
     }
 }

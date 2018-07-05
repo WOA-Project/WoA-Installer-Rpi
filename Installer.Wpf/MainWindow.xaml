@@ -7,9 +7,19 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:sections="clr-namespace:Intaller.Wpf.Parts.Sections"
         xmlns:parts="clr-namespace:Intaller.Wpf.Parts"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
-        Title="Windows On ARM Installer for Lumia 950 XL" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
+        Icon="/Assets/appicon.png"
+        Title="Windows On ARM Installer for Lumia 950 XL" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel}"
+        mah:DialogParticipation.Register="{Binding}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:EventTrigger.Actions>
+                <i:InvokeCommandAction Command="{Binding ShowWarningCommand}"/>
+            </i:EventTrigger.Actions>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

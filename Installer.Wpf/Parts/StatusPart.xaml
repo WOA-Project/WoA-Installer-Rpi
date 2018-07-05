@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Intaller.Wpf"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
     <StatusBar>
@@ -12,9 +13,10 @@
         </StatusBarItem>
         <StatusBarItem HorizontalContentAlignment="Stretch">
             <Grid>
-                <ProgressBar Minimum="0" 
+                <mah:MetroProgressBar  Minimum="0" 
                              Maximum="1" 
                              Value="{Binding Progress, Mode=OneWay}" x:Name="ProgressBar" Height="20" />
+
                 <TextBlock Text="{Binding ElementName=ProgressBar, Path=Value, StringFormat={}{0:P0}}" 
                            HorizontalAlignment="Center" 
                            VerticalAlignment="Center" />

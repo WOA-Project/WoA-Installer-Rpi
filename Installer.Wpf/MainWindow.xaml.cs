@@ -1,5 +1,6 @@
 ﻿using System;
 using Intaller.Wpf.UIServices;
+using MahApps.Metro.Controls.Dialogs;
 using Serilog;
 using Serilog.Events;
 
@@ -18,11 +19,7 @@ namespace Intaller.Wpf
                 .WriteTo.RollingFile(@"Logs\{Date}.txt")
                 .CreateLogger();
 
-            var wpfMessageBoxService = new WpfMessageBoxService();
-
-            wpfMessageBoxService.ShowInformation(Properties.Resources.WarningNotice);
-
-            DataContext = new MainViewModel(events, new WpfOpenFileService(), wpfMessageBoxService);
+            DataContext = new MainViewModel(events, new WpfOpenFileService(), DialogCoordinator.Instance);
         }
     }
 }

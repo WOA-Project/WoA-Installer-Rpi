@@ -65,6 +65,7 @@ namespace Installer.Core
         {
             Log.Information("Applying Windows Image...");
             await windowsImageService.ApplyImage(volumes.Windows, imagePath, imageIndex, progressObserver);
+            progressObserver?.OnNext(double.NaN);
         }
 
         private async Task<WindowsVolumes> CreatePartitions()

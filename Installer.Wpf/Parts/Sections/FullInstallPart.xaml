@@ -17,39 +17,7 @@
             </Span>
         </TextBlock>
         <sections:WimOptionsPart />
-        <Button Margin="10" Padding="12,5" Content="Install" FontSize="18" Command="{Binding FullInstallCommand}"
-                HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <local:BusyButton Command="{Binding FullInstallCommand}" FontSize="18" ButtonContent="Install" Image="/Assets/gears.png" Width="120"/>
     </StackPanel>
 
 </UserControl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
