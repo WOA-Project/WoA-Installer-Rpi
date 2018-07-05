@@ -13,14 +13,14 @@
           
         </StackPanel.Resources>
         <TextBlock Style="{StaticResource TitleStyle}">Install/Reinstall Windows ARM64</TextBlock>
-        <TextBlock Margin="12">
+        <TextBlock  Margin="12" FontSize="16">
             <Span>
-                This will <Bold>ONLY</Bold> install or reinstall <Bold>Windows 64 ARM into your Phone</Bold>. <LineBreak />
+                This will <Bold>ONLY</Bold> install or reinstall <Bold>Windows 64 ARM</Bold> into your Phone. <LineBreak />
                 Take into account that this will <Bold>DELETE</Bold> any existing installation of Windows ARM 64.
             </Span>
         </TextBlock>
         <sections:WimOptionsPart />
-        <local:BusyButton Command="{Binding FullInstallCommand}" FontSize="18" ButtonContent="Install" Image="/Assets/gears.png" Width="120"/>
+        <local:BusyButton Command="{Binding FullInstallCommand}" IsBusy="{Binding IsBusy}" ButtonContent="Install" Image="/Assets/gears.png" Width="120"/>
     </StackPanel>
 </UserControl>
 

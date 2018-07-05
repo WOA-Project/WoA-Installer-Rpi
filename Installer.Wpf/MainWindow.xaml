@@ -27,31 +27,59 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TabControl IsEnabled="{Binding IsBusy, Converter={StaticResource BoolNegationConverter}}">
-            <TabItem>
-                <TabItem.Header>
-                    <TextBlock ToolTip="Use this if have just unlocked the bootloader of your phone">Full Install</TextBlock>
-                </TabItem.Header>
+            <TabItem Header="Full Install">
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" ToolTip="Use this if have just unlocked the bootloader of your phone" />
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <sections:FullInstallPart />
                 </ScrollViewer>
             </TabItem>
-            <TabItem >
-                <TabItem.Header>
-                    <TextBlock ToolTip="Use this to install or re-install Windows ARM">Windows deployment</TextBlock>
-                </TabItem.Header>
-
+            <TabItem Header="Windows deployment">
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" ToolTip="Use this to install or re-install Windows ARM" />
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <sections:WindowsPart />
                 </ScrollViewer>
             </TabItem>
         </TabControl>
         <Expander Grid.Row="1" Header="Log" IsExpanded="False" MaxHeight="400">
-            <parts:LogPart />
+            <ScrollViewer>
+                <parts:LogPart />
+            </ScrollViewer>
         </Expander>
         <parts:StatusPart Grid.Row="2" />
-        <mah:ProgressRing Grid.Row="0" IsActive="{Binding IsBusy}" />
     </Grid>
 </mah:MetroWindow>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 

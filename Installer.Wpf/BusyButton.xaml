@@ -7,19 +7,19 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="UserControl">
-    <Button DataContext="{Binding ElementName=UserControl}" Command="{Binding Command}">
+    <Button DataContext="{Binding ElementName=UserControl}" Command="{Binding Command}" Padding="0,0,20,0">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*" />
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <Viewbox Margin="6">
-                <mah:ContentControlEx TextBlock.FontSize="{Binding FontSize}" VerticalAlignment="Center"
-                                      HorizontalAlignment="Center" Content="{Binding ButtonContent}" />
+            <Viewbox Margin="4" VerticalAlignment="Center">
+                <mah:ContentControlEx VerticalAlignment="Center"
+                                      HorizontalAlignment="Center" Content="{Binding ButtonContent}" Margin="4" />
             </Viewbox>
-            <Image Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
+            <Image d:IsHidden="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
                    RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="1" Source="{Binding Image}" />
-            <Viewbox VerticalAlignment="Center" Grid.Column="1" Margin="6">
+            <Viewbox VerticalAlignment="Center" Grid.Column="1">
                 <mah:ProgressRing IsActive="{Binding IsBusy}" />
             </Viewbox>
         </Grid>

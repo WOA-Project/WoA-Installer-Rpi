@@ -22,7 +22,7 @@ namespace Intaller.Wpf
         private readonly ObservableAsPropertyHelper<bool> isBusyHelper;
         private readonly ReadOnlyObservableCollection<RenderedLogEvent> logEvents;
         private readonly ObservableAsPropertyHelper<double> progressHelper;
-        private readonly ISubject<double> progressSubject = new Subject<double>();
+        private readonly ISubject<double> progressSubject = new BehaviorSubject<double>(double.NaN);
         private readonly ObservableAsPropertyHelper<RenderedLogEvent> statusHelper;
         private readonly IDisposable logLoader;
         private string wimPath;

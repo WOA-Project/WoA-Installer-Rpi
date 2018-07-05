@@ -10,14 +10,14 @@
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
     <StackPanel Margin="8">
         <TextBlock Style="{StaticResource TitleStyle}">Full Install</TextBlock>
-        <TextBlock Margin="12">
+        <TextBlock Margin="12" FontSize="16">
             <Span>
-                This will install <Bold>Windows 64 ARM into your Phone</Bold>. <LineBreak />
+                This will install <Bold>Windows 64 ARM</Bold> into your Phone. <LineBreak />
                 This option is thought to be used on a phone that has just been <Bold>unlocked</Bold> (with unlocked bootmanager)
             </Span>
         </TextBlock>
         <sections:WimOptionsPart />
-        <local:BusyButton Command="{Binding FullInstallCommand}" FontSize="18" ButtonContent="Install" Image="/Assets/gears.png" Width="120"/>
+        <local:BusyButton Command="{Binding FullInstallCommand}" IsBusy="{Binding IsBusy}" ButtonContent="Install" Image="/Assets/gears.png" Width="140"/>
     </StackPanel>
 
 </UserControl>

@@ -34,22 +34,30 @@ namespace Installer.Core
 
                 return new Config(efiespDrive, phoneDisk, dataVolume);
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException e)
             {
-                throw new InvalidOperationException("Cannot access Phone partitions");
+                throw new InvalidOperationException("Cannot access Phone partitions", e);
             }            
         }
 
         private async Task<Volume> GetDataVolume(Disk phoneDisk)
         {
+            Log.Verbose("Trying to get the Data volume");
             
             var volumes = await api.GetVolumes(phoneDisk);
-            var dataVolume = volumes.First(x => x.Label == "Data");
+            var dataVolume = volumes.First(x => EqualsIgnoreCase(x.Label, "Data"));
             return dataVolume;
+        }
+
+        private static bool EqualsIgnoreCase(string a, string b)
+        {
+            return string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static DriveInfo GetEfiespDrive()
         {
+            Log.Verbose("Trying to get the EFIESP volume");
+
             var drives = DriveInfo.GetDrives();
 
             var efiespDrive = drives.First(x =>
@@ -60,7 +68,7 @@ namespace Installer.Core
                     Log.Warning("Drive {Drive} is not ready", x);
                 }
 
-                return isReady && x.DriveFormat == "FAT" && x.VolumeLabel == "EFIESP";
+                return isReady && x.DriveFormat == "FAT" && EqualsIgnoreCase(x.VolumeLabel, "EFIESP");
             });
 
             return efiespDrive;
