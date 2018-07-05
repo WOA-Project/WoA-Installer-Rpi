@@ -52,6 +52,10 @@
       <Project>{97CF13C2-67D8-4BDF-80D3-00E31685603F}</Project>
       <Name>Installer.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Registry\Registry\Registry.csproj">
+      <Project>{5c40be24-a89d-4973-b668-2d6e945cb047}</Project>
+      <Name>Registry</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies">
