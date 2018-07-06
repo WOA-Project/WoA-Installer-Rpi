@@ -16,7 +16,7 @@ namespace Installer.Core
         public uint Number { get; set; }
         public string Id { get; set; }
         public char Letter { get; set; }
-        public Guid? GptType { get; set; }
+        public PartitionType PartitionType { get; set; }
         public ILowLevelApi LowLevelApi => Disk.LowLevelApi;
 
         public override string ToString()

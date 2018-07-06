@@ -121,7 +121,7 @@ namespace Installer.Core.FullFx
                         Number = (uint)x.GetPropertyValue("PartitionNumber"),
                         Id = (string)x.GetPropertyValue("UniqueId"),
                         Letter = (char)x.GetPropertyValue("DriveLetter"),
-                        GptType = hasType ? guid : (Guid?)null,
+                        PartitionType = hasType ? PartitionType.FromGuid(guid) : null,
                     };
                 });
 

@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="DismImageServiceSpecs.cs" />
     <Compile Include="LowLevelApiSpecs.cs" />
+    <Compile Include="PhoneSpecs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

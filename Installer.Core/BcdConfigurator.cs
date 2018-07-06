@@ -4,14 +4,14 @@ namespace Installer.Core
 {
     public class BcdConfigurator
     {
-        private readonly Config config;
         private readonly BcdInvoker invoker;
+        private readonly Volume efiespVolume;
         private readonly string bcdEdit;
 
-        public BcdConfigurator(Config config, BcdInvoker invoker)
+        public BcdConfigurator(BcdInvoker invoker, Volume efiespVolume)
         {
-            this.config = config;
             this.invoker = invoker;
+            this.efiespVolume = efiespVolume;
             bcdEdit = @"c:\Windows\SysNative\bcdedit.exe";
         }
 
@@ -33,7 +33,7 @@ namespace Installer.Core
         private void SetupBootShim(Guid guid)
         {
             invoker.Invoke($@"/set {{{guid}}} path \EFI\boot\BootShim.efi");
-            invoker.Invoke($@"/set {{{guid}}} device partition={config.EfiespDrive.RootDirectory.Name}");
+            invoker.Invoke($@"/set {{{guid}}} device partition={efiespVolume.RootDir.Name}");
             invoker.Invoke($@"/set {{{guid}}} testsigning on");
             invoker.Invoke($@"/set {{{guid}}} nointegritychecks on");
         }
@@ -48,7 +48,7 @@ namespace Installer.Core
         
         private Guid CreateBootShim()
         {
-            var run = CmdUtils.Run(bcdEdit, $@"/STORE {config.BcdFileName} /create /d ""Windows 10"" /application BOOTAPP");
+            var run = CmdUtils.Run(bcdEdit, $@"/STORE {efiespVolume.GetBcdFullFilename()} /create /d ""Windows 10"" /application BOOTAPP");
             return FormattingUtils.GetGuid(run);
         }
     }

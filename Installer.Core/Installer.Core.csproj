@@ -5,13 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.7.1" />
     <PackageReference Include="System.Reactive" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Serilog">
-      <HintPath>..\..\..\..\.nuget\packages\serilog\2.0.0\lib\net45\Serilog.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Registry\Registry\Registry.csproj" />
   </ItemGroup>
 
   <ItemGroup>

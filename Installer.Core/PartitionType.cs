@@ -18,5 +18,10 @@ namespace Installer.Core
         {
             Guid = guid;
         }
+
+        public static PartitionType FromGuid(Guid guid)
+        {
+            return new PartitionType(guid);
+        }
     }
 }

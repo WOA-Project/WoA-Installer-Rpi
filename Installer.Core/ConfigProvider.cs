@@ -90,7 +90,7 @@ namespace Installer.Core
         private static bool IsMountable(Partition partition)
         {
             var reserved = PartitionType.Reserved;
-            return partition.GptType.Equals(reserved.Guid);
+            return partition.PartitionType.Equals(reserved.Guid);
         }
     }
 }

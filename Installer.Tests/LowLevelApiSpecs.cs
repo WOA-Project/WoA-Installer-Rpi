@@ -125,13 +125,4 @@ namespace Application.Tests
             var completed = sut.GetIsOobeCompleted(volume);
         }
     }
-
-    public class DualBootServiceSpecs
-    {
-        [Fact]
-        public Task GetCanDualBoot()
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

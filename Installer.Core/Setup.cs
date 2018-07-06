@@ -22,13 +22,16 @@ namespace Installer.Core
         {
             EnsureValidFilesRepository();
 
+            var disk = await lowLevelApi.GetPhoneDisk();
+            var phone = new Phone(disk);
+            var efiespVolume = await phone.GetEfiespVolume();
+            
             Log.Information("Retrieving information from Phone Disk/partitions...");
 
-            var config = await configProvider.Retrieve();
-            await DeployUefi(config);
-            var bcdInvoker = new BcdInvoker(config.BcdFileName);
-            new BcdConfigurator(config, bcdInvoker).SetupBcd();
-            await AddDeveloperMenu(config, bcdInvoker);
+            await DeployUefi(efiespVolume);
+            var bcdInvoker = new BcdInvoker(efiespVolume.GetBcdFullFilename());
+            new BcdConfigurator(bcdInvoker, efiespVolume).SetupBcd();
+            await AddDeveloperMenu(bcdInvoker, efiespVolume);
             await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
 
             Log.Information("Full installation complete!");
@@ -68,26 +71,28 @@ namespace Installer.Core
             Log.Information("Windows deployment succeeded!");
         }
 
-        private async Task AddDeveloperMenu(Config config, BcdInvoker bcdInvoker)
+        private async Task AddDeveloperMenu(BcdInvoker bcdInvoker, Volume efiespVolume)
         {
             Log.Information("Adding Development Menu...");
 
-            var destination = Path.Combine(config.EfiespDrive.RootDirectory.Name, "Windows", "System32", "BOOT");
+            var rootDir = efiespVolume.RootDir.Name;
+
+            var destination = Path.Combine(rootDir, "Windows", "System32", "BOOT");
             await FileUtils.CopyDirectory(new DirectoryInfo(Path.Combine("Files", "Developer Menu")), new DirectoryInfo(destination));
             var guid = FormattingUtils.GetGuid(bcdInvoker.Invoke(@"/create /d ""Developer Menu"" /application BOOTAPP"));
             bcdInvoker.Invoke($@"/set {{{guid}}} path \Windows\System32\BOOT\developermenu.efi");
-            var partition = config.EfiespDrive.RootDirectory.Name;
-            bcdInvoker.Invoke($@"/set {{{guid}}} device partition={partition}");
+            bcdInvoker.Invoke($@"/set {{{guid}}} device partition={rootDir}");
             bcdInvoker.Invoke($@"/displayorder {{{guid}}} /addlast");
         }
 
-        private async Task DeployUefi(Config config)
+        private async Task DeployUefi(Volume efiespVolume)
         {
             Log.Information("Deploying UEFI...");
 
-            await FileUtils.Copy(Path.Combine("Files", "Core", "UEFI.elf"), Path.Combine(config.EfiespDrive.RootDirectory.Name, "UEFI.elf"));
-            await FileUtils.Copy(Path.Combine("Files", "Core", "emmc_appsboot.mbn"), Path.Combine(config.EfiespDrive.RootDirectory.Name, "emmc_appsboot.mbn"));
-            await FileUtils.Copy(Path.Combine("Files", "Core", "BootShim.efi"), Path.Combine(config.EfiespDrive.RootDirectory.Name, "EFI", "BOOT", "BootShim.efi"));
+            var rootDir = efiespVolume.RootDir.Name;
+            await FileUtils.Copy(Path.Combine("Files", "Core", "UEFI.elf"), Path.Combine(rootDir, "UEFI.elf"));
+            await FileUtils.Copy(Path.Combine("Files", "Core", "emmc_appsboot.mbn"), Path.Combine(rootDir, "emmc_appsboot.mbn"));
+            await FileUtils.Copy(Path.Combine("Files", "Core", "BootShim.efi"), Path.Combine(rootDir, "EFI", "BOOT", "BootShim.efi"));
         }
     }
 }
