@@ -5,42 +5,38 @@ namespace Installer.Core
 {
     public class Disk
     {
-        private readonly ILowLevelApi lowLevelApi;
+        public ILowLevelApi LowLevelApi { get; }
         public uint Number { get; }
         public ulong Size { get; }
         public ulong AllocatedSize { get; }
-        public ILowLevelApi LowLevelApi { get; set; }
 
-        public Disk(ILowLevelApi lowLevelApi)
+        public Disk(ILowLevelApi lowLevelApi, uint number, ulong size, ulong allocatedSize)
         {
-            this.lowLevelApi = lowLevelApi;
-        }
-
-        public Disk(uint number, ulong size, ulong allocatedSize)
-        {
+            LowLevelApi = lowLevelApi;
             Number = number;
             Size = size;
             AllocatedSize = allocatedSize;
         }
 
-        public Task<IList<Volume>> GetVolumes()
+        public async Task<IList<Volume>> GetVolumes()
         {
-            return lowLevelApi.GetVolumes(this);
+            var volumes = await LowLevelApi.GetVolumes(this);
+            return volumes;
         }
 
         public Task<List<Partition>> GetPartitions()
         {
-            return lowLevelApi.GetPartitions(this);
+            return LowLevelApi.GetPartitions(this);
         }
 
         public Task<Partition> CreatePartition(ulong sizeInBytes)
         {
-            return lowLevelApi.CreatePartition(this, sizeInBytes);
+            return LowLevelApi.CreatePartition(this, sizeInBytes);
         }
 
         public Task<Partition> CreateReservedPartition(ulong sizeInBytes)
         {
-            return lowLevelApi.CreateReservedPartition(this, sizeInBytes);
+            return LowLevelApi.CreateReservedPartition(this, sizeInBytes);
         }
     }
 }

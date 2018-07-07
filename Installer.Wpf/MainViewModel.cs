@@ -32,6 +32,8 @@ namespace Intaller.Wpf
 
         public MainViewModel(IObservable<LogEvent> events, IOpenFileService openFileService, IDialogCoordinator dlgCoord)
         {
+            DualBootViewModel = new DualBootViewModel(dlgCoord);
+
             setup = new Setup(new LowLevelApi(), new DismImageService());
 
             this.dlgCoord = dlgCoord;
@@ -41,14 +43,12 @@ namespace Intaller.Wpf
 
             SetupPickWimCommand(openFileService);
 
-            FullInstallCommand = ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canDeploy);
-            FullInstallCommand.ThrownExceptions.Subscribe(async exception => await HandleException(exception));
+            FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canDeploy), dlgCoord);
+            WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), dlgCoord);
 
-            WindowsInstallCommand = ReactiveCommand.CreateFromTask(DeployWindows, canDeploy);
-            WindowsInstallCommand.ThrownExceptions.Subscribe(async exception => await HandleException(exception));
-
-            isBusyHelper = FullInstallCommand.IsExecuting
-                .Merge(WindowsInstallCommand.IsExecuting)
+            isBusyHelper = FullInstallWrapper.Command.IsExecuting
+                .Merge(WindowsInstallWrapper.Command.IsExecuting)
+                .Merge(DualBootViewModel.UpdateStatusWrapper.Command.IsExecuting)
                 .ToProperty(this, model => model.IsBusy);
 
             progressHelper = progressSubject
@@ -95,7 +95,7 @@ namespace Intaller.Wpf
             await dlgCoord.ShowMessageAsync(this, "Error", $"{e.Message}");   
         }
 
-        public ReactiveCommand<Unit, Unit> WindowsInstallCommand { get; set; }
+        public CommandWrapper<Unit, Unit> WindowsInstallWrapper { get; set; }
 
         private void SetupPickWimCommand(IOpenFileService openFileService)
         {
@@ -155,7 +155,7 @@ namespace Intaller.Wpf
 
         public bool IsBusy => isBusyHelper.Value;
 
-        public ReactiveCommand<Unit, Unit> FullInstallCommand { get; set; }
+        public CommandWrapper<Unit, Unit> FullInstallWrapper { get; set; }
         public double Progress => progressHelper.Value;
 
         public string WimPath
@@ -164,6 +164,8 @@ namespace Intaller.Wpf
             set => this.RaiseAndSetIfChanged(ref wimPath, value);
         }
 
+        public DualBootViewModel DualBootViewModel { get; }
+
         public void Dispose()
         {
             isBusyHelper?.Dispose();
@@ -171,9 +173,7 @@ namespace Intaller.Wpf
             statusHelper?.Dispose();
             logLoader?.Dispose();
             isProgressVisibleHelper?.Dispose();
-            WindowsInstallCommand?.Dispose();
             PickWimCommand?.Dispose();
-            FullInstallCommand?.Dispose();
         }
     }
 }

@@ -47,6 +47,16 @@
                     <sections:WindowsPart />
                 </ScrollViewer>
             </TabItem>
+            <TabItem Header="Dual Boot" DataContext="{Binding DualBootViewModel}">
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" ToolTip="Use this to install or re-install Windows ARM" />
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <parts:DualBootPart />
+                </ScrollViewer>
+            </TabItem>
         </TabControl>
         <Expander Grid.Row="1" Header="Log" IsExpanded="False" MaxHeight="400">
             <ScrollViewer>

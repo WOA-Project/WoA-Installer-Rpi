@@ -62,8 +62,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BusyButton.xaml.cs">
-      <DependentUpon>BusyButton.xaml</DependentUpon>
+    <Compile Include="BusyButton.cs" />
+    <Compile Include="CommandWrapper.cs" />
+    <Compile Include="DualBootViewModel.cs" />
+    <Compile Include="Parts\DualBootPart.xaml.cs">
+      <DependentUpon>DualBootPart.xaml</DependentUpon>
     </Compile>
     <Compile Include="Parts\Sections\FullInstallPart.xaml.cs">
       <DependentUpon>FullInstallPart.xaml</DependentUpon>
@@ -96,7 +99,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="MainViewModel.cs" />
-    <Page Include="BusyButton.xaml">
+    <Page Include="Parts\DualBootPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -208,6 +211,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\appicon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\dual.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\refresh.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

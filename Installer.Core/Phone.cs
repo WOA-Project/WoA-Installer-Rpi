@@ -16,7 +16,12 @@ namespace Installer.Core
             this.disk = disk;
         }
 
-        public async Task<Volume> GetVolume(string label) => (await disk.GetVolumes()).Single(volume => string.Equals(volume.Label, label));
+        public async Task<Volume> GetVolume(string label)
+        {
+            var volumes = await disk.GetVolumes();
+            return volumes.Single(volume => string.Equals(volume.Label, label));
+        }
+
         public Task<Volume> GetEfiespVolume() => GetVolume("EFIESP");
         public Task<Volume> GetWindowsVolume() => GetVolume("WindowsARM");
         public Task<Volume> GetBootVolume() => GetVolume("BOOT");
@@ -30,13 +35,14 @@ namespace Installer.Core
         public async Task<DualBootStatus> GetDualBootStatus()
         {
             var isWoaPresent = await IsWoAPresent();
+            var isWPhonePresent = await IsWindowsPhonePresent();
             var isOobeComplete = await IsObeeCompleted();
             var boolVolume = await GetBootVolume();
 
-            var isEnabled = boolVolume.Partition.PartitionType == PartitionType.Basic;
+            var isEnabled = Equals(boolVolume.Partition.PartitionType, PartitionType.Basic);
 
-            var canBeEnabled = isWoaPresent && isOobeComplete;
-            return new DualBootStatus(canBeEnabled, isEnabled);
+            var isCapable = isWoaPresent && isWPhonePresent && isOobeComplete;
+            return new DualBootStatus(isCapable, isEnabled);
         }
 
         private async Task<bool> IsObeeCompleted()
@@ -62,6 +68,22 @@ namespace Installer.Core
             catch (Exception e)
             {
                 Log.Error(e, "Failed to get WoA's volumes");
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task<bool> IsWindowsPhonePresent()
+        {
+            try
+            {
+                await GetVolume("MainOS");
+                await GetVolume("Data");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to get Windows Phones's volumes");
                 return false;
             }
 
@@ -95,7 +117,8 @@ namespace Installer.Core
 
             var vol = await GetBootVolume();
             await vol.Partition.SetGptType(PartitionType.Basic);
-            var bcdInvoker = new BcdInvoker((await GetEfiespVolume()).GetBcdFullFilename());
+            var volume = await GetEfiespVolume();
+            var bcdInvoker = new BcdInvoker(volume.GetBcdFullFilename());
             bcdInvoker.Invoke($@"/set {{{winPhoneBcdGuid}}} description ""Windows 10 Phone""");
             bcdInvoker.Invoke($@"/displayorder {{{winPhoneBcdGuid}}} /addlast");
         }

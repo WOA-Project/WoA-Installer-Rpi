@@ -2,7 +2,7 @@
 {
     public class DualBootStatus
     {
-        public DualBootStatus(bool isEnabled, bool canDualBoot)
+        public DualBootStatus(bool canDualBoot, bool isEnabled)
         {
             IsEnabled = isEnabled;
             CanDualBoot = canDualBoot;

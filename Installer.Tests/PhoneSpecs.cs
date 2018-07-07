@@ -8,10 +8,10 @@ namespace Application.Tests
     public class PhoneSpecs
     {
         [Fact]
-        public async Task GetCanDualBoot()
+        public async Task GetDualBootStatus()
         {
             var sut = await Phone.Load(new LowLevelApi());
             var status = await sut.GetDualBootStatus();
-        }
+            }
     }
 }

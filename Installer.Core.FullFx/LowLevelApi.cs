@@ -30,7 +30,7 @@ namespace Installer.Core.FullFx
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
             var disk = results.First().ImmediateBaseObject;
 
-            return ToDisk(disk);
+            return ToDisk(this, disk);
         }
 
         public async Task<IList<Volume>> GetVolumes(Disk disk)
@@ -58,13 +58,13 @@ namespace Installer.Core.FullFx
             return await volumes;
         }
 
-        private static Disk ToDisk(object disk)
+        private static Disk ToDisk(ILowLevelApi lowLevelApi, object disk)
         {
             var number = (uint)disk.GetPropertyValue("Number");
             var size = (ulong)disk.GetPropertyValue("Size");
             var allocatedSize = (ulong)disk.GetPropertyValue("AllocatedSize");
 
-            return new Disk(number, size, allocatedSize);
+            return new Disk(lowLevelApi, number, size, allocatedSize);
         }
 
         public Task EnsurePartitionMounted(string label, string filesystemType)
@@ -134,7 +134,12 @@ namespace Installer.Core.FullFx
             ps.AddScript($@"Get-Partition -UniqueId ""{partition.Id}"" | Get-Volume", true);
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
-            var volume = results.First().ImmediateBaseObject;
+            var volume = results.FirstOrDefault()?.ImmediateBaseObject;
+
+            if (volume == null)
+            {
+                return null;
+            }
 
             return new Volume(partition)
             {

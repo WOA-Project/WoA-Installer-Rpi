@@ -17,7 +17,7 @@
             </Span>
         </TextBlock>
         <sections:WimOptionsPart />
-        <local:BusyButton Command="{Binding FullInstallCommand}" IsBusy="{Binding IsBusy}" ButtonContent="Install" Image="/Assets/gears.png" Width="140"/>
+        <local:BusyButton Command="{Binding FullInstallWrapper.Command}" IsBusy="{Binding FullInstallWrapper.IsExecuting}" Content="Install" Image="/Assets/gears.png" Width="140"/>
     </StackPanel>
 
 </UserControl>

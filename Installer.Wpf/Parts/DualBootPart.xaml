@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="Intaller.Wpf.Parts.DualBootPart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:wpf="clr-namespace:Intaller.Wpf"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance wpf:DualBootViewModel}"
+             mah:DialogParticipation.Register="{Binding}">
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" >
+        <wpf:BusyButton Width="180" Content="Refresh Status" Image="/Assets/refresh.png"
+                        Command="{Binding UpdateStatusWrapper.Command}"
+                        IsBusy="{Binding UpdateStatusWrapper.IsExecuting}"
+                        Visibility="{Binding IsUpdated, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
+                        />
+        <StackPanel 
+            IsEnabled="{Binding UpdateStatusWrapper.IsExecuting, Converter={StaticResource BoolNegationConverter}}"
+            Visibility="{Binding IsUpdated, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <CheckBox IsChecked="{Binding IsCapable}" IsHitTestVisible="False" Content="Is capable of Dual Boot?" />
+            <StackPanel Width="180">
+                <wpf:BusyButton Margin="8" Content="Enable Dual Boot"
+                                Command="{Binding EnableDualBootWrapper.Command}" IsBusy="{Binding EnableDualBootWrapper.IsExecuting}" Image="/Assets/dual.png" />
+                <wpf:BusyButton Margin="8" Content="Disable Dual Boot"
+                                Command="{Binding DisableDualBootWrapper.Command}" IsBusy="{Binding DisableDualBootWrapper.IsExecuting}" Image="/Assets/dual.png" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

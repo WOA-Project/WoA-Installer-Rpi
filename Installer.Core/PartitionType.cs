@@ -23,5 +23,35 @@ namespace Installer.Core
         {
             return new PartitionType(guid);
         }
+
+        protected bool Equals(PartitionType other)
+        {
+            return Guid.Equals(other.Guid);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
+            return Equals((PartitionType) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Guid.GetHashCode();
+        }
     }
 }

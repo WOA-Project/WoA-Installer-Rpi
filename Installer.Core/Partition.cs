@@ -5,11 +5,9 @@ namespace Installer.Core
 {
     public class Partition
     {
-        private readonly Disk disk;
-
         public Partition(Disk disk)
         {
-            this.disk = disk;
+            Disk = disk;
         }
 
         public Disk Disk { get; private set; }
