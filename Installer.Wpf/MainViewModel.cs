@@ -46,9 +46,10 @@ namespace Intaller.Wpf
             FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canDeploy), dlgCoord);
             WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), dlgCoord);
 
-            isBusyHelper = FullInstallWrapper.Command.IsExecuting
-                .Merge(WindowsInstallWrapper.Command.IsExecuting)
-                .Merge(DualBootViewModel.UpdateStatusWrapper.Command.IsExecuting)
+            var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting, WindowsInstallWrapper.Command.IsExecuting);
+            var dualBootIsBusyObs = DualBootViewModel.IsBusyObs;
+
+            isBusyHelper = Observable.Merge(isBusyObs, dualBootIsBusyObs)
                 .ToProperty(this, model => model.IsBusy);
 
             progressHelper = progressSubject

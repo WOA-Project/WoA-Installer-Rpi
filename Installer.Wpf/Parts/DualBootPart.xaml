@@ -8,22 +8,54 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance wpf:DualBootViewModel}"
              mah:DialogParticipation.Register="{Binding}">
-    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" >
-        <wpf:BusyButton Width="180" Content="Refresh Status" Image="/Assets/refresh.png"
-                        Command="{Binding UpdateStatusWrapper.Command}"
-                        IsBusy="{Binding UpdateStatusWrapper.IsExecuting}"
-                        Visibility="{Binding IsUpdated, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
-                        />
-        <StackPanel 
-            IsEnabled="{Binding UpdateStatusWrapper.IsExecuting, Converter={StaticResource BoolNegationConverter}}"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock Margin="20" FontSize="20" TextWrapping="Wrap" Visibility="{Binding IsUpdated, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
+                Please, check the current status in order to see the avaliable options regarding <Bold>Dual Boot</Bold>.
+            </TextBlock>
+            <wpf:BusyButton Margin="18" Width="180" Content="Check Dual Boot Status" Image="/Assets/refresh.png"
+                            Command="{Binding UpdateStatusWrapper.Command}"
+                            IsBusy="{Binding UpdateStatusWrapper.IsExecuting}" />
+        </StackPanel>
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"            
             Visibility="{Binding IsUpdated, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <CheckBox IsChecked="{Binding IsCapable}" IsHitTestVisible="False" Content="Is capable of Dual Boot?" />
-            <StackPanel Width="180">
-                <wpf:BusyButton Margin="8" Content="Enable Dual Boot"
-                                Command="{Binding EnableDualBootWrapper.Command}" IsBusy="{Binding EnableDualBootWrapper.IsExecuting}" Image="/Assets/dual.png" />
-                <wpf:BusyButton Margin="8" Content="Disable Dual Boot"
-                                Command="{Binding DisableDualBootWrapper.Command}" IsBusy="{Binding DisableDualBootWrapper.IsExecuting}" Image="/Assets/dual.png" />
+            
+            <StackPanel Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                <TextBlock Margin="20,10">Your phone <Bold>supports</Bold> dual boot</TextBlock>
+
+                <StackPanel Margin="20,10,0,20">
+                    <TextBlock Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"><Bold>Dual Boot</Bold> is currently <Bold>ENABLED</Bold></TextBlock>
+                    <TextBlock Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverterInverted}}"><Bold>Dual Boot</Bold> is currently <Bold>DISABLED</Bold></TextBlock>
+                </StackPanel>
+
+                <Grid Width="180">
+                    <wpf:BusyButton Content="Enable Dual Boot"
+                                    Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
+                                    Command="{Binding EnableDualBootWrapper.Command}"
+                                    IsBusy="{Binding EnableDualBootWrapper.IsExecuting}" Image="/Assets/dual.png" />
+                    <wpf:BusyButton Content="Disable Dual Boot"
+                                    Command="{Binding DisableDualBootWrapper.Command}"
+                                    Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    IsBusy="{Binding DisableDualBootWrapper.IsExecuting}"
+                                    Image="/Assets/disabledual.png" />
+                    </Grid>
             </StackPanel>
+
+            <StackPanel Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
+
+                <TextBlock
+                    Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
+                    IsHitTestVisible="False">
+                    <Bold>Dual Boot</Bold> cannot be enabled in this phone. Please, check that Windows 10 Phone (the original OS) and Windows 10 ARM64 are both present.
+                </TextBlock>
+
+            </StackPanel>
+
         </StackPanel>
     </Grid>
 </UserControl>

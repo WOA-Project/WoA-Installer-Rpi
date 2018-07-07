@@ -8,16 +8,22 @@
              xmlns:sections="clr-namespace:Intaller.Wpf.Parts.Sections"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
-    <StackPanel Margin="8">
-        <TextBlock Style="{StaticResource TitleStyle}">Full Install</TextBlock>
-        <TextBlock Margin="12" FontSize="16">
-            <Span>
-                This will install <Bold>Windows 64 ARM</Bold> into your Phone. <LineBreak />
-                This option is thought to be used on a phone that has just been <Bold>unlocked</Bold> (with unlocked bootmanager)
-            </Span>
-        </TextBlock>
-        <sections:WimOptionsPart />
-        <local:BusyButton Command="{Binding FullInstallWrapper.Command}" IsBusy="{Binding FullInstallWrapper.IsExecuting}" Content="Install" Image="/Assets/gears.png" Width="140"/>
-    </StackPanel>
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock Style="{StaticResource TitleStyle}">Full Install</TextBlock>
+            <TextBlock Margin="12" FontSize="16" TextWrapping="Wrap">
+                <Span>
+                    This will install <Bold>Windows 64 ARM</Bold> into your Phone. <LineBreak />
+                    This option is thought to be used on a phone that has just been <Bold>unlocked</Bold> (with unlocked bootmanager)
+                </Span>
+            </TextBlock>
+            <sections:WimOptionsPart/>
+            </StackPanel>
+        <local:BusyButton VerticalAlignment="Center" Grid.Row="1" Command="{Binding FullInstallWrapper.Command}" IsBusy="{Binding FullInstallWrapper.IsExecuting}" Content="Install" Image="/Assets/gears.png" Width="140"/>
+    </Grid>
 
 </UserControl>

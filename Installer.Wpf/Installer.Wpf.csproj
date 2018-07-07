@@ -218,5 +218,8 @@
   <ItemGroup>
     <Resource Include="Assets\refresh.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\disabledual.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -12,6 +12,6 @@ namespace Application.Tests
         {
             var sut = await Phone.Load(new LowLevelApi());
             var status = await sut.GetDualBootStatus();
-            }
+        }
     }
 }
