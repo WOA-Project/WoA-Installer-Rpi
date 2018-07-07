@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Installer.Core
 {
@@ -24,11 +28,28 @@ namespace Installer.Core
             return Partition.LowLevelApi.Format(this, ntfs, fileSystemLabel);
         }
 
-        public Task AssignDriveLetter(Volume volume, char letter)
+        public ILowLevelApi LowLevelApi => Partition.LowLevelApi;
+
+        public async Task Mount()
         {
-            return LowLevelApi.AssignDriveLetter(volume, letter);
+            var driveLetter = await LowLevelApi.GetFreeDriveLetter();
+            await LowLevelApi.AssignDriveLetter(this, driveLetter);
+
+            await Observable.Defer(() => Observable.Return(UpdateLetter(driveLetter))).RetryWithBackoffStrategy();
         }
 
-        public ILowLevelApi LowLevelApi => Partition.LowLevelApi;
+        private Unit UpdateLetter(char driveLetter)
+        {
+            try
+            {
+                rootDir = new DirectoryInfo($"{driveLetter}:");
+                return Unit.Default;
+            }
+            catch (Exception)
+            {
+                Log.Verbose("Cannot get path for drive letter {DriveLetter} while mounting partition {@Partition}", driveLetter, this);
+                throw;
+            }
+        }
     }
 }

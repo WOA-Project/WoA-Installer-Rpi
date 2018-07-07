@@ -22,7 +22,14 @@ namespace Installer.Core
         private async Task<Volume> GetVolume(string label)
         {
             var volumes = await disk.GetVolumes();
-            return volumes.FirstOrDefault(volume => string.Equals(volume.Label, label));
+            var volume = volumes.FirstOrDefault(v => string.Equals(v.Label, label));
+
+            if (volume != null)
+            {
+                await volume.Mount();
+            }
+
+            return volume;
         }
 
         public async Task<Volume> GetEfiespVolume() => efiEspVolume ?? (efiEspVolume = await GetVolume("EFIESP"));
