@@ -8,17 +8,16 @@ namespace Installer.Core
     public class WindowsDeployer : IWindowsDeployer
     {
         private const ulong SpaceNeeded = 19 * (ulong) 1_000_000_000;
-        private readonly IConfigProvider configProvider;
-        private readonly DriverLocations driverLocations = new DriverLocations();
-        private readonly ILowLevelApi lowLevelApi;
         private readonly IWindowsImageService windowsImageService;
+        private readonly Phone phone;
         private BcdInvoker bcd;
+        private const string DriverLocation = @"Files\Drivers\Stable";
 
-        public WindowsDeployer(ILowLevelApi lowLevelApi, IConfigProvider configProvider, IWindowsImageService windowsImageService)
+        public WindowsDeployer(ILowLevelApi lowLevelApi,
+            IWindowsImageService windowsImageService, Phone phone)
         {
-            this.lowLevelApi = lowLevelApi;
-            this.configProvider = configProvider;
             this.windowsImageService = windowsImageService;
+            this.phone = phone;
         }
 
         public async Task Deploy(string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null)
@@ -45,20 +44,20 @@ namespace Installer.Core
             await CmdUtils.RunProcessAsync(@"c:\Windows\SysNative\bcdboot.exe", $@"{Path.Combine(volumes.Windows.RootDir.Name, "Windows")} /f UEFI /s {volumes.Boot.Letter}:");
             bcd.Invoke("/set {default} testsigning on");
             bcd.Invoke("/set {default} nointegritychecks on");
-            await lowLevelApi.SetPartitionType(volumes.Boot.Partition, PartitionType.Esp);
+            await volumes.Boot.Partition.SetGptType(PartitionType.Esp);
         }
 
         private Task RemoveExistingWindowsPartitions()
         {
             Log.Information("Cleaning existing Windows ARM64 partitions...");
 
-            return lowLevelApi.RemoveExistingWindowsPartitions();
+            return phone.RemoveExistingWindowsPartitions();
         }
 
         private Task InjectBasicDrivers(Volume partitionsWindows)
         {
             Log.Information("Injecting Basic Drivers...");
-            return windowsImageService.InjectDrivers(driverLocations.PreObee, partitionsWindows);
+            return windowsImageService.InjectDrivers(DriverLocation, partitionsWindows);
         }
 
         private async Task DeployWindows(WindowsVolumes volumes, string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null)
@@ -72,29 +71,27 @@ namespace Installer.Core
         {
             Log.Information("Creating Windows partitions...");
 
-            var disk = (await configProvider.Retrieve()).PhoneDisk;
+            await phone.Disk.CreateReservedPartition(200 * 1_000_000);
 
-            await lowLevelApi.CreateReservedPartition(disk, 200 * 1_000_000);
-
-            var bootPartition = await lowLevelApi.CreatePartition(disk, 100 * 1_000_000);
-            var bootVolume = await lowLevelApi.GetVolume(bootPartition);
-            await lowLevelApi.AssignDriveLetter(bootVolume, await lowLevelApi.GetFreeDriveLetter());
-            await lowLevelApi.Format(bootVolume, FileSystemFormat.Fat32, "BOOT");
+            var bootPartition = await phone.Disk.CreatePartition(100 * 1_000_000);
+            var bootVolume = await bootPartition.GetVolume();
+            await bootVolume.Mount();
+            await bootVolume.Format(FileSystemFormat.Fat32, "BOOT");
             
-            var windowsPartition = await lowLevelApi.CreatePartition(disk, ulong.MaxValue);
-            var winVolume = await lowLevelApi.GetVolume(windowsPartition);
-            await lowLevelApi.AssignDriveLetter(winVolume, await lowLevelApi.GetFreeDriveLetter());
-            await lowLevelApi.Format(winVolume, FileSystemFormat.Ntfs, "WindowsARM");
+            var windowsPartition = await phone.Disk.CreatePartition(ulong.MaxValue);
+            var winVolume = await windowsPartition.GetVolume();
+            await winVolume.Mount();
+            await winVolume.Format(FileSystemFormat.Ntfs, "WindowsARM");
             
-            return new WindowsVolumes(await lowLevelApi.GetVolume(bootPartition), await lowLevelApi.GetVolume(windowsPartition));
+            return new WindowsVolumes(await phone.GetBootVolume(), await phone.GetWindowsVolume());
         }
 
         private async Task AllocateSpace()
         {
             Log.Information("Verifying the available space...");
 
-            var disk = (await configProvider.Retrieve()).PhoneDisk;
-            var available = disk.Size - disk.AllocatedSize;
+            var refreshedDisk = await phone.Disk.LowLevelApi.GetPhoneDisk();
+            var available = refreshedDisk.Size - refreshedDisk.AllocatedSize;
 
             if (available < SpaceNeeded)
             {
@@ -106,11 +103,11 @@ namespace Installer.Core
 
         private async Task TakeSpaceFromDataPartition()
         {
-            var dataVolume = (await configProvider.Retrieve()).DataVolume;
+            var dataVolume = await phone.GetDataVolume();
 
             Log.Warning("We will try to resize the Data partition to get the required space...");
             var finalSize = dataVolume.Size - SpaceNeeded;
-            await lowLevelApi.ResizePartition(dataVolume.Partition, finalSize);
+            await dataVolume.Partition.Resize(finalSize);
         }
 
         public class WindowsVolumes
@@ -123,12 +120,6 @@ namespace Installer.Core
 
             public Volume Boot { get; }
             public Volume Windows { get; }
-        }
-
-        private class DriverLocations
-        {
-            public string PreObee { get; } = Path.Combine(@"Files\Drivers\Stable");
-            public string PostObee { get; } = Path.Combine(@"Files\Drivers\Testing");
-        }
+        }    
     }
 }

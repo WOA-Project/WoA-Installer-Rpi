@@ -9,13 +9,11 @@ namespace Installer.Core
     {
         private readonly ILowLevelApi lowLevelApi;
         private readonly IWindowsImageService imageService;
-        private readonly ConfigProvider configProvider;
 
         public Setup(ILowLevelApi lowLevelApi, IWindowsImageService imageService)
         {
             this.lowLevelApi = lowLevelApi;
             this.imageService = imageService;
-            configProvider = new ConfigProvider(lowLevelApi);
         }
 
         public async Task DeployUefiAndWindows(InstallOptions options, IObserver<double> progressObserver)
@@ -32,7 +30,7 @@ namespace Installer.Core
             var bcdInvoker = new BcdInvoker(efiespVolume.GetBcdFullFilename());
             new BcdConfigurator(bcdInvoker, efiespVolume).SetupBcd();
             await AddDeveloperMenu(bcdInvoker, efiespVolume);
-            await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
+            await new WindowsDeployer(lowLevelApi, imageService, phone).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
 
             Log.Information("Full installation complete!");
         }
@@ -66,7 +64,10 @@ namespace Installer.Core
         {
             EnsureValidFilesRepository();
 
-            await new WindowsDeployer(lowLevelApi, configProvider, imageService).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
+            var disk = await lowLevelApi.GetPhoneDisk();
+            var phone = new Phone(disk);
+
+            await new WindowsDeployer(lowLevelApi, imageService, phone).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
 
             Log.Information("Windows deployment succeeded!");
         }

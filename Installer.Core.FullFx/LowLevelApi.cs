@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Registry;
@@ -56,6 +55,15 @@ namespace Installer.Core.FullFx
                 .ToList();
 
             return await volumes;
+        }
+
+        public Task RemovePartition(Partition partition)
+        {
+            ps.Commands.Clear();
+            var cmd = $@"Remove-Partition -DiskNumber {partition.Disk.Number} -PartitionNumber {partition.Number} -Confirm:$false";
+            ps.AddScript(cmd);
+
+            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
         }
 
         private static Disk ToDisk(ILowLevelApi lowLevelApi, object disk)
@@ -239,7 +247,7 @@ namespace Installer.Core.FullFx
         public bool GetIsOobeCompleted(Volume windowsVolume)
         {
             var path = Path.Combine(windowsVolume.RootDir.Name, "Windows", "System32", "Config", "System");
-            var hive = new RegistryHive(path) {RecoverDeleted = true};
+            var hive = new RegistryHive(path) { RecoverDeleted = true };
             hive.ParseHive();
 
             var key = hive.GetKey("Setup");

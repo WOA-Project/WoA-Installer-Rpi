@@ -6,7 +6,6 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using DynamicData;
 using Installer.Core;
-using Installer.Core.FullFx;
 using Intaller.Wpf.Properties;
 using Intaller.Wpf.UIServices;
 using MahApps.Metro.Controls.Dialogs;
@@ -27,23 +26,23 @@ namespace Intaller.Wpf
         private readonly IDisposable logLoader;
         private string wimPath;
         private int wimIndex;
-        private readonly Setup setup;
+        private readonly ISetup setup;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
 
-        public MainViewModel(IObservable<LogEvent> events, IOpenFileService openFileService, IDialogCoordinator dlgCoord)
+        public MainViewModel(IObservable<LogEvent> logEvents, ISetup setup, IOpenFileService openFileService, IDialogCoordinator dlgCoord)
         {
             DualBootViewModel = new DualBootViewModel(dlgCoord);
 
-            setup = new Setup(new LowLevelApi(), new DismImageService());
-
+            this.setup = setup;
             this.dlgCoord = dlgCoord;
+
             var canDeploy = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
 
             ShowWarningCommand = ReactiveCommand.CreateFromTask(() => dlgCoord.ShowMessageAsync(this, "Warning", Resources.WarningNotice));
 
             SetupPickWimCommand(openFileService);
 
-            FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canDeploy), dlgCoord);
+            FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), dlgCoord);
             WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), dlgCoord);
 
             var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting, WindowsInstallWrapper.Command.IsExecuting);
@@ -61,7 +60,7 @@ namespace Intaller.Wpf
                     .Select(d => !double.IsNaN(d))
                     .ToProperty(this, x => x.IsProgressVisible);
 
-            statusHelper = events
+            statusHelper = logEvents
                 .Where(x => x.Level == LogEventLevel.Information)
                 .Select(x => new RenderedLogEvent
                 {
@@ -70,7 +69,7 @@ namespace Intaller.Wpf
                 })
                 .ToProperty(this, x => x.Status);
 
-            logLoader = events
+            logLoader = logEvents
                 .Where(x => x.Level == LogEventLevel.Information)
                 .ToObservableChangeSet()
                 .Transform(x => new RenderedLogEvent
@@ -78,7 +77,7 @@ namespace Intaller.Wpf
                     Message = x.RenderMessage(),
                     Level = x.Level
                 })
-                .Bind(out logEvents)
+                .Bind(out this.logEvents)
                 .DisposeMany()
                 .Subscribe();
 
@@ -120,7 +119,7 @@ namespace Intaller.Wpf
 
         public ReactiveCommand<Unit, string> PickWimCommand { get; set; }
 
-        private async Task DeployEufiAndWindows()
+        private async Task DeployUefiAndWindows()
         {
             var installOptions = new InstallOptions
             {

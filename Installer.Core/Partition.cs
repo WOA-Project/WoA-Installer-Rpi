@@ -36,5 +36,10 @@ namespace Installer.Core
         {
             return LowLevelApi.SetPartitionType(this, partitionType);
         }
+
+        public Task Remove()
+        {
+            return LowLevelApi.RemovePartition(this);
+        }
     }
 }

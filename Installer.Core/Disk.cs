@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Installer.Core
@@ -37,6 +38,12 @@ namespace Installer.Core
         public Task<Partition> CreateReservedPartition(ulong sizeInBytes)
         {
             return LowLevelApi.CreateReservedPartition(this, sizeInBytes);
+        }
+
+        public async Task<Partition> GetReservedPartition()
+        {
+            var parts = await LowLevelApi.GetPartitions(this);
+            return parts.FirstOrDefault(x => Equals(x.PartitionType, PartitionType.Reserved));
         }
     }
 }

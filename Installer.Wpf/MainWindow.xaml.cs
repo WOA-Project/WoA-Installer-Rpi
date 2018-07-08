@@ -1,4 +1,6 @@
 ﻿using System;
+using Installer.Core;
+using Installer.Core.FullFx;
 using Intaller.Wpf.UIServices;
 using MahApps.Metro.Controls.Dialogs;
 using Serilog;
@@ -19,7 +21,7 @@ namespace Intaller.Wpf
                 .WriteTo.RollingFile(@"Logs\{Date}.txt")
                 .CreateLogger();
 
-            DataContext = new MainViewModel(events, new WpfOpenFileService(), DialogCoordinator.Instance);
+            DataContext = new MainViewModel(events, new Setup(new LowLevelApi(), new DismImageService()),  new WpfOpenFileService(), DialogCoordinator.Instance);
         }
     }
 }

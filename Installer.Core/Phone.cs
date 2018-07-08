@@ -9,20 +9,21 @@ namespace Installer.Core
 {
     public class Phone
     {
-        private readonly Disk disk;
-        private Volume windowsVolume;
-        private Volume efiEspVolume;
         private Volume boolVolume;
+        private Volume efiEspVolume;
+        private Volume windowsVolume;
 
         public Phone(Disk disk)
         {
-            this.disk = disk;
+            Disk = disk;
         }
+
+        public Disk Disk { get; }
 
         private async Task<Volume> GetVolume(string label)
         {
-            var volumes = await disk.GetVolumes();
-            var volume = volumes.FirstOrDefault(v => string.Equals(v.Label, label));
+            var volumes = await Disk.GetVolumes();
+            var volume = volumes.FirstOrDefault(v => string.Equals(v.Label, label, StringComparison.InvariantCultureIgnoreCase));
 
             if (volume != null)
             {
@@ -32,9 +33,20 @@ namespace Installer.Core
             return volume;
         }
 
-        public async Task<Volume> GetEfiespVolume() => efiEspVolume ?? (efiEspVolume = await GetVolume("EFIESP"));
-        public async Task<Volume> GetWindowsVolume() => windowsVolume ?? (windowsVolume = await GetVolume("WindowsARM"));
-        public async Task<Volume> GetBootVolume() => boolVolume ?? (boolVolume = await GetVolume("BOOT"));
+        public async Task<Volume> GetEfiespVolume()
+        {
+            return efiEspVolume ?? (efiEspVolume = await GetVolume("EFIESP"));
+        }
+
+        public async Task<Volume> GetWindowsVolume()
+        {
+            return windowsVolume ?? (windowsVolume = await GetVolume("WindowsARM"));
+        }
+
+        public async Task<Volume> GetBootVolume()
+        {
+            return boolVolume ?? (boolVolume = await GetVolume("BOOT"));
+        }
 
         public static async Task<Phone> Load(ILowLevelApi lowLevelApi)
         {
@@ -45,16 +57,17 @@ namespace Installer.Core
         public async Task<DualBootStatus> GetDualBootStatus()
         {
             Log.Information("Getting Dual Boot Status...");
-            
+
             var isWoaPresent = await IsWoAPresent();
             var isWPhonePresent = await IsWindowsPhonePresent();
-            var isOobeComplete = IsObeeCompleted();
+            var isOobeFinished = await IsObeeFinished();
 
-            var isEnabled = await GetBootPartition() == null;
+            var bootPartition = await GetBootPartition();
+            var isEnabled = Equals(bootPartition.PartitionType, PartitionType.Basic);
 
-            var isCapable = isWoaPresent && isWPhonePresent && isOobeComplete;
+            var isCapable = isWoaPresent && isWPhonePresent && isOobeFinished;
             var status = new DualBootStatus(isCapable, isEnabled);
-            
+
 
             Log.Information("Dual Boot Status retrieved");
             Log.Verbose("Dual Boot Status is {@Status}", status);
@@ -62,9 +75,16 @@ namespace Installer.Core
             return status;
         }
 
-        private bool IsObeeCompleted()
+        private async Task<bool> IsObeeFinished()
         {
-            var path = Path.Combine(windowsVolume.RootDir.Name, "Windows", "System32", "Config", "System");
+            var winVolume = await GetWindowsVolume();
+
+            if (winVolume == null)
+            {
+                return false;
+            }
+
+            var path = Path.Combine(winVolume.RootDir.Name, "Windows", "System32", "Config", "System");
             var hive = new RegistryHive(path) { RecoverDeleted = true };
             hive.ParseHive();
 
@@ -172,9 +192,41 @@ namespace Installer.Core
 
         private async Task<Partition> GetBootPartition()
         {
-            var partitions = await disk.GetPartitions();
-            var systemPartition = partitions.FirstOrDefault(x => Equals(x.PartitionType, PartitionType.Esp));
-            return systemPartition;
+            var partitions = await Disk.GetPartitions();
+            var bootPartition = partitions.FirstOrDefault(x => Equals(x.PartitionType, PartitionType.Esp));
+            if (bootPartition != null)
+            {
+                return bootPartition;
+            }
+
+            var bootVolume = await GetBootVolume();
+            return bootVolume?.Partition;
+        }
+
+        public Task<Volume> GetDataVolume()
+        {
+            return GetVolume("Data");
+        }
+
+        public async Task RemoveExistingWindowsPartitions()
+        {
+            Log.Information("Cleanup of possible previous Windows 10 ARM64 installation...");
+
+            await RemovePartition("Reserved", await Disk.GetReservedPartition());
+            await RemovePartition("WoA ESP", await GetBootPartition());
+            var winVol = await GetWindowsVolume();
+            await RemovePartition("WoA", winVol?.Partition);           
+        }
+
+        private static async Task RemovePartition(string partitionName, Partition partition)
+        {
+            Log.Verbose("Trying to remove previously existing {Partition} partition", partitionName);
+            if (partition != null)
+            {
+                Log.Verbose("{Partition} exists: Removing it...");
+                await partition.Remove();
+                Log.Verbose("{Partition} removed");
+            }
         }
     }
 }

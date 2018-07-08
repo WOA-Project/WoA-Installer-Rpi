@@ -53,7 +53,7 @@ namespace Application.Tests
         public async Task DeployWindows()
         {
             var api = new LowLevelApi();
-            var deployer = new WindowsDeployer(new LowLevelApi(), new ConfigProvider(api), new Installer.Core.FullFx.DismImageService());
+            var deployer = new WindowsDeployer(new LowLevelApi(), new DismImageService(), new Phone(await api.GetPhoneDisk()));
             await deployer.Deploy(@"F:\sources\install.wim");
         }
 

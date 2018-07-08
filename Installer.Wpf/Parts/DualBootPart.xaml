@@ -26,7 +26,7 @@
             
             <StackPanel Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverter}}">
 
-                <TextBlock Margin="20,10">Your phone <Bold>supports</Bold> dual boot</TextBlock>
+                <TextBlock Margin="20,10" TextWrapping="Wrap">Your phone <Bold>supports</Bold> dual boot</TextBlock>
 
                 <StackPanel Margin="20,10,0,20">
                     <TextBlock Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"><Bold>Dual Boot</Bold> is currently <Bold>ENABLED</Bold></TextBlock>
@@ -48,7 +48,7 @@
 
             <StackPanel Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
 
-                <TextBlock
+                <TextBlock FontSize="18" Margin="20" TextWrapping="Wrap"
                     Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
                     IsHitTestVisible="False">
                     <Bold>Dual Boot</Bold> cannot be enabled in this phone. Please, check that Windows 10 Phone (the original OS) and Windows 10 ARM64 are both present.
