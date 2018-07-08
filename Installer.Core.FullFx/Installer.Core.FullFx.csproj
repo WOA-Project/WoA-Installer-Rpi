@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeploymentException.cs" />
     <Compile Include="DismImageService.cs" />
     <Compile Include="LowLevelApi.cs" />
     <Compile Include="PowerShellUtils.cs" />

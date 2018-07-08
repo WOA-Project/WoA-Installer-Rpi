@@ -52,7 +52,7 @@ namespace Installer.Core
                 Log.Verbose("Testing path {Path}", path);
                 if (!FileUtils.TestPath(Path.Combine("Files", path)))
                 {
-                    throw new InvalidFileRepositoryException(Resources.EnsureValidFilesRepository);
+                    throw new InvalidRepositoryException(Resources.EnsureValidFilesRepository);
                 }
             }
 
