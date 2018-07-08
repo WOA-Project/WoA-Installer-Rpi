@@ -19,7 +19,7 @@
             <TextBlock Margin="12,6,12,18" FontSize="16" TextWrapping="Wrap">
                 <Span>
                     This will install <Bold>Windows 64 ARM</Bold> into your Phone. <LineBreak />
-                    This option is thought to be used on a phone that has just been <Bold>unlocked</Bold> (with unlocked bootmanager)
+                    This option should to be used on a Phone that has just been <Bold>unlocked</Bold> (with unlocked bootmanager)
                 </Span>
             </TextBlock>
             <sections:WimOptionsPart/>
@@ -35,7 +35,7 @@
         <GroupBox Header="Post-Windows Setup Drivers" Grid.Row="2" VerticalAlignment="Center" Padding="20">
             <StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="0,0,0,20" FontSize="14">
-                    Some drivers should <Bold>only</Bold> be injected after Windows ARM64 has been completely installed into the Phone. Injecting them will provide improved functionality and better experience. 
+                    Some drivers should <Bold>only</Bold> be injected after Windows ARM64 has been completely installed into the Phone. Injecting them will provide improved functionality and better overall experience. 
                 </TextBlock>
                 <local:BusyButton VerticalAlignment="Center"
                                   Command="{Binding InjectDriversWrapper.Command}"

@@ -68,9 +68,18 @@ namespace Installer.Core.FullFx
             return double.NaN;
         }
 
-        public Task InjectDrivers(string path, Volume volume)
+        public async Task InjectDrivers(string path, Volume volume)
         {
-            return CmdUtils.RunProcessAsync("DISM", $@"/Add-Driver /Image:{volume.RootDir.Name} /Driver:""{path}"" /Recurse /ForceUnsigned");
+            var outputSubject = new Subject<string>();
+            var subscription = outputSubject.Subscribe(Log.Verbose);
+            var resultCode = await CmdUtils.RunProcessAsync("DISM", $@"/Add-Driver /Image:{volume.RootDir.Name} /Driver:""{path}"" /Recurse /ForceUnsigned", outputSubject, outputSubject);
+            subscription.Dispose();
+            
+            if (resultCode != 0)
+            {
+                throw new DeploymentException(
+                    $"There has been a problem during deployment: DISM exited with code {resultCode}.");
+            }
         }
     }
 }

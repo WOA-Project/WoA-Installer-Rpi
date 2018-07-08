@@ -17,6 +17,7 @@ namespace Intaller.Wpf
             IObservable<LogEvent> events = null;
 
             Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
                 .WriteTo.Observers(x => events = x, LogEventLevel.Information) 
                 .WriteTo.RollingFile(@"Logs\{Date}.txt")
                 .CreateLogger();

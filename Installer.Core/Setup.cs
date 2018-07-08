@@ -43,7 +43,8 @@ namespace Installer.Core
             {
                 @"Core\BootShim.efi",
                 @"Core\UEFI.elf",
-                @"Drivers",
+                @"Drivers\Pre-OOBE",
+                @"Drivers\Post-OOBE",
                 @"Developer Menu"
             };
 

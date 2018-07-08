@@ -125,7 +125,7 @@ namespace Installer.Core
 
         public async Task InjectPostOobeDrivers()
         {
-            Log.Information("Post Windows Setup drivers injection");
+            Log.Information("Injection of 'Post Windows Setup' drivers");
 
             Log.Information("Checking Windows Setup status...");
             var isWindowsInstalled = await phone.IsOobeFinished();
@@ -135,7 +135,7 @@ namespace Installer.Core
                 throw new InvalidOperationException(Resources.DriversInjectionWindowsNotFullyInstalled);
             }
 
-            Log.Information("Injecting Basic Drivers...");
+            Log.Information("Injecting 'Post Windows Setup' Drivers...");
             var windowsVolume = await phone.GetWindowsVolume();
 
             await windowsImageService.InjectDrivers(PostOobeDriverLocation, windowsVolume);
