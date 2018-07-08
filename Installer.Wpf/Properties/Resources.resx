@@ -129,4 +129,7 @@ Keep in mind that this is for Lumia 950 XL **ONLY** and that you need it unlocke
 
 You've been warned :P</value>
   </data>
+  <data name="DriversInjectedSucessfully" xml:space="preserve">
+    <value>The drivers have been injected correctly</value>
+  </data>
 </root>

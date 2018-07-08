@@ -1,11 +1,11 @@
 ﻿namespace Intaller.Wpf.Parts.Sections
 {
     /// <summary>
-    /// Interaction logic for FullInstallPart.xaml
+    /// Interaction logic for InstallPart.xaml
     /// </summary>
-    public partial class FullInstallPart
+    public partial class InstallPart
     {
-        public FullInstallPart()
+        public InstallPart()
         {
             InitializeComponent();
         }

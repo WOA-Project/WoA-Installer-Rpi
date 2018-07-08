@@ -72,6 +72,13 @@ namespace Installer.Core
             Log.Information("Windows deployment succeeded!");
         }
 
+        public async Task InjectPostOobeDrivers()
+        {
+            var disk = await lowLevelApi.GetPhoneDisk();
+            var phone = new Phone(disk);
+            await new WindowsDeployer(lowLevelApi, imageService, phone).InjectPostOobeDrivers();
+        }
+
         private async Task AddDeveloperMenu(BcdInvoker bcdInvoker, Volume efiespVolume)
         {
             Log.Information("Adding Development Menu...");

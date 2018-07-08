@@ -22,11 +22,14 @@ namespace Installer.Core
 
         private async Task<Volume> GetVolume(string label)
         {
+            Log.Verbose("Getting {Label} volume", label);
+
             var volumes = await Disk.GetVolumes();
             var volume = volumes.FirstOrDefault(v => string.Equals(v.Label, label, StringComparison.InvariantCultureIgnoreCase));
 
             if (volume != null)
             {
+                Log.Verbose("{Label} volume wasn't mounted.", label);
                 await volume.Mount();
             }
 
@@ -60,7 +63,7 @@ namespace Installer.Core
 
             var isWoaPresent = await IsWoAPresent();
             var isWPhonePresent = await IsWindowsPhonePresent();
-            var isOobeFinished = await IsObeeFinished();
+            var isOobeFinished = await IsOobeFinished();
 
             var bootPartition = await GetBootPartition();
             var isEnabled = Equals(bootPartition.PartitionType, PartitionType.Basic);
@@ -75,7 +78,7 @@ namespace Installer.Core
             return status;
         }
 
-        private async Task<bool> IsObeeFinished()
+        public async Task<bool> IsOobeFinished()
         {
             var winVolume = await GetWindowsVolume();
 
@@ -227,6 +230,6 @@ namespace Installer.Core
                 await partition.Remove();
                 Log.Verbose("{Partition} removed");
             }
-        }
+        }        
     }
 }

@@ -68,8 +68,8 @@
     <Compile Include="Parts\DualBootPart.xaml.cs">
       <DependentUpon>DualBootPart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Parts\Sections\FullInstallPart.xaml.cs">
-      <DependentUpon>FullInstallPart.xaml</DependentUpon>
+    <Compile Include="Parts\Sections\InstallPart.xaml.cs">
+      <DependentUpon>InstallPart.xaml</DependentUpon>
     </Compile>
     <Compile Include="Parts\LogPart.xaml.cs">
       <DependentUpon>LogPart.xaml</DependentUpon>
@@ -91,9 +91,6 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Parts\Sections\WindowsPart.xaml.cs">
-      <DependentUpon>WindowsPart.xaml</DependentUpon>
-    </Compile>
     <None Include="..\Installer.Core.FullFx\Functions.ps1">
       <Link>Functions.ps1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -103,7 +100,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Parts\Sections\FullInstallPart.xaml">
+    <Page Include="Parts\Sections\InstallPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -124,10 +121,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Parts\Sections\WindowsPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -220,6 +213,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\disabledual.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\windows-only.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\inject-drivers.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

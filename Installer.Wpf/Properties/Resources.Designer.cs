@@ -61,6 +61,15 @@ namespace Intaller.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The drivers have been injected correctly.
+        /// </summary>
+        internal static string DriversInjectedSucessfully {
+            get {
+                return ResourceManager.GetString("DriversInjectedSucessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hey, if you destroy your phone, it&apos;s your fault, not mine!
         ///
         ///Keep in mind that this is for Lumia 950 XL **ONLY** and that you need it unlocked and into Mass Storage Mode. 

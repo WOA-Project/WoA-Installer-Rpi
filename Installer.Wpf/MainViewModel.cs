@@ -44,8 +44,9 @@ namespace Intaller.Wpf
 
             FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), dlgCoord);
             WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), dlgCoord);
+            InjectDriversWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InjectPostOobeDrivers), dlgCoord);
 
-            var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting, WindowsInstallWrapper.Command.IsExecuting);
+            var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting, WindowsInstallWrapper.Command.IsExecuting, InjectDriversWrapper.Command.IsExecuting);
             var dualBootIsBusyObs = DualBootViewModel.IsBusyObs;
 
             isBusyHelper = Observable.Merge(isBusyObs, dualBootIsBusyObs)
@@ -84,6 +85,8 @@ namespace Intaller.Wpf
             WimIndex = 1;
             WimPath = "";
         }
+
+        public CommandWrapper<Unit, Unit> InjectDriversWrapper { get; }
 
         public ReactiveCommand<Unit, MessageDialogResult> ShowWarningCommand { get; set; }
 
@@ -141,6 +144,12 @@ namespace Intaller.Wpf
 
             await setup.DeployWindows(installOptions, progressSubject);
             await dlgCoord.ShowMessageAsync(this, "Finished", Resources.WindowsDeployedSuccessfully);
+        }
+
+        private async Task InjectPostOobeDrivers()
+        {            
+            await setup.InjectPostOobeDrivers();
+            await dlgCoord.ShowMessageAsync(this, "Finished", Resources.DriversInjectedSucessfully);
         }
 
         public int WimIndex

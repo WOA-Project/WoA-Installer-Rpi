@@ -7,5 +7,6 @@ namespace Installer.Core
     {
         Task DeployUefiAndWindows(InstallOptions options, IObserver<double> progressObserver);
         Task DeployWindows(InstallOptions options, IObserver<double> progressObserver);
+        Task InjectPostOobeDrivers();
     }
 }

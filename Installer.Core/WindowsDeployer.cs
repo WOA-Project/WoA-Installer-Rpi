@@ -11,7 +11,8 @@ namespace Installer.Core
         private readonly IWindowsImageService windowsImageService;
         private readonly Phone phone;
         private BcdInvoker bcd;
-        private const string DriverLocation = @"Files\Drivers\Stable";
+        private const string DriverLocation = @"Files\Drivers\Pre-OOBE";
+        private const string PostOobeDriverLocation = @"Files\Drivers\Post-OOBE";
 
         public WindowsDeployer(ILowLevelApi lowLevelApi,
             IWindowsImageService windowsImageService, Phone phone)
@@ -54,10 +55,10 @@ namespace Installer.Core
             return phone.RemoveExistingWindowsPartitions();
         }
 
-        private Task InjectBasicDrivers(Volume partitionsWindows)
+        private Task InjectBasicDrivers(Volume windowsVolume)
         {
             Log.Information("Injecting Basic Drivers...");
-            return windowsImageService.InjectDrivers(DriverLocation, partitionsWindows);
+            return windowsImageService.InjectDrivers(DriverLocation, windowsVolume);
         }
 
         private async Task DeployWindows(WindowsVolumes volumes, string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null)
@@ -120,6 +121,26 @@ namespace Installer.Core
 
             public Volume Boot { get; }
             public Volume Windows { get; }
-        }    
+        }
+
+        public async Task InjectPostOobeDrivers()
+        {
+            Log.Information("Post Windows Setup drivers injection");
+
+            Log.Information("Checking Windows Setup status...");
+            var isWindowsInstalled = await phone.IsOobeFinished();
+
+            if (!isWindowsInstalled)
+            {
+                throw new InvalidOperationException(Resources.DriversInjectionWindowsNotFullyInstalled);
+            }
+
+            Log.Information("Injecting Basic Drivers...");
+            var windowsVolume = await phone.GetWindowsVolume();
+
+            await windowsImageService.InjectDrivers(PostOobeDriverLocation, windowsVolume);
+
+            Log.Information("Drivers installed successfully");
+        }
     }
 }
