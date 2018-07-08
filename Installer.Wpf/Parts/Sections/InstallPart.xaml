@@ -15,27 +15,21 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel>
-            
-            <TextBlock Margin="12,6,12,18" FontSize="16" TextWrapping="Wrap">
-                <Span>
-                    This will install <Bold>Windows 64 ARM</Bold> into your Phone. <LineBreak />
-                    This option should to be used on a Phone that has just been <Bold>unlocked</Bold> (with unlocked bootmanager)
-                </Span>
-            </TextBlock>
+            <TextBlock Margin="12,6,12,18" FontSize="16" TextWrapping="Wrap">Use this section to install or reinstall <Bold>Windows 10 ARM64</Bold> into your Phone.</TextBlock>
             <sections:WimOptionsPart/>
         </StackPanel>
-        <UniformGrid Rows="1" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="50" Margin="20">
-            <local:BusyButton VerticalAlignment="Center" Grid.Row="1" Command="{Binding FullInstallWrapper.Command}"
+        <UniformGrid Rows="1" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="50" Margin="15">
+            <local:BusyButton VerticalAlignment="Center" Command="{Binding FullInstallWrapper.Command}"
                               IsBusy="{Binding FullInstallWrapper.IsExecuting}" Content="Full"
-                              Image="/Assets/full.png" Margin="0,0,4,0" />
-            <local:BusyButton VerticalAlignment="Center" Grid.Row="1" Command="{Binding FullInstallWrapper.Command}"
-                              IsBusy="{Binding WindowsInstallWrapper.IsExecuting}" Content="Windows Only"
+                              Image="/Assets/full.png" Margin="0,0,4,0" ToolTip="Use this option to install Windows into a Phone that has just been unlocked." />
+            <local:BusyButton VerticalAlignment="Center" Command="{Binding FullInstallWrapper.Command}"
+                              IsBusy="{Binding WindowsInstallWrapper.IsExecuting}" Content="Windows Only" ToolTip="Use this option to install/reinstall Windows. This will NOT modify your BCD nor you current UEFI."
                               Image="/Assets/windows-only.png" Margin="4,0,0,0"  />
         </UniformGrid>
         <GroupBox Header="Post-Windows Setup Drivers" Grid.Row="2" VerticalAlignment="Center" Padding="20">
             <StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="0,0,0,20" FontSize="14">
-                    Some drivers should <Bold>only</Bold> be injected after Windows ARM64 has been completely installed into the Phone. Injecting them will provide improved functionality and better overall experience. 
+                    Some drivers should <Bold>only</Bold> be injected after Windows ARM64 has been completely installed into the Phone. Injecting them will provide improved functionality and better overall experience.
                 </TextBlock>
                 <local:BusyButton VerticalAlignment="Center"
                                   Command="{Binding InjectDriversWrapper.Command}"
