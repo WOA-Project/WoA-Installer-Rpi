@@ -22,8 +22,8 @@
                                                       HorizontalAlignment="Center" Content="{TemplateBinding Content}" Margin="4" />
                             </Viewbox>
                             <Image Visibility="{TemplateBinding IsBusy, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
-                                   RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="1" Source="{TemplateBinding Image}" Margin="2,4,4,4" />
-                            <Viewbox VerticalAlignment="Center" Grid.Column="1" Margin="5">
+                                   RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="1" Source="{TemplateBinding Image}" Margin="2,6,6,6" />
+                            <Viewbox VerticalAlignment="Center" Grid.Column="1" Margin="6">
                                 <mah:ProgressRing IsActive="{TemplateBinding IsBusy}" />
                             </Viewbox>
                         </Grid>

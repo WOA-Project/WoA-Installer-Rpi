@@ -68,6 +68,9 @@
     <Compile Include="Parts\DualBootPart.xaml.cs">
       <DependentUpon>DualBootPart.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Parts\Sections\AdvancedPart.xaml.cs">
+      <DependentUpon>AdvancedPart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Parts\Sections\InstallPart.xaml.cs">
       <DependentUpon>InstallPart.xaml</DependentUpon>
     </Compile>
@@ -97,6 +100,10 @@
     </None>
     <Compile Include="MainViewModel.cs" />
     <Page Include="Parts\DualBootPart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Parts\Sections\AdvancedPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

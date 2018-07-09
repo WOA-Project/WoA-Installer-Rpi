@@ -23,7 +23,7 @@
             </Style>
 
             <valueConverters:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverterInverted" IsInverted="True" />
-
+            
         </ResourceDictionary>
 
     </Application.Resources>

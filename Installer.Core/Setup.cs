@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
+using SharpCompress.Archives.SevenZip;
 
 namespace Installer.Core
 {
@@ -9,21 +11,23 @@ namespace Installer.Core
     {
         private readonly ILowLevelApi lowLevelApi;
         private readonly IWindowsImageService imageService;
+        private readonly IDriverPackageImporter packageImporter;
 
-        public Setup(ILowLevelApi lowLevelApi, IWindowsImageService imageService)
+        public Setup(ILowLevelApi lowLevelApi, IWindowsImageService imageService, IDriverPackageImporter packageImporter)
         {
             this.lowLevelApi = lowLevelApi;
             this.imageService = imageService;
+            this.packageImporter = packageImporter;
         }
 
-        public async Task DeployUefiAndWindows(InstallOptions options, IObserver<double> progressObserver)
+        public async Task DeployUefiAndWindows(InstallOptions options, IObserver<double> progressObserver = null)
         {
             EnsureValidFilesRepository();
 
             var disk = await lowLevelApi.GetPhoneDisk();
             var phone = new Phone(disk);
             var efiespVolume = await phone.GetEfiespVolume();
-            
+
             Log.Information("Retrieving information from Phone Disk/partitions...");
 
             await DeployUefi(efiespVolume);
@@ -41,11 +45,11 @@ namespace Installer.Core
 
             var paths = new[]
             {
-                @"Core\BootShim.efi",
-                @"Core\UEFI.elf",
-                @"Drivers\Pre-OOBE",
-                @"Drivers\Post-OOBE",
-                @"Developer Menu"
+                Path.Combine("Core", "BootShim.efi"),
+                Path.Combine("Core", "UEFI.elf"),
+                Path.Combine("Drivers", "Pre-OOBE"),
+                Path.Combine("Drivers", "Post-OOBE"),
+                "Developer Menu",
             };
 
             foreach (var path in paths)
@@ -78,6 +82,16 @@ namespace Installer.Core
             var disk = await lowLevelApi.GetPhoneDisk();
             var phone = new Phone(disk);
             await new WindowsDeployer(lowLevelApi, imageService, phone).InjectPostOobeDrivers();
+        }
+
+        public async Task InstallDriverPackage(string fileName, IObserver<double> progressObserver = null)
+        {
+            await packageImporter.ImportDriverPackage(fileName, @"Files\Drivers", progressObserver);
+        }
+
+        public async Task<string> GetDriverPackageReadmeText(string fileName)
+        {
+            return await packageImporter.GetReadmeText(fileName);
         }
 
         private async Task AddDeveloperMenu(BcdInvoker bcdInvoker, Volume efiespVolume)

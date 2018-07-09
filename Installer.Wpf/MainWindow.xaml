@@ -35,7 +35,7 @@
             <TabItem Header="Windows Deployment">
                 <TabItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" ToolTip="Use this if have just unlocked the bootloader of your Phone (Lumia 950 XL)" />
+                        <TextBlock Text="{Binding}" ToolTip="Windows deployment tasks" />
                     </DataTemplate>
                 </TabItem.HeaderTemplate>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -45,12 +45,20 @@
             <TabItem Header="Dual Boot" DataContext="{Binding DualBootViewModel}">
                 <TabItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" ToolTip="Use this to install or re-install Windows ARM" />
+                        <TextBlock Text="{Binding}" ToolTip="Check Dual Boot capability and enable/disable options" />
                     </DataTemplate>
                 </TabItem.HeaderTemplate>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <parts:DualBootPart />
                 </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Advanced">
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" ToolTip="Advanced tasks" />
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
+                <sections:AdvancedPart />
             </TabItem>
         </TabControl>
         <Expander Grid.Row="2" Header="Log" IsExpanded="False" MaxHeight="400">

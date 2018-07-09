@@ -4,13 +4,13 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using DynamicData;
 using Installer.Core;
 using Intaller.Wpf.Properties;
 using Intaller.Wpf.UIServices;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
-using Serilog;
 using Serilog.Events;
 
 namespace Intaller.Wpf
@@ -27,13 +27,18 @@ namespace Intaller.Wpf
         private string wimPath;
         private int wimIndex;
         private readonly ISetup setup;
+        private readonly IOpenFileService openFileService;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
+        private string driverPackageLocation;
+        private string message;
+        private ObservableAsPropertyHelper<bool> hasMessageHelper;
 
         public MainViewModel(IObservable<LogEvent> logEvents, ISetup setup, IOpenFileService openFileService, IDialogCoordinator dlgCoord)
         {
             DualBootViewModel = new DualBootViewModel(dlgCoord);
 
             this.setup = setup;
+            this.openFileService = openFileService;
             this.dlgCoord = dlgCoord;
 
             var canDeploy = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
@@ -46,6 +51,8 @@ namespace Intaller.Wpf
             WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), dlgCoord);
             InjectDriversWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InjectPostOobeDrivers), dlgCoord);
 
+            ImportDriverPackageWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InstallDriverPackage), dlgCoord);
+            
             var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting, WindowsInstallWrapper.Command.IsExecuting, InjectDriversWrapper.Command.IsExecuting);
             var dualBootIsBusyObs = DualBootViewModel.IsBusyObs;
 
@@ -82,21 +89,53 @@ namespace Intaller.Wpf
                 .DisposeMany()
                 .Subscribe();
 
+            hasMessageHelper = this.WhenAnyValue(model => model.Message, (string s) => s != null).ToProperty(this, x => x.HasMessage);
+
+            ClearMessageCommand = ReactiveCommand.Create(() => Message = null);
+
             WimIndex = 1;
             WimPath = "";
         }
+
+        public ReactiveCommand<Unit, string> ClearMessageCommand { get; set; }
+
+        public bool HasMessage => hasMessageHelper.Value;
+
+        private async Task InstallDriverPackage()
+        {
+            openFileService.Filter = "7-Zip files|*.7z";
+
+            var showDialog = openFileService.ShowDialog(null);
+            if (showDialog != true)
+            {
+                return;
+            }
+
+            Message = await setup.GetDriverPackageReadmeText(openFileService.FileName);
+            await setup.InstallDriverPackage(openFileService.FileName, progressSubject);
+        }
+
+        public string Message
+        {
+            get => message;
+            set => this.RaiseAndSetIfChanged(ref message, value);
+        }
+
+        public string DriverPackageLocation
+        {
+            get => driverPackageLocation;
+            set => this.RaiseAndSetIfChanged(ref driverPackageLocation, value);
+        }
+
+        public ReactiveCommand<Unit, string> PickDriverPackageCommand { get; set; }
+
+        public CommandWrapper<Unit, Unit> ImportDriverPackageWrapper { get; }
 
         public CommandWrapper<Unit, Unit> InjectDriversWrapper { get; }
 
         public ReactiveCommand<Unit, MessageDialogResult> ShowWarningCommand { get; set; }
 
         public bool IsProgressVisible => isProgressVisibleHelper.Value;
-
-        private async Task HandleException(Exception e)
-        {
-            Log.Error(e, "An error has ocurred");
-            await dlgCoord.ShowMessageAsync(this, "Error", $"{e.Message}");   
-        }
 
         public CommandWrapper<Unit, Unit> WindowsInstallWrapper { get; set; }
 
@@ -147,7 +186,7 @@ namespace Intaller.Wpf
         }
 
         private async Task InjectPostOobeDrivers()
-        {            
+        {
             await setup.InjectPostOobeDrivers();
             await dlgCoord.ShowMessageAsync(this, "Finished", Resources.DriversInjectedSucessfully);
         }

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.7.1" />
+    <PackageReference Include="SharpCompress" Version="0.21.1" />
     <PackageReference Include="System.Reactive" Version="4.0.0" />
   </ItemGroup>
 

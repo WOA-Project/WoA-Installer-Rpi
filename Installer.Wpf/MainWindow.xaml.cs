@@ -22,7 +22,7 @@ namespace Intaller.Wpf
                 .WriteTo.RollingFile(@"Logs\{Date}.txt")
                 .CreateLogger();
 
-            DataContext = new MainViewModel(events, new Setup(new LowLevelApi(), new DismImageService()),  new WpfOpenFileService(), DialogCoordinator.Instance);
+            DataContext = new MainViewModel(events, new Setup(new LowLevelApi(), new DismImageService(), new DriverPackageImporter()),  new WpfOpenFileService(), DialogCoordinator.Instance);
         }
     }
 }
