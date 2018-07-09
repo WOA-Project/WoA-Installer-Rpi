@@ -22,14 +22,14 @@
             <local:BusyButton VerticalAlignment="Center" Command="{Binding FullInstallWrapper.Command}"
                               IsBusy="{Binding FullInstallWrapper.IsExecuting}" Content="Full"
                               Image="/Assets/full.png" Margin="0,0,4,0" ToolTip="Use this option to install Windows into a Phone that has just been unlocked." />
-            <local:BusyButton VerticalAlignment="Center" Command="{Binding FullInstallWrapper.Command}"
+            <local:BusyButton VerticalAlignment="Center" Command="{Binding WindowsInstallWrapper.Command}"
                               IsBusy="{Binding WindowsInstallWrapper.IsExecuting}" Content="Windows Only" ToolTip="Use this option to install/reinstall Windows. This will NOT modify your BCD nor you current UEFI."
                               Image="/Assets/windows-only.png" Margin="4,0,0,0"  />
         </UniformGrid>
         <GroupBox Header="Post-Windows Setup Drivers" Grid.Row="2" VerticalAlignment="Center" Padding="20">
             <StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="0,0,0,20" FontSize="14">
-                    Some drivers should <Bold>only</Bold> be injected after Windows ARM64 has been completely installed into the Phone. Injecting them will provide improved functionality and better overall experience.
+                    Some drivers should <Bold>only</Bold> be injected after Windows 10 ARM64 has been completely installed into the Phone. Injecting them will provide improved functionality and better overall experience.
                 </TextBlock>
                 <local:BusyButton VerticalAlignment="Center"
                                   Command="{Binding InjectDriversWrapper.Command}"

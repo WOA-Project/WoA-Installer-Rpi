@@ -9,38 +9,12 @@
     
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance wpf:MainViewModel}">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <StackPanel Margin="16">
-            <TextBlock Margin="8,8,8,18" Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverterInverted}}" TextWrapping="Wrap">You can import drive packages into the application so new Windows deployments will use them. Please, notice that this <Bold>will not inject the drivers</Bold>, will <Bold>stage them</Bold> for further deployments (inside the Windows Deployment section)</TextBlock>
-            <wpf:BusyButton 
-                VerticalAlignment="Center" HorizontalAlignment="Center" Height="50"
-                Content="Import Driver package" Command="{Binding ImportDriverPackageWrapper.Command}"
-                IsBusy="{Binding ImportDriverPackageWrapper.IsExecuting}" Image="/Assets/gears.png" />
-        </StackPanel>
-        <GroupBox Grid.Row="1" Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" Header="Changelog">
-            <GroupBox.HeaderTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
-                        <Button Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Command="{Binding ElementName=Root, Path=DataContext.ClearMessageCommand}" Margin="4">Close</Button>
-                    </Grid>
-                </DataTemplate>
-            </GroupBox.HeaderTemplate>
-            <Grid>
-                <ScrollViewer>
-                    <TextBlock Text="{Binding Message}" />
-                </ScrollViewer>
-            </Grid>
-        </GroupBox>
-    </Grid>
-
+    <StackPanel Margin="16">
+        <TextBlock Margin="8,8,8,18" TextWrapping="Wrap">You can import drive packages into the application so new Windows deployments will use them. Please, notice that this <Bold>will not inject the drivers</Bold>, will <Bold>stage them</Bold> for further deployments (inside the Windows Deployment section)</TextBlock>
+        <wpf:BusyButton 
+            VerticalAlignment="Center" HorizontalAlignment="Center" Height="50"
+            Content="Import Driver package" Command="{Binding ImportDriverPackageWrapper.Command}"
+            IsBusy="{Binding ImportDriverPackageWrapper.IsExecuting}" Image="/Assets/gears.png" />
+    </StackPanel>
 
 </UserControl>

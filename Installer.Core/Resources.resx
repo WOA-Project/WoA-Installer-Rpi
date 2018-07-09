@@ -122,9 +122,9 @@
 Please, download a fresh copy and put it inside a folder name "Files" inside the root folder of this tool.</value>
   </data>
   <data name="DriversInjectionWindowsNotFullyInstalled" xml:space="preserve">
-    <value>Windows ARM64 isn't fully installed.
+    <value>Windows 10 ARM64 isn't fully installed.
 
-In order to inject these drivers, you must complete Windows Setup until the Desktop screen is shown
+In order to inject these drivers, you must complete Windows Setup until the Desktop screen is shown.
 
 Please, complete Windows Setup first.</value>
   </data>

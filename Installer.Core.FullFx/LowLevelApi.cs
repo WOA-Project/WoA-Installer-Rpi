@@ -232,16 +232,12 @@ namespace Installer.Core.FullFx
 
         public async Task<char> GetFreeDriveLetter()
         {
-            ps.Commands.Clear();
-            var cmd = $@"$normalizedName = ls function:[d-z]: -n | ?{{ !(test-path $_) }} | select -First 1
-	                    $letter = $normalizedName[0]
-	                    return $letter";
+            var drives = Enumerable.Range((int) 'C', (int) 'Z').Select(i => (char)i);
+            var usedDrives = DriveInfo.GetDrives().Select(x => char.ToUpper(x.Name[0]));
 
-            ps.AddScript(cmd);
+            var available = drives.Except(usedDrives);
 
-            var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
-
-            return (char)results.First().ImmediateBaseObject;
+            return available.First();
         }
 
         public bool GetIsOobeCompleted(Volume windowsVolume)

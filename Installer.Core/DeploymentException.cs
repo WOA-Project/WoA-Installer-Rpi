@@ -1,6 +1,6 @@
 using System;
 
-namespace Installer.Core.FullFx
+namespace Installer.Core
 {
     public class DeploymentException : Exception
     {

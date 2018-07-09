@@ -32,7 +32,7 @@ namespace Installer.Core
 
         public async Task Mount()
         {
-            Log.Verbose("Mounting volume {Label}", Label);
+            Log.Verbose("Mounting volume {Volume}", this);
             var driveLetter = await LowLevelApi.GetFreeDriveLetter();
             await LowLevelApi.AssignDriveLetter(this, driveLetter);
 
@@ -55,7 +55,7 @@ namespace Installer.Core
 
         public override string ToString()
         {
-            return $"{nameof(Label)}: {Label}, {nameof(Partition)}: {Partition}, {nameof(Letter)}: {Letter}";
+            return $"{nameof(Label)}: '{Label}', {nameof(Partition)}: {Partition}, {nameof(Letter)}: {Letter}";
         }
     }
 }

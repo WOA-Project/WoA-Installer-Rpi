@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 
@@ -23,7 +24,7 @@ namespace Installer.Core
 
         public async Task Deploy(string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null)
         {
-            Log.Information("Deploying Windows ARM64...");
+            Log.Information("Deploying Windows 10 ARM64...");
 
             await RemoveExistingWindowsPartitions();
             await AllocateSpace();
@@ -50,7 +51,7 @@ namespace Installer.Core
 
         private Task RemoveExistingWindowsPartitions()
         {
-            Log.Information("Cleaning existing Windows ARM64 partitions...");
+            Log.Information("Cleaning existing Windows 10 ARM64 partitions...");
 
             return phone.RemoveExistingWindowsPartitions();
         }
@@ -126,6 +127,16 @@ namespace Installer.Core
         public async Task InjectPostOobeDrivers()
         {
             Log.Information("Injection of 'Post Windows Setup' drivers");
+
+            if (!Directory.Exists(PostOobeDriverLocation))
+            {
+                throw new DirectoryNotFoundException("There Post-OOBE folder doesn't exist");
+            }
+
+            if (Directory.GetFiles(PostOobeDriverLocation, "*.inf").Any())
+            {
+                throw new InvalidOperationException("There are no drivers inside the Post-OOBE folder");
+            }
 
             Log.Information("Checking Windows Setup status...");
             var isWindowsInstalled = await phone.IsOobeFinished();

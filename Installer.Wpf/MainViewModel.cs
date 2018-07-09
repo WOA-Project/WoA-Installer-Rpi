@@ -1,14 +1,16 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using System.Windows.Input;
+using CinchExtended.Services.Implementation;
+using CinchExtended.Services.Interfaces;
 using DynamicData;
 using Installer.Core;
+using Installer.Core.Wim;
 using Intaller.Wpf.Properties;
-using Intaller.Wpf.UIServices;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
 using Serilog.Events;
@@ -18,34 +20,34 @@ namespace Intaller.Wpf
     public class MainViewModel : ReactiveObject, IDisposable
     {
         private readonly IDialogCoordinator dlgCoord;
+        private readonly IExtendedUIVisualizerService visualizerService;
         private readonly ObservableAsPropertyHelper<bool> isBusyHelper;
         private readonly ReadOnlyObservableCollection<RenderedLogEvent> logEvents;
         private readonly ObservableAsPropertyHelper<double> progressHelper;
         private readonly ISubject<double> progressSubject = new BehaviorSubject<double>(double.NaN);
         private readonly ObservableAsPropertyHelper<RenderedLogEvent> statusHelper;
         private readonly IDisposable logLoader;
-        private string wimPath;
-        private int wimIndex;
         private readonly ISetup setup;
         private readonly IOpenFileService openFileService;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
-        private string driverPackageLocation;
-        private string message;
-        private readonly ObservableAsPropertyHelper<bool> hasMessageHelper;
+        private WimViewModel wim;
+        private readonly ObservableAsPropertyHelper<bool> hasWimHelper;
 
-        public MainViewModel(IObservable<LogEvent> logEvents, ISetup setup, IOpenFileService openFileService, IDialogCoordinator dlgCoord)
+        public MainViewModel(IObservable<LogEvent> logEvents, ISetup setup, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService)
         {
             DualBootViewModel = new DualBootViewModel(dlgCoord);
 
             this.setup = setup;
             this.openFileService = openFileService;
             this.dlgCoord = dlgCoord;
-
-            var canDeploy = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
+            this.visualizerService = visualizerService;
 
             ShowWarningCommand = ReactiveCommand.CreateFromTask(() => dlgCoord.ShowMessageAsync(this, Resources.TermsOfUseTitle, Resources.WarningNotice));
 
-            SetupPickWimCommand(openFileService);
+            SetupPickWimCommand();
+
+            var canDeploy = this.WhenAnyObservable(x => x.Wim.SelectedImageObs)
+                .Select(metadata => metadata != null);
 
             FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), dlgCoord);
             WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), dlgCoord);
@@ -93,21 +95,18 @@ namespace Intaller.Wpf
                 .DisposeMany()
                 .Subscribe();
 
-            hasMessageHelper = this.WhenAnyValue(model => model.Message, (string s) => s != null).ToProperty(this, x => x.HasMessage);
-
-            ClearMessageCommand = ReactiveCommand.Create(() => Message = null);
-
-            WimIndex = 1;
-            WimPath = "";
+            hasWimHelper = this.WhenAnyValue(model => model.Wim, (WimViewModel x) => x != null).ToProperty(this, x => x.HasWim);
         }
 
-        public ReactiveCommand<Unit, string> ClearMessageCommand { get; set; }
+        public bool HasWim => hasWimHelper.Value;
 
-        public bool HasMessage => hasMessageHelper.Value;
+        public ReactiveCommand<Unit, string> ClearMessageCommand { get; set; }
 
         private async Task InstallDriverPackage()
         {
             openFileService.Filter = "7-Zip files|*.7z";
+            openFileService.FileName = "";
+            openFileService.InitialDirectory = Settings.Default.DriverPackFolder;
 
             var showDialog = openFileService.ShowDialog(null);
             if (showDialog != true)
@@ -115,23 +114,14 @@ namespace Intaller.Wpf
                 return;
             }
 
-            Message = await setup.GetDriverPackageReadmeText(openFileService.FileName);
-            await setup.InstallDriverPackage(openFileService.FileName, progressSubject);
-        }
+            var fileName = openFileService.FileName;
+            Settings.Default.DriverPackFolder = Path.GetDirectoryName(fileName);
 
-        public string Message
-        {
-            get => message;
-            set => this.RaiseAndSetIfChanged(ref message, value);
+            var message = await setup.GetDriverPackageReadmeText(fileName);
+            visualizerService.Show("TextViewer", new MessageViewModel("Changelog", message), (_, __) => { }, OwnerOption.MainWindow);
+            
+            await setup.InstallDriverPackage(fileName, progressSubject);
         }
-
-        public string DriverPackageLocation
-        {
-            get => driverPackageLocation;
-            set => this.RaiseAndSetIfChanged(ref driverPackageLocation, value);
-        }
-
-        public ReactiveCommand<Unit, string> PickDriverPackageCommand { get; set; }
 
         public CommandWrapper<Unit, Unit> ImportDriverPackageWrapper { get; }
 
@@ -143,34 +133,58 @@ namespace Intaller.Wpf
 
         public CommandWrapper<Unit, Unit> WindowsInstallWrapper { get; set; }
 
-        private void SetupPickWimCommand(IOpenFileService openFileService)
+        private void SetupPickWimCommand()
         {
-            PickWimCommand = ReactiveCommand.Create(() =>
+            PickWimFile = ReactiveCommand.Create(() =>
             {
                 openFileService.Filter = "WIM files|*.wim";
+                openFileService.FileName = "";
+                openFileService.InitialDirectory = Settings.Default.WimFolder;
 
                 var showDialog = openFileService.ShowDialog(null);
-                if (showDialog == true)
+                if (showDialog != true)
                 {
-                    return openFileService.FileName;
+                    return null;
                 }
 
-                return null;
+                var fileName = openFileService.FileName;
+                Settings.Default.WimFolder = Path.GetDirectoryName(fileName);
+                return fileName;
+
             });
 
-            PickWimCommand
+            PickWimFile
                 .Where(s => !string.IsNullOrEmpty(s))
-                .Subscribe(path => { WimPath = path; });
+                .Subscribe(path =>
+                {
+                    Wim = LoadWim(path);
+                });
         }
 
-        public ReactiveCommand<Unit, string> PickWimCommand { get; set; }
+        public WimViewModel Wim
+        {
+            get => wim;
+            set => this.RaiseAndSetIfChanged(ref wim, value);
+        }
+    
+        private static WimViewModel LoadWim(string path)
+        {
+            using (var file = File.OpenRead(path))
+            {
+                var imageReader = new WindowsImageMetadataReader();
+                var windowsImageInfo = imageReader.Load(file);
+                return new WimViewModel(windowsImageInfo, path);
+            }
+        }
+
+        public ReactiveCommand<Unit, string> PickWimFile { get; set; }
 
         private async Task DeployUefiAndWindows()
         {
             var installOptions = new InstallOptions
             {
-                ImagePath = WimPath,
-                ImageIndex = WimIndex,
+                ImagePath = Wim.Path,
+                ImageIndex = Wim.SelectedImage.Index,
             };
 
             await setup.DeployUefiAndWindows(installOptions, progressSubject);
@@ -181,8 +195,8 @@ namespace Intaller.Wpf
         {
             var installOptions = new InstallOptions
             {
-                ImagePath = WimPath,
-                ImageIndex = WimIndex,
+                ImagePath = Wim.Path,
+                ImageIndex = Wim.SelectedImage.Index,
             };
 
             await setup.DeployWindows(installOptions, progressSubject);
@@ -191,14 +205,20 @@ namespace Intaller.Wpf
 
         private async Task InjectPostOobeDrivers()
         {
-            await setup.InjectPostOobeDrivers();
-            await dlgCoord.ShowMessageAsync(this, "Finished", Resources.DriversInjectedSucessfully);
-        }
+            try
+            {
+                await setup.InjectPostOobeDrivers();
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                throw new InvalidOperationException("Sorry, there are no POST-OOBE drivers available to inject.\nThe driver package that is currently installed might not need to install any additional driver after Windows Setup.", e);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new InvalidOperationException("Cannot inject the Post-OOBE drivers", e);
+            }
 
-        public int WimIndex
-        {
-            get => wimIndex;
-            set => this.RaiseAndSetIfChanged(ref wimIndex, value);
+            await dlgCoord.ShowMessageAsync(this, "Finished", Resources.DriversInjectedSucessfully);
         }
 
         public ReadOnlyObservableCollection<RenderedLogEvent> Events => logEvents;
@@ -210,12 +230,6 @@ namespace Intaller.Wpf
         public CommandWrapper<Unit, Unit> FullInstallWrapper { get; set; }
         public double Progress => progressHelper.Value;
 
-        public string WimPath
-        {
-            get => wimPath;
-            set => this.RaiseAndSetIfChanged(ref wimPath, value);
-        }
-
         public DualBootViewModel DualBootViewModel { get; }
 
         public void Dispose()
@@ -225,7 +239,7 @@ namespace Intaller.Wpf
             statusHelper?.Dispose();
             logLoader?.Dispose();
             isProgressVisibleHelper?.Dispose();
-            PickWimCommand?.Dispose();
+            PickWimFile?.Dispose();
         }
     }
 }

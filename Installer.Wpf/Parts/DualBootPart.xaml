@@ -25,16 +25,15 @@
 
             <StackPanel Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverter}}">
 
-                <TextBlock Margin="20,10" TextWrapping="Wrap">Your phone <Bold>supports</Bold> dual boot</TextBlock>
+                <TextBlock HorizontalAlignment="Center" Margin="20,10" TextWrapping="Wrap">Your phone <Bold>supports</Bold> dual boot</TextBlock>
 
-                <StackPanel Margin="20,10,0,20">
+                <StackPanel Margin="20,10,0,20" HorizontalAlignment="Center">
                     <TextBlock Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"><Bold>Dual Boot</Bold> is currently <Bold>ENABLED</Bold></TextBlock>
                     <TextBlock Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverterInverted}}"><Bold>Dual Boot</Bold> is currently <Bold>DISABLED</Bold></TextBlock>
                 </StackPanel>
 
                 <Grid>
                     <StackPanel Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
-                        <TextBlock  Margin="4">Please, notice that while Dual Boot is enabled, <Bold>Windows Update will not work</Bold> inside Windows 10 ARM64. Please, disable Dual Boot to before using Windows Update.</TextBlock>
                         <wpf:BusyButton Content="Enable Dual Boot" Width="180"
                                         Command="{Binding EnableDualBootWrapper.Command}"
                                         IsBusy="{Binding EnableDualBootWrapper.IsExecuting}" Image="/Assets/dual.png" />
@@ -46,6 +45,7 @@
                                     IsBusy="{Binding DisableDualBootWrapper.IsExecuting}"
                                     Image="/Assets/disabledual.png" />
                 </Grid>
+                <TextBlock MaxWidth="280" Margin="20" TextWrapping="Wrap" TextAlignment="Center">Please, notice that while Dual Boot is enabled, <Bold>Windows Update will not work</Bold> inside Windows 10 ARM64. Please, disable Dual Boot to before using Windows Update.</TextBlock>
             </StackPanel>
 
             <StackPanel Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverterInverted}}">

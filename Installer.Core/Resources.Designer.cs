@@ -61,9 +61,9 @@ namespace Installer.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windows ARM64 isn&apos;t fully installed.
+        ///   Looks up a localized string similar to Windows 10 ARM64 isn&apos;t fully installed.
         ///
-        ///In order to inject these drivers, you must complete Windows Setup until the Desktop screen is shown
+        ///In order to inject these drivers, you must complete Windows Setup until the Desktop screen is shown.
         ///
         ///Please, complete Windows Setup first..
         /// </summary>

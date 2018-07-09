@@ -1,10 +1,13 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Installer.Core.Wim;
 using Serilog;
 
 namespace Installer.Core.FullFx
@@ -15,10 +18,7 @@ namespace Installer.Core.FullFx
 
         public async Task ApplyImage(Volume volume, string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null)
         {
-            if (!File.Exists(imagePath))
-            {
-                throw new FileNotFoundException($"Image not found: {imagePath}. Please, verify that the file exists and it's accessible.");
-            }
+            EnsureValidImage(imagePath, imageIndex);
 
             ISubject<string> outputSubject = new Subject<string>();
             IDisposable stdOutputSubscription = null;
@@ -40,6 +40,24 @@ namespace Installer.Core.FullFx
             }
 
             stdOutputSubscription?.Dispose();
+        }
+
+        private static void EnsureValidImage(string imagePath, int imageIndex)
+        {
+            if (!File.Exists(imagePath))
+            {
+                throw new FileNotFoundException($"Image not found: {imagePath}. Please, verify that the file exists and it's accessible.");
+            }
+
+            using (var stream = File.OpenRead(imagePath))
+            {
+                var metadata = new WindowsImageMetadataReader().Load(stream);
+                var imageMetadata = metadata.Images.Single(x => x.Index == imageIndex);
+                if (imageMetadata.Architecture != Architecture.Arm64)
+                {
+                    throw new InvalidImageException("The selected image isn't for the ARM64 architecture.");
+                }
+            }            
         }
 
         private double GetPercentage(string dismOutput)

@@ -12,7 +12,8 @@ namespace Installer.Core
 {
     public class DriverPackageImporter : IDriverPackageImporter
     {
-        private const string ChangelogFilename = "Changelog.txt";
+        private const string RootFolder = "";
+        private static readonly string ChangelogFilename = $"{RootFolder}Changelog.txt";
 
         public async Task ImportDriverPackage(string fileName, string destination, IObserver<double> progressObserver = null)
         {
@@ -20,12 +21,14 @@ namespace Installer.Core
 
             var pathMapping = new Dictionary<string, string>
             {
-                {"Cityman", Path.Combine(destination, "Pre-OOBE")},
-                {"POSTOOBE", Path.Combine(destination, "Post-OOBE")},
+                {$"{RootFolder}Cityman/", Path.Combine(destination, "Pre-OOBE")},
+                {$"{RootFolder}POSTOOBE/", Path.Combine(destination, "Post-OOBE")},
             };
 
             using (var package = SevenZipArchive.Open(fileName))
             {
+                SanityCheck(package);
+
                 var itemsToExtract = package.Entries.Where(entry => IsExtractable(entry, pathMapping)).Select(x => new PendingExtract() { Entry = x, Destination = DestinationFolder(x, pathMapping)})
                     .ToList();
 
@@ -34,6 +37,14 @@ namespace Installer.Core
             }
 
             Log.Information("Driver Package imported correctly", fileName);
+        }
+
+        private static void SanityCheck(SevenZipArchive archive)
+        {
+            if (!archive.Entries.Any(x => x.Key.StartsWith($"{RootFolder}Cityman", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                throw new InvalidDriverPackageException("The driver package seems to be invalid");
+            }
         }
 
         public async Task<string> GetReadmeText(string fileName)
@@ -127,5 +138,5 @@ namespace Installer.Core
             public SevenZipArchiveEntry Entry { get; set; }
             public string Destination { get; set; }
         }
-    }  
+    }
 }

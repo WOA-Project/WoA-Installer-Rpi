@@ -25,13 +25,15 @@ namespace Installer.Core
             Log.Verbose("Getting {Label} volume", label);
 
             var volumes = await Disk.GetVolumes();
-            var volume = volumes.FirstOrDefault(v => string.Equals(v.Label, label, StringComparison.InvariantCultureIgnoreCase));
+            var volume = volumes.Single(v => string.Equals(v.Label, label, StringComparison.InvariantCultureIgnoreCase));
 
-            if (volume != null)
+            if (volume.Letter != null)
             {
-                Log.Verbose("{Label} volume wasn't mounted.", label);
-                await volume.Mount();
+                return volume;
             }
+
+            Log.Verbose("{Label} volume wasn't mounted.", label);
+            await volume.Mount();
 
             return volume;
         }

@@ -47,8 +47,7 @@ namespace Installer.Core
             {
                 Path.Combine("Core", "BootShim.efi"),
                 Path.Combine("Core", "UEFI.elf"),
-                Path.Combine("Drivers", "Pre-OOBE"),
-                Path.Combine("Drivers", "Post-OOBE"),
+                Path.Combine("Drivers", "Pre-OOBE"),                
                 "Developer Menu",
             };
 

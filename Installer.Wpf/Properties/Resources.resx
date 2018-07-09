@@ -137,7 +137,4 @@ By accepting this warning notice, you accept the aforementioned risks.
   <data name="TermsOfUseTitle" xml:space="preserve">
     <value>Disclaimer Notice and Terms of Use</value>
   </data>
-  <data name="DriversInjectedSucessfully" xml:space="preserve">
-    <value>The drivers have been injected correctly</value>
-  </data>
 </root>
