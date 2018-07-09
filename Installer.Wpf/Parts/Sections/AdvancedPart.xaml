@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="Intaller.Wpf.Parts.Sections.AdvancedPart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:wpf="clr-namespace:Intaller.Wpf"
+             mc:Ignorable="d" 
+             x:Name="Root"
+    
+             d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance wpf:MainViewModel}">
+    <Grid>
+        <wpf:BusyButton Margin="20"
+                        Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
+                        VerticalAlignment="Center" HorizontalAlignment="Center" Height="50" Content="Import Driver package" Command="{Binding ImportDriverPackageWrapper.Command}" IsBusy="{Binding ImportDriverPackageWrapper.IsExecuting}" Image="/Assets/gears.png"/>
+        <Grid Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <wpf:BusyButton Margin="20" VerticalAlignment="Center" HorizontalAlignment="Center" Height="50" Content="Import Driver package" Command="{Binding ImportDriverPackageWrapper.Command}" IsBusy="{Binding ImportDriverPackageWrapper.IsExecuting}" Image="/Assets/gears.png"/>
+            <GroupBox Grid.Row="1" Visibility="{Binding HasMessage, Converter={StaticResource BooleanToVisibilityConverter}}" Header="Changelog">
+                <GroupBox.HeaderTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                            <Button Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Command="{Binding ElementName=Root, Path=DataContext.ClearMessageCommand}" Margin="4">Close</Button>
+                        </Grid>
+                    </DataTemplate>
+                </GroupBox.HeaderTemplate>
+                <Grid>
+                    <ScrollViewer>
+                        <TextBlock Text="{Binding Message}" />
+                    </ScrollViewer>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </Grid>
+
+
+</UserControl>

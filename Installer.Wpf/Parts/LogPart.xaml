@@ -16,6 +16,7 @@
         <ListView.Style>
             <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListView}}">
                 <Style.Triggers>
+                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                     <DataTrigger 
                         Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=Items.Count}" 
                         Value="0">

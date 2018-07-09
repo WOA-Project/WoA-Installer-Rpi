@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 
 namespace Installer.Core
 {
@@ -11,7 +12,7 @@ namespace Installer.Core
             PhoneDisk = phoneDisk;
             EfiespDrive = efiespDrive;
             DataVolume = volume;
-            BcdFileName = Path.Combine(efiespDrive.RootDirectory.Name, "EFI", "Microsoft", "Boot", "BCD");            
+            BcdFileName = Path.Combine(efiespDrive.RootDirectory.Name, "EFI", "Microsoft", "Boot", "BCD");
         }
 
         public string BcdFileName { get; }

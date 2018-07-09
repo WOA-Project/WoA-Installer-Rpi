@@ -61,6 +61,19 @@ namespace Installer.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Windows ARM64 isn&apos;t fully installed.
+        ///
+        ///In order to inject these drivers, you must complete Windows Setup until the Desktop screen is shown
+        ///
+        ///Please, complete Windows Setup first..
+        /// </summary>
+        internal static string DriversInjectionWindowsNotFullyInstalled {
+            get {
+                return ResourceManager.GetString("DriversInjectionWindowsNotFullyInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find a valid &quot;Files&quot; repository.
         ///Please, download a fresh copy and put it inside a folder name &quot;Files&quot; inside the root folder of this tool..
         /// </summary>

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Registry;
 using Serilog;
 
 namespace Installer.Core.FullFx
@@ -29,7 +29,7 @@ namespace Installer.Core.FullFx
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
             var disk = results.First().ImmediateBaseObject;
 
-            return ToDisk(disk);
+            return ToDisk(this, disk);
         }
 
         public async Task<IList<Volume>> GetVolumes(Disk disk)
@@ -57,13 +57,22 @@ namespace Installer.Core.FullFx
             return await volumes;
         }
 
-        private static Disk ToDisk(object disk)
+        public Task RemovePartition(Partition partition)
+        {
+            ps.Commands.Clear();
+            var cmd = $@"Remove-Partition -DiskNumber {partition.Disk.Number} -PartitionNumber {partition.Number} -Confirm:$false";
+            ps.AddScript(cmd);
+
+            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+        }
+
+        private static Disk ToDisk(ILowLevelApi lowLevelApi, object disk)
         {
             var number = (uint)disk.GetPropertyValue("Number");
             var size = (ulong)disk.GetPropertyValue("Size");
             var allocatedSize = (ulong)disk.GetPropertyValue("AllocatedSize");
 
-            return new Disk(number, size, allocatedSize);
+            return new Disk(lowLevelApi, number, size, allocatedSize);
         }
 
         public Task EnsurePartitionMounted(string label, string filesystemType)
@@ -82,17 +91,6 @@ namespace Installer.Core.FullFx
             ps.AddCommand("RemoveExistingWindowsPartitions");
 
             return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
-        }
-
-        public async Task<double> GetAvailableFreeSpace(Disk disk)
-        {
-            ps.Commands.Clear();
-            ps.AddCommand("GetAvailableSpace")
-                .AddParameter("diskNumber", disk.Number);
-
-            var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
-            var space = Convert.ToDouble(results.First().ImmediateBaseObject);
-            return space;
         }
 
 
@@ -126,13 +124,12 @@ namespace Installer.Core.FullFx
                 {
                     var hasType = Guid.TryParse((string)x.GetPropertyValue("GptType"), out var guid);
 
-                    return new Partition
+                    return new Partition(disk)
                     {
-                        Disk = disk,
                         Number = (uint)x.GetPropertyValue("PartitionNumber"),
                         Id = (string)x.GetPropertyValue("UniqueId"),
                         Letter = (char)x.GetPropertyValue("DriveLetter"),
-                        GptType = hasType ? guid : (Guid?)null,
+                        PartitionType = hasType ? PartitionType.FromGuid(guid) : null,
                     };
                 });
 
@@ -145,9 +142,14 @@ namespace Installer.Core.FullFx
             ps.AddScript($@"Get-Partition -UniqueId ""{partition.Id}"" | Get-Volume", true);
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
-            var volume = results.First().ImmediateBaseObject;
+            var volume = results.FirstOrDefault()?.ImmediateBaseObject;
 
-            return new Volume
+            if (volume == null)
+            {
+                return null;
+            }
+
+            return new Volume(partition)
             {
                 Partition = partition,
                 Size = Convert.ToUInt64(volume.GetPropertyValue("Size")),
@@ -191,11 +193,10 @@ namespace Installer.Core.FullFx
             return ToPartition(disk, partition);
         }
 
-        private static Partition ToPartition(Disk disk, object partition)
+        private Partition ToPartition(Disk disk, object partition)
         {
-            return new Partition
+            return new Partition(disk)
             {
-                Disk = disk,
                 Number = (uint)partition.GetPropertyValue("PartitionNumber"),
                 Id = (string)partition.GetPropertyValue("UniqueId"),
                 Letter = (char)partition.GetPropertyValue("DriveLetter")
@@ -241,6 +242,25 @@ namespace Installer.Core.FullFx
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
 
             return (char)results.First().ImmediateBaseObject;
+        }
+
+        public bool GetIsOobeCompleted(Volume windowsVolume)
+        {
+            var path = Path.Combine(windowsVolume.RootDir.Name, "Windows", "System32", "Config", "System");
+            var hive = new RegistryHive(path) { RecoverDeleted = true };
+            hive.ParseHive();
+
+            var key = hive.GetKey("Setup");
+            var val = key.Values.Single(x => x.ValueName == "OOBEInProgress");
+
+            return int.Parse(val.ValueData) == 0;
+        }
+
+        public async Task<Volume> GetWindowsVolume()
+        {
+            var disk = await GetPhoneDisk();
+            var volumes = await GetVolumes(disk);
+            return volumes.Single(x => x.Label == "WindowsARM");
         }
     }
 }

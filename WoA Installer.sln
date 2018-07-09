@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer.Tests", "Installe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer.Wpf", "Installer.Wpf\Installer.Wpf.csproj", "{19064893-A79C-4E75-9FEA-391F6CEA4917}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Registry", "Registry\Registry\Registry.csproj", "{5C40BE24-A89D-4973-B668-2D6E945CB047}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", "{9BCD9498-F120-4DB2-BD5E-E2698705AC77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +37,16 @@ Global
 		{19064893-A79C-4E75-9FEA-391F6CEA4917}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19064893-A79C-4E75-9FEA-391F6CEA4917}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19064893-A79C-4E75-9FEA-391F6CEA4917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C40BE24-A89D-4973-B668-2D6E945CB047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C40BE24-A89D-4973-B668-2D6E945CB047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C40BE24-A89D-4973-B668-2D6E945CB047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C40BE24-A89D-4973-B668-2D6E945CB047}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5C40BE24-A89D-4973-B668-2D6E945CB047} = {9BCD9498-F120-4DB2-BD5E-E2698705AC77}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E09817AC-F002-4FDC-BA6F-5A99F55D72C0}

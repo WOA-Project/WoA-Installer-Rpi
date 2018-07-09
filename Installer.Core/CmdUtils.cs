@@ -72,7 +72,7 @@ namespace Installer.Core
                 process.ErrorDataReceived += (s, ea) => errorObserver?.OnNext(ea.Data);
             }
 
-            Log.Verbose("Starting process {@Process}", process.StartInfo);
+            Log.Verbose("Starting process {@Process}", new { process.StartInfo.FileName, process.StartInfo.Arguments });
             bool started = process.Start();
             Log.Verbose("Process started sucessfully");
 

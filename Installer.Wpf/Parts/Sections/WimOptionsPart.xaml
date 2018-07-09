@@ -8,8 +8,11 @@
              xmlns:wpf="clr-namespace:Intaller.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance wpf:MainViewModel}">
-    <GroupBox Margin="8" Header="Windows Image (.WIM)">
+    <GroupBox Header="Windows Image (.WIM)">
         <StackPanel>
+            <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" Margin="4">
+                Please, specify the Windows Image file (.wim) you wish to deploy.
+            </TextBlock>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -18,6 +21,7 @@
                 <TextBox VerticalAlignment="Center" Text="{Binding WimPath, Mode=TwoWay}" Padding="4" />
                 <Button Command="{Binding PickWimCommand}" Margin="8" Padding="4" Content="Browse..." Grid.Column="1" />
             </Grid>
+          
             <StackPanel Orientation="Horizontal" ToolTip="This is the index of the image you want to deploy (WIM images can contain more than one edition like 'Pro' or 'Home'). If you don't know what this means, leave it with the default value of 1.">
                 <TextBlock VerticalAlignment="Center" Text="Index" TextAlignment="Center"/>
                 <mah:NumericUpDown Minimum="1" Margin="10,0" Value="{Binding WimIndex, Mode=TwoWay}"/>

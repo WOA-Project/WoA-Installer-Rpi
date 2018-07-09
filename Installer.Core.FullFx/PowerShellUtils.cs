@@ -4,17 +4,17 @@ namespace Installer.Core.FullFx
 {
     public static class PowerShellUtils
     {
-        private static readonly CimInstanceAdapter adapter = new CimInstanceAdapter();
+        private static readonly CimInstanceAdapter Adapter = new CimInstanceAdapter();
 
         public static object GetPropertyValue(this object obj, string propertyName)
         {
-            var psAdaptedProperty = adapter.GetProperty(obj, propertyName);
+            var psAdaptedProperty = Adapter.GetProperty(obj, propertyName);
             if (psAdaptedProperty == null)
             {
                 return null;
             }
 
-            return adapter.GetPropertyValue(psAdaptedProperty);
+            return Adapter.GetPropertyValue(psAdaptedProperty);
         }
     }
 }

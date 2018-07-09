@@ -4,14 +4,13 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using DynamicData;
 using Installer.Core;
-using Installer.Core.FullFx;
 using Intaller.Wpf.Properties;
 using Intaller.Wpf.UIServices;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
-using Serilog;
 using Serilog.Events;
 
 namespace Intaller.Wpf
@@ -27,28 +26,37 @@ namespace Intaller.Wpf
         private readonly IDisposable logLoader;
         private string wimPath;
         private int wimIndex;
-        private readonly Setup setup;
+        private readonly ISetup setup;
+        private readonly IOpenFileService openFileService;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
+        private string driverPackageLocation;
+        private string message;
+        private ObservableAsPropertyHelper<bool> hasMessageHelper;
 
-        public MainViewModel(IObservable<LogEvent> events, IOpenFileService openFileService, IDialogCoordinator dlgCoord)
+        public MainViewModel(IObservable<LogEvent> logEvents, ISetup setup, IOpenFileService openFileService, IDialogCoordinator dlgCoord)
         {
-            setup = new Setup(new LowLevelApi(), new DismImageService());
+            DualBootViewModel = new DualBootViewModel(dlgCoord);
 
+            this.setup = setup;
+            this.openFileService = openFileService;
             this.dlgCoord = dlgCoord;
+
             var canDeploy = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
 
             ShowWarningCommand = ReactiveCommand.CreateFromTask(() => dlgCoord.ShowMessageAsync(this, "Warning", Resources.WarningNotice));
 
             SetupPickWimCommand(openFileService);
 
-            FullInstallCommand = ReactiveCommand.CreateFromTask(DeployEufiAndWindows, canDeploy);
-            FullInstallCommand.ThrownExceptions.Subscribe(async exception => await HandleException(exception));
+            FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), dlgCoord);
+            WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), dlgCoord);
+            InjectDriversWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InjectPostOobeDrivers), dlgCoord);
 
-            WindowsInstallCommand = ReactiveCommand.CreateFromTask(DeployWindows, canDeploy);
-            WindowsInstallCommand.ThrownExceptions.Subscribe(async exception => await HandleException(exception));
+            ImportDriverPackageWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InstallDriverPackage), dlgCoord);
+            
+            var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting, WindowsInstallWrapper.Command.IsExecuting, InjectDriversWrapper.Command.IsExecuting);
+            var dualBootIsBusyObs = DualBootViewModel.IsBusyObs;
 
-            isBusyHelper = FullInstallCommand.IsExecuting
-                .Merge(WindowsInstallCommand.IsExecuting)
+            isBusyHelper = Observable.Merge(isBusyObs, dualBootIsBusyObs)
                 .ToProperty(this, model => model.IsBusy);
 
             progressHelper = progressSubject
@@ -60,7 +68,7 @@ namespace Intaller.Wpf
                     .Select(d => !double.IsNaN(d))
                     .ToProperty(this, x => x.IsProgressVisible);
 
-            statusHelper = events
+            statusHelper = logEvents
                 .Where(x => x.Level == LogEventLevel.Information)
                 .Select(x => new RenderedLogEvent
                 {
@@ -69,7 +77,7 @@ namespace Intaller.Wpf
                 })
                 .ToProperty(this, x => x.Status);
 
-            logLoader = events
+            logLoader = logEvents
                 .Where(x => x.Level == LogEventLevel.Information)
                 .ToObservableChangeSet()
                 .Transform(x => new RenderedLogEvent
@@ -77,25 +85,59 @@ namespace Intaller.Wpf
                     Message = x.RenderMessage(),
                     Level = x.Level
                 })
-                .Bind(out logEvents)
+                .Bind(out this.logEvents)
                 .DisposeMany()
                 .Subscribe();
+
+            hasMessageHelper = this.WhenAnyValue(model => model.Message, (string s) => s != null).ToProperty(this, x => x.HasMessage);
+
+            ClearMessageCommand = ReactiveCommand.Create(() => Message = null);
 
             WimIndex = 1;
             WimPath = "";
         }
 
+        public ReactiveCommand<Unit, string> ClearMessageCommand { get; set; }
+
+        public bool HasMessage => hasMessageHelper.Value;
+
+        private async Task InstallDriverPackage()
+        {
+            openFileService.Filter = "7-Zip files|*.7z";
+
+            var showDialog = openFileService.ShowDialog(null);
+            if (showDialog != true)
+            {
+                return;
+            }
+
+            Message = await setup.GetDriverPackageReadmeText(openFileService.FileName);
+            await setup.InstallDriverPackage(openFileService.FileName, progressSubject);
+        }
+
+        public string Message
+        {
+            get => message;
+            set => this.RaiseAndSetIfChanged(ref message, value);
+        }
+
+        public string DriverPackageLocation
+        {
+            get => driverPackageLocation;
+            set => this.RaiseAndSetIfChanged(ref driverPackageLocation, value);
+        }
+
+        public ReactiveCommand<Unit, string> PickDriverPackageCommand { get; set; }
+
+        public CommandWrapper<Unit, Unit> ImportDriverPackageWrapper { get; }
+
+        public CommandWrapper<Unit, Unit> InjectDriversWrapper { get; }
+
         public ReactiveCommand<Unit, MessageDialogResult> ShowWarningCommand { get; set; }
 
         public bool IsProgressVisible => isProgressVisibleHelper.Value;
 
-        private async Task HandleException(Exception e)
-        {
-            Log.Error(e, "An error has ocurred");
-            await dlgCoord.ShowMessageAsync(this, "Error", $"{e.Message}");   
-        }
-
-        public ReactiveCommand<Unit, Unit> WindowsInstallCommand { get; set; }
+        public CommandWrapper<Unit, Unit> WindowsInstallWrapper { get; set; }
 
         private void SetupPickWimCommand(IOpenFileService openFileService)
         {
@@ -119,7 +161,7 @@ namespace Intaller.Wpf
 
         public ReactiveCommand<Unit, string> PickWimCommand { get; set; }
 
-        private async Task DeployEufiAndWindows()
+        private async Task DeployUefiAndWindows()
         {
             var installOptions = new InstallOptions
             {
@@ -143,6 +185,12 @@ namespace Intaller.Wpf
             await dlgCoord.ShowMessageAsync(this, "Finished", Resources.WindowsDeployedSuccessfully);
         }
 
+        private async Task InjectPostOobeDrivers()
+        {
+            await setup.InjectPostOobeDrivers();
+            await dlgCoord.ShowMessageAsync(this, "Finished", Resources.DriversInjectedSucessfully);
+        }
+
         public int WimIndex
         {
             get => wimIndex;
@@ -155,7 +203,7 @@ namespace Intaller.Wpf
 
         public bool IsBusy => isBusyHelper.Value;
 
-        public ReactiveCommand<Unit, Unit> FullInstallCommand { get; set; }
+        public CommandWrapper<Unit, Unit> FullInstallWrapper { get; set; }
         public double Progress => progressHelper.Value;
 
         public string WimPath
@@ -164,6 +212,8 @@ namespace Intaller.Wpf
             set => this.RaiseAndSetIfChanged(ref wimPath, value);
         }
 
+        public DualBootViewModel DualBootViewModel { get; }
+
         public void Dispose()
         {
             isBusyHelper?.Dispose();
@@ -171,9 +221,7 @@ namespace Intaller.Wpf
             statusHelper?.Dispose();
             logLoader?.Dispose();
             isProgressVisibleHelper?.Dispose();
-            WindowsInstallCommand?.Dispose();
             PickWimCommand?.Dispose();
-            FullInstallCommand?.Dispose();
         }
     }
 }

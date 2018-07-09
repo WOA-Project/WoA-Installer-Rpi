@@ -1,0 +1,3 @@
+[submodule "Registry"]
+	path = Registry
+	url = https://github.com/EricZimmerman/Registry.git

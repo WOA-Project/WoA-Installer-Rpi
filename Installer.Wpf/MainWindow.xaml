@@ -11,7 +11,8 @@
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
         Icon="/Assets/appicon.png"
-        Title="Windows On ARM Installer for Lumia 950 XL" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel}"
+        Title="Windows On ARM Installer for Lumia 950 XL" Width="920" Height="640"
+                 d:DataContext="{d:DesignInstance local:MainViewModel}"
         mah:DialogParticipation.Register="{Binding}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -22,38 +23,50 @@
     </i:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TabControl IsEnabled="{Binding IsBusy, Converter={StaticResource BoolNegationConverter}}">
-            <TabItem Header="Full Install">
+        <TextBlock Margin="0,10,0,0" TextAlignment="Center">
+            <Bold>NOTICE:</Bold> All the following operations require the Phone to be in <Bold>Mass Storage Mode</Bold>
+        </TextBlock>
+        <TabControl Margin="20,0,20,20" Grid.Row="1" IsEnabled="{Binding IsBusy, Converter={StaticResource BoolNegationConverter}}">
+            <TabItem Header="Windows Deployment">
                 <TabItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" ToolTip="Use this if have just unlocked the bootloader of your phone" />
+                        <TextBlock Text="{Binding}" ToolTip="Windows deployment tasks" />
                     </DataTemplate>
                 </TabItem.HeaderTemplate>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <sections:FullInstallPart />
+                    <sections:InstallPart />
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Windows deployment">
+            <TabItem Header="Dual Boot" DataContext="{Binding DualBootViewModel}">
                 <TabItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" ToolTip="Use this to install or re-install Windows ARM" />
+                        <TextBlock Text="{Binding}" ToolTip="Check Dual Boot capability and enable/disable options" />
                     </DataTemplate>
                 </TabItem.HeaderTemplate>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <sections:WindowsPart />
+                    <parts:DualBootPart />
                 </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Advanced">
+                <TabItem.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" ToolTip="Advanced tasks" />
+                    </DataTemplate>
+                </TabItem.HeaderTemplate>
+                <sections:AdvancedPart />
             </TabItem>
         </TabControl>
-        <Expander Grid.Row="1" Header="Log" IsExpanded="False" MaxHeight="400">
+        <Expander Grid.Row="2" Header="Log" IsExpanded="False" MaxHeight="400">
             <ScrollViewer>
                 <parts:LogPart />
             </ScrollViewer>
         </Expander>
-        <parts:StatusPart Grid.Row="2" />
+        <parts:StatusPart Grid.Row="3" />
     </Grid>
 </mah:MetroWindow>
 

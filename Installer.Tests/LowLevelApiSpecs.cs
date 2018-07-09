@@ -28,15 +28,6 @@ namespace Application.Tests
         }
 
         [Fact]
-        public async Task GetAvailableFreeSpace()
-        {
-            var sut = new LowLevelApi();
-            var phoneDisk = await sut.GetPhoneDisk();
-            var free = await sut.GetAvailableFreeSpace(phoneDisk);
-            Assert.True(free > 0);
-        }
-
-        [Fact]
         public async Task Format()
         {
             var sut = new LowLevelApi();
@@ -62,7 +53,7 @@ namespace Application.Tests
         public async Task DeployWindows()
         {
             var api = new LowLevelApi();
-            var deployer = new WindowsDeployer(new LowLevelApi(), new ConfigProvider(api), new Installer.Core.FullFx.DismImageService());
+            var deployer = new WindowsDeployer(new LowLevelApi(), new DismImageService(), new Phone(await api.GetPhoneDisk()));
             await deployer.Deploy(@"F:\sources\install.wim");
         }
 
@@ -122,6 +113,16 @@ namespace Application.Tests
             var volumeToResize = volumes.First(x => x.Label == "Data");
             var sizeInBytes = 2 * (ulong)1_000_000_000;
             await sut.ResizePartition(volumeToResize.Partition, sizeInBytes);
+        }
+
+        [Fact]
+        public async Task CheckOobeCompleted()
+        {
+            var sut = new LowLevelApi();
+
+            var volume = await sut.GetWindowsVolume();
+
+            var completed = sut.GetIsOobeCompleted(volume);
         }
     }
 }
