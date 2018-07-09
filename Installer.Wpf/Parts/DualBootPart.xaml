@@ -21,9 +21,8 @@
                             Command="{Binding UpdateStatusWrapper.Command}"
                             IsBusy="{Binding UpdateStatusWrapper.IsExecuting}" />
         </StackPanel>
-        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"            
-            Visibility="{Binding IsUpdated, Converter={StaticResource BooleanToVisibilityConverter}}">
-            
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding IsUpdated, Converter={StaticResource BooleanToVisibilityConverter}}">
+
             <StackPanel Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                 <TextBlock Margin="20,10" TextWrapping="Wrap">Your phone <Bold>supports</Bold> dual boot</TextBlock>
@@ -33,17 +32,20 @@
                     <TextBlock Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverterInverted}}"><Bold>Dual Boot</Bold> is currently <Bold>DISABLED</Bold></TextBlock>
                 </StackPanel>
 
-                <Grid Width="180">
-                    <wpf:BusyButton Content="Enable Dual Boot"
-                                    Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
-                                    Command="{Binding EnableDualBootWrapper.Command}"
-                                    IsBusy="{Binding EnableDualBootWrapper.IsExecuting}" Image="/Assets/dual.png" />
+                <Grid>
+                    <StackPanel Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
+                        <TextBlock  Margin="4">Please, notice that while Dual Boot is enabled, <Bold>Windows Update will not work</Bold> inside Windows 10 ARM64. Please, disable Dual Boot to before using Windows Update.</TextBlock>
+                        <wpf:BusyButton Content="Enable Dual Boot" Width="180"
+                                        Command="{Binding EnableDualBootWrapper.Command}"
+                                        IsBusy="{Binding EnableDualBootWrapper.IsExecuting}" Image="/Assets/dual.png" />
+                    </StackPanel>
                     <wpf:BusyButton Content="Disable Dual Boot"
+                                    Width="180"
                                     Command="{Binding DisableDualBootWrapper.Command}"
                                     Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     IsBusy="{Binding DisableDualBootWrapper.IsExecuting}"
                                     Image="/Assets/disabledual.png" />
-                    </Grid>
+                </Grid>
             </StackPanel>
 
             <StackPanel Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverterInverted}}">

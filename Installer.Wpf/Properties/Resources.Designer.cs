@@ -70,11 +70,22 @@ namespace Intaller.Wpf.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hey, if you destroy your phone, it&apos;s your fault, not mine!
+        ///   Looks up a localized string similar to Disclaimer Notice and Terms of Use.
+        /// </summary>
+        internal static string TermsOfUseTitle {
+            get {
+                return ResourceManager.GetString("TermsOfUseTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This tool comes with no warranty. 
+        ///The authors can&apos;t be hold responsible for any damage it may cause to your device.    
         ///
-        ///Keep in mind that this is for Lumia 950 XL **ONLY** and that you need it unlocked and into Mass Storage Mode. 
-        ///
-        ///You&apos;ve been warned :P.
+        ///This tool intended for usage with Lumia 950 XL **ONLY**.
+        ///    
+        ///By accepting this warning notice, you accept the aforementioned risks.
+        ///.
         /// </summary>
         internal static string WarningNotice {
             get {

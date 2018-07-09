@@ -31,7 +31,7 @@ namespace Intaller.Wpf
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
         private string driverPackageLocation;
         private string message;
-        private ObservableAsPropertyHelper<bool> hasMessageHelper;
+        private readonly ObservableAsPropertyHelper<bool> hasMessageHelper;
 
         public MainViewModel(IObservable<LogEvent> logEvents, ISetup setup, IOpenFileService openFileService, IDialogCoordinator dlgCoord)
         {
@@ -43,7 +43,7 @@ namespace Intaller.Wpf
 
             var canDeploy = this.WhenAnyValue(x => x.WimPath, x => x.WimIndex, (p, i) => !string.IsNullOrEmpty(p) && i >= 1);
 
-            ShowWarningCommand = ReactiveCommand.CreateFromTask(() => dlgCoord.ShowMessageAsync(this, "Warning", Resources.WarningNotice));
+            ShowWarningCommand = ReactiveCommand.CreateFromTask(() => dlgCoord.ShowMessageAsync(this, Resources.TermsOfUseTitle, Resources.WarningNotice));
 
             SetupPickWimCommand(openFileService);
 
@@ -53,7 +53,11 @@ namespace Intaller.Wpf
 
             ImportDriverPackageWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InstallDriverPackage), dlgCoord);
             
-            var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting, WindowsInstallWrapper.Command.IsExecuting, InjectDriversWrapper.Command.IsExecuting);
+            var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting, 
+                WindowsInstallWrapper.Command.IsExecuting, 
+                InjectDriversWrapper.Command.IsExecuting, 
+                ImportDriverPackageWrapper.Command.IsExecuting);
+
             var dualBootIsBusyObs = DualBootViewModel.IsBusyObs;
 
             isBusyHelper = Observable.Merge(isBusyObs, dualBootIsBusyObs)
