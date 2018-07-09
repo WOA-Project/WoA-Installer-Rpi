@@ -25,7 +25,12 @@ namespace Installer.Core
             Log.Verbose("Getting {Label} volume", label);
 
             var volumes = await Disk.GetVolumes();
-            var volume = volumes.Single(v => string.Equals(v.Label, label, StringComparison.InvariantCultureIgnoreCase));
+            var volume = volumes.SingleOrDefault(v => string.Equals(v.Label, label, StringComparison.InvariantCultureIgnoreCase));
+
+            if (volume == null)
+            {
+                return null;
+            }
 
             if (volume.Letter != null)
             {

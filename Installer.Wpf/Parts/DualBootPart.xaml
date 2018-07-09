@@ -53,7 +53,7 @@
                 <TextBlock FontSize="18" Margin="20" TextWrapping="Wrap"
                     Visibility="{Binding IsCapable, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
                     IsHitTestVisible="False">
-                    <Bold>Dual Boot</Bold> cannot be enabled in this phone. Please, check that Windows 10 Phone (the original OS) and Windows 10 ARM64 are both present.
+                    <Bold>Dual Boot</Bold> cannot be enabled in this phone. Please, check that Windows 10 Phone (the original OS) and Windows 10 ARM64 are both present. Also, check that Windows 10 ARM Setup has been completed.
                 </TextBlock>
 
             </StackPanel>
