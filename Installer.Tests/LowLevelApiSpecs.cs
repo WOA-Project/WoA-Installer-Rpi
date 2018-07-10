@@ -3,7 +3,9 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Installer.Core;
+using Installer.Core.FileSystem;
 using Installer.Core.FullFx;
+using Installer.Core.Services;
 using Serilog;
 using Xunit;
 
@@ -53,7 +55,7 @@ namespace Application.Tests
         public async Task DeployWindows()
         {
             var api = new LowLevelApi();
-            var deployer = new WindowsDeployer(new LowLevelApi(), new DismImageService(), new Phone(await api.GetPhoneDisk()));
+            var deployer = new WindowsDeployer(new DismImageService(), new Phone(await api.GetPhoneDisk()));
             await deployer.Deploy(@"F:\sources\install.wim");
         }
 

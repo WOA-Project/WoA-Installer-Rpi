@@ -123,13 +123,11 @@ You can now reboot your phone and choose "Windows 10" to start the Windows 10 AR
 Enjoy!</value>
   </data>
   <data name="WarningNotice" xml:space="preserve">
-    <value>This tool comes with no warranty. 
-The authors can't be hold responsible for any damage it may cause to your device.    
-
-This tool intended for usage with Lumia 950 XL **ONLY**.
+    <value>- This tool comes with no warranty. 
+- The authors can't be hold responsible for any damage it may cause to your device.    
+- This tool intended for usage with Lumia 950 XL **ONLY**.
     
-By accepting this warning notice, you accept the aforementioned risks.
-</value>
+By clicking "OK" you accept the aforementioned risks.</value>
   </data>
   <data name="DriversInjectedSucessfully" xml:space="preserve">
     <value>The drivers have been injected correctly</value>

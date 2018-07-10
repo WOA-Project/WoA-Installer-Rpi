@@ -7,7 +7,11 @@ using System.Reactive.Subjects;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Installer.Core.Wim;
+using Installer.Core.Exceptions;
+using Installer.Core.FileSystem;
+using Installer.Core.Services;
+using Installer.Core.Services.Wim;
+using Installer.Core.Utils;
 using Serilog;
 
 namespace Installer.Core.FullFx
@@ -33,7 +37,7 @@ namespace Installer.Core.FullFx
             var dismName = "DISM";
             var args = $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}";
             Log.Verbose("We are about to run DISM: {ExecName} {Parameters}", dismName, args);
-            var resultCode = await CmdUtils.RunProcessAsync(dismName, args, outputObserver: outputSubject);
+            var resultCode = await ProcessUtils.RunProcessAsync(dismName, args, outputObserver: outputSubject);
             if (resultCode != 0)
             {
                 throw new DeploymentException($"There has been a problem during deployment: DISM exited with code {resultCode}.");
@@ -90,7 +94,7 @@ namespace Installer.Core.FullFx
         {
             var outputSubject = new Subject<string>();
             var subscription = outputSubject.Subscribe(Log.Verbose);
-            var resultCode = await CmdUtils.RunProcessAsync("DISM", $@"/Add-Driver /Image:{volume.RootDir.Name} /Driver:""{path}"" /Recurse /ForceUnsigned", outputSubject, outputSubject);
+            var resultCode = await ProcessUtils.RunProcessAsync("DISM", $@"/Add-Driver /Image:{volume.RootDir.Name} /Driver:""{path}"" /Recurse /ForceUnsigned", outputSubject, outputSubject);
             subscription.Dispose();
             
             if (resultCode != 0)

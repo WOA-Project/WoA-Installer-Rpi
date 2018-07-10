@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Installer.Core.FileSystem;
+using Installer.Core.Services;
 using Registry;
 using Serilog;
 

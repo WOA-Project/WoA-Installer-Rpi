@@ -9,7 +9,8 @@ using CinchExtended.Services.Implementation;
 using CinchExtended.Services.Interfaces;
 using DynamicData;
 using Installer.Core;
-using Installer.Core.Wim;
+using Installer.Core.Services;
+using Installer.Core.Services.Wim;
 using Intaller.Wpf.Properties;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
@@ -27,17 +28,19 @@ namespace Intaller.Wpf
         private readonly ISubject<double> progressSubject = new BehaviorSubject<double>(double.NaN);
         private readonly ObservableAsPropertyHelper<RenderedLogEvent> statusHelper;
         private readonly IDisposable logLoader;
-        private readonly ISetup setup;
+        private readonly IDeployer deployer;
+        private readonly IDriverPackageImporter packageImporter;
         private readonly IOpenFileService openFileService;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
         private WimViewModel wim;
         private readonly ObservableAsPropertyHelper<bool> hasWimHelper;
 
-        public MainViewModel(IObservable<LogEvent> logEvents, ISetup setup, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService)
+        public MainViewModel(IObservable<LogEvent> logEvents, IDeployer deployer, IDriverPackageImporter packageImporter, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService)
         {
             DualBootViewModel = new DualBootViewModel(dlgCoord);
 
-            this.setup = setup;
+            this.deployer = deployer;
+            this.packageImporter = packageImporter;
             this.openFileService = openFileService;
             this.dlgCoord = dlgCoord;
             this.visualizerService = visualizerService;
@@ -115,13 +118,13 @@ namespace Intaller.Wpf
             var fileName = openFileService.FileName;
             Settings.Default.DriverPackFolder = Path.GetDirectoryName(fileName);
 
-            var message = await setup.GetDriverPackageReadmeText(fileName);
+            var message = await packageImporter.GetReadmeText(fileName);
             if (!string.IsNullOrEmpty(message))
             {
                 visualizerService.Show("TextViewer", new MessageViewModel("Changelog", message), (_, __) => { }, OwnerOption.MainWindow);
             }
             
-            await setup.InstallDriverPackage(fileName, progressSubject);
+            await packageImporter.ImportDriverPackage(fileName, FileSystemPaths.DriversPath, progressSubject);
         }
 
         public CommandWrapper<Unit, Unit> ImportDriverPackageWrapper { get; }
@@ -185,10 +188,10 @@ namespace Intaller.Wpf
             var installOptions = new InstallOptions
             {
                 ImagePath = Wim.Path,
-                ImageIndex = Wim.SelectedImage.Index,
+                ImageIndex = Wim.SelectedDiskImage.Index,
             };
 
-            await setup.DeployUefiAndWindows(installOptions, progressSubject);
+            await deployer.DeployUefiAndWindows(installOptions, progressSubject);
             await dlgCoord.ShowMessageAsync(this, "Finished", Resources.WindowsDeployedSuccessfully);
         }
 
@@ -197,10 +200,10 @@ namespace Intaller.Wpf
             var installOptions = new InstallOptions
             {
                 ImagePath = Wim.Path,
-                ImageIndex = Wim.SelectedImage.Index,
+                ImageIndex = Wim.SelectedDiskImage.Index,
             };
 
-            await setup.DeployWindows(installOptions, progressSubject);
+            await deployer.DeployWindows(installOptions, progressSubject);
             await dlgCoord.ShowMessageAsync(this, "Finished", Resources.WindowsDeployedSuccessfully);
         }
 
@@ -208,7 +211,7 @@ namespace Intaller.Wpf
         {
             try
             {
-                await setup.InjectPostOobeDrivers();
+                await deployer.InjectPostOobeDrivers();
             }
             catch (DirectoryNotFoundException e)
             {
@@ -240,6 +243,8 @@ namespace Intaller.Wpf
             statusHelper?.Dispose();
             logLoader?.Dispose();
             isProgressVisibleHelper?.Dispose();
+            hasWimHelper?.Dispose();
+            ShowWarningCommand?.Dispose();
             PickWimFile?.Dispose();
         }
     }

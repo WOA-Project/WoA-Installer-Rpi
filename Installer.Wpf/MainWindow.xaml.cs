@@ -2,6 +2,7 @@
 using CinchExtended.Services.Implementation;
 using Installer.Core;
 using Installer.Core.FullFx;
+using Installer.Core.Services;
 using MahApps.Metro.Controls.Dialogs;
 using Serilog;
 using Serilog.Events;
@@ -25,7 +26,8 @@ namespace Intaller.Wpf
             var visualizerService = new ExtendedWpfUIVisualizerService();
             visualizerService.Register("TextViewer", typeof(TextViewerWindow));
 
-            DataContext = new MainViewModel(events, new Setup(new LowLevelApi(), new DismImageService(), new DriverPackageImporter()),  new WpfOpenFileService(), DialogCoordinator.Instance, visualizerService);
+            var deployer = new Deployer(new LowLevelApi(), new DismImageService());
+            DataContext = new MainViewModel(events, deployer, new DriverPackageImporter(), new WpfOpenFileService(), DialogCoordinator.Instance, visualizerService);
         }
     }
 }

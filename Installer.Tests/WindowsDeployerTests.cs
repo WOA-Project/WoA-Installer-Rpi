@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Installer.Core;
 using Installer.Core.FullFx;
+using Installer.Core.Services;
 using Xunit;
 
 namespace Application.Tests
@@ -12,7 +13,7 @@ namespace Application.Tests
         public async Task MakeBootable()
         {
             var lowLevelApi = new LowLevelApi();
-            var sut = new WindowsDeployer(lowLevelApi, new DismImageService(), new Phone(await lowLevelApi.GetPhoneDisk()));
+            var sut = new WindowsDeployer(new DismImageService(), new Phone(await lowLevelApi.GetPhoneDisk()));
 
             var lowlevel = lowLevelApi;
             var volumes = await lowlevel.GetVolumes(await lowlevel.GetPhoneDisk());

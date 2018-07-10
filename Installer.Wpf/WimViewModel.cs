@@ -1,34 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Installer.Core.Wim;
+using Installer.Core.Services.Wim;
 using ReactiveUI;
 
 namespace Intaller.Wpf
 {
     public class WimViewModel : ReactiveObject
     {
-        private WindowsImageMetadataReader.ImageMetadata selectedImage;
+        private DiskImageMetadata selectedDiskImage;
 
-        public WimViewModel(WindowsImageMetadataReader.WindowsImageInfo windowsImageInfo, string path)
+        public WimViewModel(WindowsImageMetadata windowsImageMetadata, string path)
         {
-            WindowsImageInfo = windowsImageInfo;
+            WindowsImageMetadata = windowsImageMetadata;
             Path = path;
-            SelectedImageObs = this.WhenAnyValue(x => x.SelectedImage);
-            SelectedImage = Images.First();
+            SelectedImageObs = this.WhenAnyValue(x => x.SelectedDiskImage);
+            SelectedDiskImage = Images.First();
         }
 
-        private WindowsImageMetadataReader.WindowsImageInfo WindowsImageInfo { get; }
+        private WindowsImageMetadata WindowsImageMetadata { get; }
         public string Path { get; }
 
-        public IObservable<WindowsImageMetadataReader.ImageMetadata> SelectedImageObs { get; }
+        public IObservable<DiskImageMetadata> SelectedImageObs { get; }
 
-        public ICollection<WindowsImageMetadataReader.ImageMetadata> Images => WindowsImageInfo.Images;
+        public ICollection<DiskImageMetadata> Images => WindowsImageMetadata.Images;
 
-        public WindowsImageMetadataReader.ImageMetadata SelectedImage
+        public DiskImageMetadata SelectedDiskImage
         {
-            get => selectedImage;
-            set => this.RaiseAndSetIfChanged(ref selectedImage, value);
+            get => selectedDiskImage;
+            set => this.RaiseAndSetIfChanged(ref selectedDiskImage, value);
         }
     }
 }
