@@ -25,6 +25,7 @@ namespace Intaller.Wpf
         private async Task HandleException(Exception e)
         {
             Log.Error(e, "An error has ocurred");
+            Log.Information($"Error: {e.Message}");
             await dialogCoordinator.ShowMessageAsync(parent, "Error", $"{e.Message}");   
         }
 

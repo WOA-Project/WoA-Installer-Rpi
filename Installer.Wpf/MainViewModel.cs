@@ -100,8 +100,6 @@ namespace Intaller.Wpf
 
         public bool HasWim => hasWimHelper.Value;
 
-        public ReactiveCommand<Unit, string> ClearMessageCommand { get; set; }
-
         private async Task InstallDriverPackage()
         {
             openFileService.Filter = "7-Zip files|*.7z";
@@ -118,7 +116,10 @@ namespace Intaller.Wpf
             Settings.Default.DriverPackFolder = Path.GetDirectoryName(fileName);
 
             var message = await setup.GetDriverPackageReadmeText(fileName);
-            visualizerService.Show("TextViewer", new MessageViewModel("Changelog", message), (_, __) => { }, OwnerOption.MainWindow);
+            if (!string.IsNullOrEmpty(message))
+            {
+                visualizerService.Show("TextViewer", new MessageViewModel("Changelog", message), (_, __) => { }, OwnerOption.MainWindow);
+            }
             
             await setup.InstallDriverPackage(fileName, progressSubject);
         }

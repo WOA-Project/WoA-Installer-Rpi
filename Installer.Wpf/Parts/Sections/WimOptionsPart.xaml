@@ -23,7 +23,7 @@
             </Grid>
 
             <StackPanel IsEnabled="{Binding HasWim}" Orientation="Horizontal" ToolTip="This is the index of the image you want to deploy (WIM images can contain more than one edition like 'Pro' or 'Home'). If you don't know what this means, leave it with the default value of 1.">
-                <TextBlock  VerticalAlignment="Center" Text="Edition" Margin="10,0,12,0" TextAlignment="Center"/>
+                <TextBlock  VerticalAlignment="Center" Text="Image" Margin="10,0,12,0" TextAlignment="Center"/>
                 <ComboBox MinWidth="120"  ItemsSource="{Binding Wim.Images}" SelectedItem="{Binding Wim.SelectedImage, Mode=TwoWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -33,7 +33,14 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock FontWeight="Bold" Text="{Binding Index}"/>
-                                <TextBlock Margin="4,0,0,0" Grid.Column="1" Text="{Binding DisplayName}"/>
+                                <TextBlock Margin="4,0,0,0" Grid.Column="1">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} build {1}">
+                                            <Binding Path="DisplayName" />
+                                            <Binding Path="Build" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </Grid>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
