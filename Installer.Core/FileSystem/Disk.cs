@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ByteSizeLib;
 
 namespace Installer.Core.FileSystem
 {
@@ -8,10 +9,10 @@ namespace Installer.Core.FileSystem
     {
         public ILowLevelApi LowLevelApi { get; }
         public uint Number { get; }
-        public ulong Size { get; }
-        public ulong AllocatedSize { get; }
+        public ByteSize Size { get; }
+        public ByteSize AllocatedSize { get; }
 
-        public Disk(ILowLevelApi lowLevelApi, uint number, ulong size, ulong allocatedSize)
+        public Disk(ILowLevelApi lowLevelApi, uint number, ByteSize size, ByteSize allocatedSize)
         {
             LowLevelApi = lowLevelApi;
             Number = number;
@@ -44,6 +45,11 @@ namespace Installer.Core.FileSystem
         {
             var parts = await LowLevelApi.GetPartitions(this);
             return parts.FirstOrDefault(x => Equals(x.PartitionType, PartitionType.Reserved));
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Number)}: {Number}, {nameof(Size)}: {Size}, {nameof(AllocatedSize)}: {AllocatedSize}";
         }
     }
 }

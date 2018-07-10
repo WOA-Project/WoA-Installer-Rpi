@@ -15,6 +15,14 @@ namespace Application.Tests
     public class LowLevelApiSpecs
     {
         [Fact]
+        public async Task GetDisks()
+        {
+            var sut = new LowLevelApi();
+            var disk = await sut.GetDisks();
+            Assert.NotNull(disk);
+        }
+
+        [Fact]
         public async Task GetPhoneDisk()
         {
             var sut = new LowLevelApi();

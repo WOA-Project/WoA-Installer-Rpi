@@ -5,6 +5,7 @@ using System.Linq;
 using System.Management.Automation;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using ByteSizeLib;
 using Installer.Core.FileSystem;
 using Registry;
 using Serilog;
@@ -13,6 +14,9 @@ namespace Installer.Core.FullFx
 {
     public class LowLevelApi : ILowLevelApi
     {
+        private static readonly ByteSize MinimumPhoneDiskSize = ByteSize.FromGigaBytes(28);
+        private static readonly ByteSize MaximumPhoneDiskSize = ByteSize.FromGigaBytes(34);
+        private const string MainOsLabel = "MainOS";
         private readonly PowerShell ps;
 
         public LowLevelApi()
@@ -22,15 +26,45 @@ namespace Installer.Core.FullFx
             ps.Invoke();
         }
 
-        public async Task<Disk> GetPhoneDisk()
+        public async Task<ICollection<Disk>> GetDisks()
         {
             ps.Commands.Clear();
-            ps.AddCommand("GetPhoneDisk");
+            var cmd = $@"Get-Disk";
+            ps.AddScript(cmd);
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
-            var disk = results.First().ImmediateBaseObject;
+            
+            var disks = results
+                .Select(x => x.ImmediateBaseObject)
+                .Select(x => ToDisk(this, x));
 
-            return ToDisk(this, disk);
+            return disks.ToList();
+        }
+
+        public async Task<Disk> GetPhoneDisk()
+        {
+            var disks = await GetDisks();
+            foreach (var disk in disks)
+            {
+                if (HasCorrectSize(disk))
+                {
+                    var volumes = await disk.GetVolumes();
+                    var mainOs = volumes.FirstOrDefault(x => x.Label == MainOsLabel);
+                    if (mainOs != null)
+                    {
+                        return disk;
+                    }
+                }                
+            }
+
+            throw new PhoneDiskNotFoundException("Cannot get the Phone Disk. Please, verify that the Phone is in Mass Storage Mode.");
+        }
+
+        private static bool HasCorrectSize(Disk disk)
+        {
+            var moreThanMinimum = disk.Size > MinimumPhoneDiskSize;
+            var lessThanMaximum = disk.Size < MaximumPhoneDiskSize;
+            return moreThanMinimum && lessThanMaximum;
         }
 
         public async Task<IList<Volume>> GetVolumes(Disk disk)
@@ -70,8 +104,8 @@ namespace Installer.Core.FullFx
         private static Disk ToDisk(ILowLevelApi lowLevelApi, object disk)
         {
             var number = (uint)disk.GetPropertyValue("Number");
-            var size = (ulong)disk.GetPropertyValue("Size");
-            var allocatedSize = (ulong)disk.GetPropertyValue("AllocatedSize");
+            var size = new ByteSize((ulong)disk.GetPropertyValue("Size"));
+            var allocatedSize = new ByteSize((ulong)disk.GetPropertyValue("AllocatedSize"));
 
             return new Disk(lowLevelApi, number, size, allocatedSize);
         }

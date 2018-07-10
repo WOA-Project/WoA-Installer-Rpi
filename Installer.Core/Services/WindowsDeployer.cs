@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ByteSizeLib;
 using Installer.Core.FileSystem;
 using Installer.Core.Utils;
 using Serilog;
@@ -10,9 +11,9 @@ namespace Installer.Core.Services
 {
     public class WindowsDeployer : IWindowsDeployer
     {
-        private const ulong SpaceNeededForWindows = 19 * (ulong) 1_000_000_000;
-        private const int ReservedPartitionSize = 200 * 1_000_000;
-        private const int BootPartitionSize = 100 * 1_000_000;
+        private static readonly ByteSize SpaceNeededForWindows = ByteSize.FromGigaBytes(19);
+        private static readonly ByteSize ReservedPartitionSize = ByteSize.FromMegaBytes(200);
+        private static readonly ByteSize BootPartitionSize = ByteSize.FromMegaBytes(100);
         private const string BootPartitionLabel = "BOOT";
         private const string WindowsPartitonLabel = "WindowsARM";
         private const string BcdBootPath = @"c:\Windows\SysNative\bcdboot.exe";
@@ -80,9 +81,9 @@ namespace Installer.Core.Services
         {
             Log.Information("Creating Windows partitions...");
 
-            await phone.Disk.CreateReservedPartition(ReservedPartitionSize);
+            await phone.Disk.CreateReservedPartition((ulong) ReservedPartitionSize.Bytes);
 
-            var bootPartition = await phone.Disk.CreatePartition(BootPartitionSize);
+            var bootPartition = await phone.Disk.CreatePartition((ulong) BootPartitionSize.Bytes);
             var bootVolume = await bootPartition.GetVolume();
             await bootVolume.Mount();
             await bootVolume.Format(FileSystemFormat.Fat32, BootPartitionLabel);
@@ -117,8 +118,8 @@ namespace Installer.Core.Services
             var dataVolume = await phone.GetDataVolume();
 
             Log.Warning("We will try to resize the Data partition to get the required space...");
-            var finalSize = dataVolume.Size - SpaceNeededForWindows;
-            await dataVolume.Partition.Resize(finalSize);
+            var finalSize = dataVolume.Size - SpaceNeededForWindows.Bytes;
+            await dataVolume.Partition.Resize((ulong) finalSize);
         }
 
         public async Task InjectPostOobeDrivers()
