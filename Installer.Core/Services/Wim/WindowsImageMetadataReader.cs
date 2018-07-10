@@ -13,7 +13,11 @@ namespace Installer.Core.Services.Wim
 
         public WindowsImageMetadata Load(Stream stream)
         {
+            Log.Verbose("Getting WIM stream");
+
             var metadata = (WimMetadata) Serializer.Deserialize(GetWimMetadataStream(stream));
+
+            Log.Verbose("Wim metadata deserialized correctly");
 
             return new WindowsImageMetadata
             {

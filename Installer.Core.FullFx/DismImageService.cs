@@ -48,10 +48,14 @@ namespace Installer.Core.FullFx
 
         private static void EnsureValidImage(string imagePath, int imageIndex)
         {
+            Log.Verbose("Checking image at {Path}, with index {Index}", imagePath, imagePath);
+
             if (!File.Exists(imagePath))
             {
                 throw new FileNotFoundException($"Image not found: {imagePath}. Please, verify that the file exists and it's accessible.");
             }
+
+            Log.Verbose("Image file at '{ImagePath}' exists", imagePath);
 
             using (var stream = File.OpenRead(imagePath))
             {

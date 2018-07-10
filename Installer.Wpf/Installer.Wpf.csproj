@@ -106,7 +106,7 @@
     <Compile Include="TextViewerWindow.xaml.cs">
       <DependentUpon>TextViewerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WimViewModel.cs" />
+    <Compile Include="WimMetadataViewModel.cs" />
     <None Include="..\Installer.Core.FullFx\Functions.ps1">
       <Link>Functions.ps1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

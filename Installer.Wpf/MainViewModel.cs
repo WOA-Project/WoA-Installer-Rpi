@@ -14,6 +14,7 @@ using Installer.Core.Services.Wim;
 using Intaller.Wpf.Properties;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
+using Serilog;
 using Serilog.Events;
 
 namespace Intaller.Wpf
@@ -32,7 +33,7 @@ namespace Intaller.Wpf
         private readonly IDriverPackageImporter packageImporter;
         private readonly IOpenFileService openFileService;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
-        private WimViewModel wim;
+        private WimMetadataViewModel wimMetadata;
         private readonly ObservableAsPropertyHelper<bool> hasWimHelper;
 
         public MainViewModel(IObservable<LogEvent> logEvents, IDeployer deployer, IDriverPackageImporter packageImporter, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService)
@@ -49,7 +50,7 @@ namespace Intaller.Wpf
 
             SetupPickWimCommand();
 
-            var canDeploy = this.WhenAnyObservable(x => x.Wim.SelectedImageObs)
+            var canDeploy = this.WhenAnyObservable(x => x.WimMetadata.SelectedImageObs)
                 .Select(metadata => metadata != null);
 
             FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), dlgCoord);
@@ -98,7 +99,7 @@ namespace Intaller.Wpf
                 .DisposeMany()
                 .Subscribe();
 
-            hasWimHelper = this.WhenAnyValue(model => model.Wim, (WimViewModel x) => x != null).ToProperty(this, x => x.HasWim);
+            hasWimHelper = this.WhenAnyValue(model => model.WimMetadata, (WimMetadataViewModel x) => x != null).ToProperty(this, x => x.HasWim);
         }
 
         public bool HasWim => hasWimHelper.Value;
@@ -146,38 +147,50 @@ namespace Intaller.Wpf
                 openFileService.InitialDirectory = Settings.Default.WimFolder;
 
                 var showDialog = openFileService.ShowDialog(null);
+
                 if (showDialog != true)
                 {
                     return null;
                 }
 
                 var fileName = openFileService.FileName;
-                Settings.Default.WimFolder = Path.GetDirectoryName(fileName);
-                return fileName;
+                Log.Verbose("A WIM file has been selected: {FileName}", fileName);
 
+
+                var defaultWimFolder = Path.GetDirectoryName(fileName);
+                Settings.Default.WimFolder = defaultWimFolder;
+                Log.Verbose("Default directory for WimFolder has been set to {}", defaultWimFolder);
+                
+                return fileName;
             });
 
             PickWimFile
                 .Where(s => !string.IsNullOrEmpty(s))
                 .Subscribe(path =>
                 {
-                    Wim = LoadWim(path);
+                    WimMetadata = LoadWimMetadata(path);
                 });
         }
 
-        public WimViewModel Wim
+        public WimMetadataViewModel WimMetadata
         {
-            get => wim;
-            set => this.RaiseAndSetIfChanged(ref wim, value);
+            get => wimMetadata;
+            set => this.RaiseAndSetIfChanged(ref wimMetadata, value);
         }
     
-        private static WimViewModel LoadWim(string path)
+        private static WimMetadataViewModel LoadWimMetadata(string path)
         {
+            Log.Verbose("Trying to load WIM metadata file at '{ImagePath}'", path);
+
             using (var file = File.OpenRead(path))
             {
                 var imageReader = new WindowsImageMetadataReader();
                 var windowsImageInfo = imageReader.Load(file);
-                return new WimViewModel(windowsImageInfo, path);
+                var vm = new WimMetadataViewModel(windowsImageInfo, path);
+
+                Log.Verbose("WIM metadata file at '{ImagePath}' retrieved correctly", path);
+
+                return vm;
             }
         }
 
@@ -187,8 +200,8 @@ namespace Intaller.Wpf
         {
             var installOptions = new InstallOptions
             {
-                ImagePath = Wim.Path,
-                ImageIndex = Wim.SelectedDiskImage.Index,
+                ImagePath = WimMetadata.Path,
+                ImageIndex = WimMetadata.SelectedDiskImage.Index,
             };
 
             await deployer.DeployUefiAndWindows(installOptions, progressSubject);
@@ -199,8 +212,8 @@ namespace Intaller.Wpf
         {
             var installOptions = new InstallOptions
             {
-                ImagePath = Wim.Path,
-                ImageIndex = Wim.SelectedDiskImage.Index,
+                ImagePath = WimMetadata.Path,
+                ImageIndex = WimMetadata.SelectedDiskImage.Index,
             };
 
             await deployer.DeployWindows(installOptions, progressSubject);

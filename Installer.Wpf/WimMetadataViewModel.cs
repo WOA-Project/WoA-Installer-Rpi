@@ -6,11 +6,11 @@ using ReactiveUI;
 
 namespace Intaller.Wpf
 {
-    public class WimViewModel : ReactiveObject
+    public class WimMetadataViewModel : ReactiveObject
     {
         private DiskImageMetadata selectedDiskImage;
 
-        public WimViewModel(WindowsImageMetadata windowsImageMetadata, string path)
+        public WimMetadataViewModel(WindowsImageMetadata windowsImageMetadata, string path)
         {
             WindowsImageMetadata = windowsImageMetadata;
             Path = path;
