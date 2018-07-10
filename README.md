@@ -8,6 +8,9 @@ This is a GUI tool to install Windows On ARM for Lumia 950 XL
 - A Windows 10 ARM64 Image (.wim)
 - A USB-C cable
 
+If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjmn
+) Thanks in advance!!
+
 # Acknowledgements
 - [Eric Zimmerman](https://github.com/EricZimmerman) for [Registry project](https://github.com/EricZimmerman/Registry)
 - Gustave M. (retrieving metada from Windows Images)
