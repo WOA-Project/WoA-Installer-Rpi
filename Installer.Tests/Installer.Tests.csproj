@@ -85,6 +85,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WimImageMetadataReaderSpecs.cs" />
     <Compile Include="DismImageServiceSpecs.cs" />
     <Compile Include="LowLevelApiSpecs.cs" />
     <Compile Include="PhoneSpecs.cs" />
@@ -110,6 +111,11 @@
       <Project>{15D1B19B-6F1B-47AD-BE7B-F9BCA447CBC0}</Project>
       <Name>Installer.Core.FullFx</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

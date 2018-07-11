@@ -1,9 +1,11 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CinchExtended.Services.Implementation;
 using CinchExtended.Services.Interfaces;
@@ -58,10 +60,10 @@ namespace Intaller.Wpf
             InjectDriversWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InjectPostOobeDrivers), dlgCoord);
 
             ImportDriverPackageWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InstallDriverPackage), dlgCoord);
-            
-            var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting, 
-                WindowsInstallWrapper.Command.IsExecuting, 
-                InjectDriversWrapper.Command.IsExecuting, 
+
+            var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting,
+                WindowsInstallWrapper.Command.IsExecuting,
+                InjectDriversWrapper.Command.IsExecuting,
                 ImportDriverPackageWrapper.Command.IsExecuting);
 
             var dualBootIsBusyObs = DualBootViewModel.IsBusyObs;
@@ -124,7 +126,7 @@ namespace Intaller.Wpf
             {
                 visualizerService.Show("TextViewer", new MessageViewModel("Changelog", message), (_, __) => { }, OwnerOption.MainWindow);
             }
-            
+
             await packageImporter.ImportDriverPackage(fileName, FileSystemPaths.DriversPath, progressSubject);
         }
 
@@ -140,44 +142,52 @@ namespace Intaller.Wpf
 
         private void SetupPickWimCommand()
         {
-            PickWimFile = ReactiveCommand.Create(() =>
+            PickWimFileCommand = ReactiveCommand.CreateFromObservable(() => PickWimFileObs);
+
+
+            PickWimFileCommand.ThrownExceptions.Subscribe(e =>
             {
-                openFileService.Filter = "WIM files|*.wim";
-                openFileService.FileName = "";
-                openFileService.InitialDirectory = Settings.Default.WimFolder;
-
-                var showDialog = openFileService.ShowDialog(null);
-
-                if (showDialog != true)
-                {
-                    return null;
-                }
-
-                var fileName = openFileService.FileName;
-                Log.Verbose("A WIM file has been selected: {FileName}", fileName);
-
-
-                var defaultWimFolder = Path.GetDirectoryName(fileName);
-                Settings.Default.WimFolder = defaultWimFolder;
-                Log.Verbose("Default directory for WimFolder has been set to {}", defaultWimFolder);
-                
-                return fileName;
+                Log.Error(e, "WIM file error");
+                dlgCoord.ShowMessageAsync(this, "Invalid WIM file", e.Message);
             });
 
-            PickWimFile
-                .Where(s => !string.IsNullOrEmpty(s))
-                .Subscribe(path =>
-                {
-                    WimMetadata = LoadWimMetadata(path);
-                });
+            PickWimFileCommand
+                .Subscribe(wim => { WimMetadata = wim; });
         }
+
+        private string PickFile()
+        {
+            openFileService.Filter = "WIM files|*.wim";
+            openFileService.FileName = "";
+            openFileService.InitialDirectory = Settings.Default.WimFolder;
+
+            var showDialog = openFileService.ShowDialog(null);
+
+            if (showDialog != true)
+            {
+                return null;
+            }
+
+            var fileName = openFileService.FileName;
+            Log.Verbose("A WIM file has been selected: {FileName}", fileName);
+
+
+            var defaultWimFolder = Path.GetDirectoryName(fileName);
+            Settings.Default.WimFolder = defaultWimFolder;
+            Log.Verbose("Default directory for WimFolder has been set to {Folder}", defaultWimFolder);
+
+            return fileName;
+        }
+
+        private IObservable<WimMetadataViewModel> PickWimFileObs =>
+            Observable.Return(PickFile()).Where(x => !string.IsNullOrEmpty(x)).Select(LoadWimMetadata);
 
         public WimMetadataViewModel WimMetadata
         {
             get => wimMetadata;
             set => this.RaiseAndSetIfChanged(ref wimMetadata, value);
         }
-    
+
         private static WimMetadataViewModel LoadWimMetadata(string path)
         {
             Log.Verbose("Trying to load WIM metadata file at '{ImagePath}'", path);
@@ -186,6 +196,11 @@ namespace Intaller.Wpf
             {
                 var imageReader = new WindowsImageMetadataReader();
                 var windowsImageInfo = imageReader.Load(file);
+                if (windowsImageInfo.Images.All(x => x.Architecture != Architecture.Arm64))
+                {
+                    throw new InvalidWimFileException("The selected .WIM file doesn't contain any image with the ARM64 architecture. Please, select a .wim file that targets the ARM64 architecture.");
+                }
+
                 var vm = new WimMetadataViewModel(windowsImageInfo, path);
 
                 Log.Verbose("WIM metadata file at '{ImagePath}' retrieved correctly", path);
@@ -194,7 +209,7 @@ namespace Intaller.Wpf
             }
         }
 
-        public ReactiveCommand<Unit, string> PickWimFile { get; set; }
+        public ReactiveCommand<Unit, WimMetadataViewModel> PickWimFileCommand { get; set; }
 
         private async Task DeployUefiAndWindows()
         {
@@ -258,7 +273,7 @@ namespace Intaller.Wpf
             isProgressVisibleHelper?.Dispose();
             hasWimHelper?.Dispose();
             ShowWarningCommand?.Dispose();
-            PickWimFile?.Dispose();
+            PickWimFileCommand?.Dispose();
         }
     }
 }

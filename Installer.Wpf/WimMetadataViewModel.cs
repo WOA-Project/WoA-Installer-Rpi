@@ -10,7 +10,7 @@ namespace Intaller.Wpf
     {
         private DiskImageMetadata selectedDiskImage;
 
-        public WimMetadataViewModel(WindowsImageMetadata windowsImageMetadata, string path)
+        public WimMetadataViewModel(XmlWindowsImageMetadata windowsImageMetadata, string path)
         {
             WindowsImageMetadata = windowsImageMetadata;
             Path = path;
@@ -18,7 +18,7 @@ namespace Intaller.Wpf
             SelectedDiskImage = Images.First();
         }
 
-        private WindowsImageMetadata WindowsImageMetadata { get; }
+        private XmlWindowsImageMetadata WindowsImageMetadata { get; }
         public string Path { get; }
 
         public IObservable<DiskImageMetadata> SelectedImageObs { get; }

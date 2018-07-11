@@ -2,7 +2,7 @@
 
 namespace Installer.Core.Services.Wim
 {
-    public class WindowsImageMetadata
+    public class XmlWindowsImageMetadata
     {
         public IList<DiskImageMetadata> Images { get; set; }
     }

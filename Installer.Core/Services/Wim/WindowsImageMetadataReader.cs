@@ -1,65 +1,33 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Xml.Serialization;
 using Serilog;
 
 namespace Installer.Core.Services.Wim
 {
-    public class WindowsImageMetadataReader
+    public class WindowsImageMetadataReader : WindowsImageMetadataReaderBase, IWindowsImageMetadataReader
     {
-        private static XmlSerializer Serializer { get; } = new XmlSerializer(typeof(WimMetadata));
-
-        public WindowsImageMetadata Load(Stream stream)
-        {
-            Log.Verbose("Getting WIM stream");
-
-            var metadata = (WimMetadata) Serializer.Deserialize(GetWimMetadataStream(stream));
-
-            Log.Verbose("Wim metadata deserialized correctly");
-
-            return new WindowsImageMetadata
-            {
-                Images = metadata.Images.Select(x => new DiskImageMetadata
-                {
-                    Architecture = GetArchitecture(x.Windows.Arch),
-                    Build = x.Windows.Version.Build,
-                    DisplayName = x.Name,
-                    Index = int.Parse(x.Index)
-                }).ToList()
-            };
-        }
-
-        private static Architecture GetArchitecture(string str)
-        {
-            if (str == "12")
-            {
-                return Architecture.Arm64;
-            }
-
-            throw new IndexOutOfRangeException($"The architecture '{str}' is unknown");
-        }
-
         private static long ToInt64LittleEndian(byte[] buffer, int offset)
         {
-            return (long) ToUInt64LittleEndian(buffer, offset);
+            return (long)ToUInt64LittleEndian(buffer, offset);
         }
 
         private static uint ToUInt32LittleEndian(byte[] buffer, int offset)
         {
-            return (uint) (((buffer[offset + 3] << 24) & 0xFF000000U) | ((buffer[offset + 2] << 16) & 0x00FF0000U)
-                                                                      | ((buffer[offset + 1] << 8) & 0x0000FF00U) |
-                                                                      ((buffer[offset + 0] << 0) & 0x000000FFU));
+            var a = (buffer[offset + 3] << 24) & 0xFF000000U;
+            var b = (buffer[offset + 2] << 16) & 0x00FF0000U;
+            var c = (buffer[offset + 1] << 8) & 0x0000FF00U;
+            var d = (buffer[offset + 0] << 0) & 0x000000FFU;
+
+            return (uint)(a | b | c | d);
         }
 
 
         private static ulong ToUInt64LittleEndian(byte[] buffer, int offset)
         {
-            return ((ulong) ToUInt32LittleEndian(buffer, offset + 4) << 32) | ToUInt32LittleEndian(buffer, offset + 0);
+            return ((ulong)ToUInt32LittleEndian(buffer, offset + 4) << 32) | ToUInt32LittleEndian(buffer, offset + 0);
         }
-
-
+        
         //
         // https://stackoverflow.com/questions/1471975/best-way-to-find-position-in-the-stream-where-given-byte-sequence-starts
         //
@@ -109,7 +77,7 @@ namespace Installer.Core.Services.Wim
             return i;
         }
 
-        private static MemoryStream GetWimMetadataStream(Stream wim)
+        protected override Stream GetXmlMetadataStream(Stream wim)
         {
             var outputstream = new MemoryStream();
             var wimwriter = new BinaryWriter(outputstream);
@@ -124,7 +92,7 @@ namespace Installer.Core.Services.Wim
 
                     Log.Verbose("(WIM) Finding Magic Bytes...");
 
-                    var start = FindPosition(wimsecstream, bytes);
+                    var start = WindowsImageMetadataReader.FindPosition(wimsecstream, bytes);
 
                     Log.Verbose("(WIM) Found Magic Bytes at " + start);
 
@@ -138,7 +106,7 @@ namespace Installer.Core.Services.Wim
                     wimsecstream.Seek(start + 72, SeekOrigin.Begin);
                     var buffer = new byte[24];
                     wimsecstream.Read(buffer, 0, 24);
-                    var may = ToInt64LittleEndian(buffer, 8);
+                    var may = WindowsImageMetadataReader.ToInt64LittleEndian(buffer, 8);
                     wimsecstream.Seek(start, SeekOrigin.Begin);
 
                     Log.Verbose("(WIM) Found WIM XML Data at " + start + may + 2);
@@ -161,6 +129,6 @@ namespace Installer.Core.Services.Wim
 
             outputstream.Seek(0, SeekOrigin.Begin);
             return outputstream;
-        }       
-    }
+        }
+    }    
 }
