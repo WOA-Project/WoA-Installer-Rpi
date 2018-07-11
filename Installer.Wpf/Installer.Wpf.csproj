@@ -182,8 +182,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Cinch.Extended">
-      <Version>2.1.1.6</Version>
+    <PackageReference Include="Cinch.Reloaded">
+      <Version>1.1.6766.25004</Version>
     </PackageReference>
     <PackageReference Include="DynamicData">
       <Version>6.4.0.2419</Version>

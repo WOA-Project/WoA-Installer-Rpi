@@ -1,5 +1,5 @@
 ﻿using System;
-using CinchExtended.Services.Implementation;
+using Cinch.Reloaded.Services.Implementation;
 using Installer.Core;
 using Installer.Core.FullFx;
 using Installer.Core.Services;
