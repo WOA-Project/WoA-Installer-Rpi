@@ -183,7 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Cinch.Reloaded">
-      <Version>1.1.6766.25004</Version>
+      <Version>1.1.7</Version>
     </PackageReference>
     <PackageReference Include="DynamicData">
       <Version>6.4.0.2419</Version>
