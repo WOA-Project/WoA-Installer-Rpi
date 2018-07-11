@@ -155,7 +155,7 @@ namespace Intaller.Wpf
             });            
         }
 
-        private string PickFile()
+        private string PickWimFile()
         {
             openFileService.Filter = "WIM files|*.wim";
             openFileService.FileName = "";
@@ -180,7 +180,7 @@ namespace Intaller.Wpf
         }
 
         private IObservable<WimMetadataViewModel> PickWimFileObs =>
-            Observable.Return(PickFile()).Where(x => !string.IsNullOrEmpty(x)).Select(LoadWimMetadata);
+            Observable.Return(PickWimFile()).Where(x => !string.IsNullOrEmpty(x)).Select(LoadWimMetadata);
 
         public WimMetadataViewModel WimMetadata => pickWimFileObs.Value;
 
