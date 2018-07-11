@@ -11,6 +11,7 @@ using CinchExtended.Services.Implementation;
 using CinchExtended.Services.Interfaces;
 using DynamicData;
 using Installer.Core;
+using Installer.Core.Exceptions;
 using Installer.Core.Services;
 using Installer.Core.Services.Wim;
 using Intaller.Wpf.Properties;
@@ -35,8 +36,8 @@ namespace Intaller.Wpf
         private readonly IDriverPackageImporter packageImporter;
         private readonly IOpenFileService openFileService;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
-        private WimMetadataViewModel wimMetadata;
         private readonly ObservableAsPropertyHelper<bool> hasWimHelper;
+        private ObservableAsPropertyHelper<WimMetadataViewModel> pickWimFileObs;
 
         public MainViewModel(IObservable<LogEvent> logEvents, IDeployer deployer, IDriverPackageImporter packageImporter, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService)
         {
@@ -144,15 +145,14 @@ namespace Intaller.Wpf
         {
             PickWimFileCommand = ReactiveCommand.CreateFromObservable(() => PickWimFileObs);
 
+            pickWimFileObs = PickWimFileCommand.ToProperty(this, x => x.WimMetadata);
+
 
             PickWimFileCommand.ThrownExceptions.Subscribe(e =>
             {
                 Log.Error(e, "WIM file error");
                 dlgCoord.ShowMessageAsync(this, "Invalid WIM file", e.Message);
-            });
-
-            PickWimFileCommand
-                .Subscribe(wim => { WimMetadata = wim; });
+            });            
         }
 
         private string PickFile()
@@ -182,11 +182,7 @@ namespace Intaller.Wpf
         private IObservable<WimMetadataViewModel> PickWimFileObs =>
             Observable.Return(PickFile()).Where(x => !string.IsNullOrEmpty(x)).Select(LoadWimMetadata);
 
-        public WimMetadataViewModel WimMetadata
-        {
-            get => wimMetadata;
-            set => this.RaiseAndSetIfChanged(ref wimMetadata, value);
-        }
+        public WimMetadataViewModel WimMetadata => pickWimFileObs.Value;
 
         private static WimMetadataViewModel LoadWimMetadata(string path)
         {
@@ -198,7 +194,7 @@ namespace Intaller.Wpf
                 var windowsImageInfo = imageReader.Load(file);
                 if (windowsImageInfo.Images.All(x => x.Architecture != Architecture.Arm64))
                 {
-                    throw new InvalidWimFileException("The selected .WIM file doesn't contain any image with the ARM64 architecture. Please, select a .wim file that targets the ARM64 architecture.");
+                    throw new InvalidWimFileException("The selected .WIM file doesn't contain any image for ARM64. Please, select a .wim file that targets this architecture.");
                 }
 
                 var vm = new WimMetadataViewModel(windowsImageInfo, path);

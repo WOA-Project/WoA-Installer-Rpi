@@ -46,7 +46,7 @@ namespace Installer.Core.FullFx
             var disks = await GetDisks();
             foreach (var disk in disks)
             {
-                if (true)
+                if (HasCorrectSize(disk))
                 {
                     var volumes = await disk.GetVolumes();
                     var mainOs = volumes.FirstOrDefault(x => x.Label == MainOsLabel);

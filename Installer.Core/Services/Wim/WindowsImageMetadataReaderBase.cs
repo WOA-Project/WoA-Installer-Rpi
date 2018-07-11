@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
+using Installer.Core.Exceptions;
 using Serilog;
 
 namespace Installer.Core.Services.Wim
@@ -15,7 +16,15 @@ namespace Installer.Core.Services.Wim
         {
             Log.Verbose("Getting WIM stream");
 
-            var metadata = (WimMetadata)Serializer.Deserialize(GetXmlMetadataStream(stream));
+            WimMetadata metadata;
+            try
+            {
+                metadata = (WimMetadata)Serializer.Deserialize(GetXmlMetadataStream(stream));
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new InvalidWimFileException("Could not read the metadata from the WIM file. Please, check it's a valid .WIM file", e);
+            }
 
             Log.Verbose("Wim metadata deserialized correctly {@Metadata}", metadata);
 
@@ -37,10 +46,10 @@ namespace Installer.Core.Services.Wim
             {
                 case "0":
                     return Architecture.X86;
-                case "12":
-                    return Architecture.Arm64;
                 case "9":
                     return Architecture.X64;
+                case "12":
+                    return Architecture.Arm64;
             }
 
             throw new IndexOutOfRangeException($"The architecture '{str}' is unknown");

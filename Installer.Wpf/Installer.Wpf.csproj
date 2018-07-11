@@ -80,7 +80,6 @@
     <Compile Include="BusyButton.cs" />
     <Compile Include="CommandWrapper.cs" />
     <Compile Include="DualBootViewModel.cs" />
-    <Compile Include="InvalidWimFileException.cs" />
     <Compile Include="MessageViewModel.cs" />
     <Compile Include="Parts\DualBootPart.xaml.cs">
       <DependentUpon>DualBootPart.xaml</DependentUpon>
