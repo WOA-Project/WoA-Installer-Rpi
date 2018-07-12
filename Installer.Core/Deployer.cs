@@ -31,12 +31,17 @@ namespace Installer.Core
             Log.Information("Retrieving information from Phone Disk/partitions...");
 
             await DeployUefi(efiespVolume);
-            var bcdInvoker = new BcdInvoker(efiespVolume.GetBcdFullFilename());
-            new BcdConfigurator(bcdInvoker, efiespVolume).SetupBcd();
-            await AddDeveloperMenu(bcdInvoker, efiespVolume);
+            await AddDeveloperMenu(efiespVolume);
             await new WindowsDeployer(imageService, phone).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
 
             Log.Information("Full installation complete!");
+        }
+
+        private async Task AddDeveloperMenu(Volume efiespVolume)
+        {
+            var bcdInvoker = new BcdInvoker(efiespVolume.GetBcdFullFilename());
+            new BcdConfigurator(bcdInvoker, efiespVolume).SetupBcd();
+            await AddDeveloperMenu(bcdInvoker, efiespVolume);
         }
 
         private void EnsureValidFilesRepository()
