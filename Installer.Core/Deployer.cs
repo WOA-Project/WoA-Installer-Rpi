@@ -93,6 +93,8 @@ namespace Installer.Core
             var guid = FormattingUtils.GetGuid(bcdInvoker.Invoke(@"/create /d ""Developer Menu"" /application BOOTAPP"));
             bcdInvoker.Invoke($@"/set {{{guid}}} path \Windows\System32\BOOT\developermenu.efi");
             bcdInvoker.Invoke($@"/set {{{guid}}} device partition={rootDir}");
+            bcdInvoker.Invoke($@"/set {{{guid}}} testsigning on");
+            bcdInvoker.Invoke($@"/set {{{guid}}} nointegritychecks on");
             bcdInvoker.Invoke($@"/displayorder {{{guid}}} /addlast");
         }
 
