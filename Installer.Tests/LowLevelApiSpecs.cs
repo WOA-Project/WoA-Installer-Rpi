@@ -31,13 +31,6 @@ namespace Application.Tests
         }
 
         [Fact]
-        public async Task EnsurePartitionMounted()
-        {
-            var sut = new LowLevelApi();
-            await sut.EnsurePartitionMounted("EFIESP", "FAT");
-        }
-
-        [Fact]
         public async Task Format()
         {
             var sut = new LowLevelApi();
@@ -63,16 +56,8 @@ namespace Application.Tests
         public async Task DeployWindows()
         {
             var api = new LowLevelApi();
-            var deployer = new WindowsDeployer(new DismImageService(), new Phone(await api.GetPhoneDisk()));
-            await deployer.Deploy(@"F:\sources\install.wim");
-        }
-
-
-        [Fact]
-        public async Task RemoveExistingWindowsPartitions()
-        {
-            var sut = new LowLevelApi();
-            await sut.RemoveExistingWindowsPartitions();
+            var deployer = new WindowsDeployer(new DismImageService(), new DriverPaths(""));
+            await deployer.Deploy(new InstallOptions(@"F:\sources\install.wim"), new Phone(null));
         }
 
         [Fact]

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -26,35 +27,41 @@ namespace Intaller.Wpf
     {
         private readonly IDialogCoordinator dlgCoord;
         private readonly IExtendedUIVisualizerService visualizerService;
+        private readonly Func<Task<Phone>> getPhoneFunc;
         private readonly ObservableAsPropertyHelper<bool> isBusyHelper;
         private readonly ReadOnlyObservableCollection<RenderedLogEvent> logEvents;
         private readonly ObservableAsPropertyHelper<double> progressHelper;
         private readonly ISubject<double> progressSubject = new BehaviorSubject<double>(double.NaN);
         private readonly ObservableAsPropertyHelper<RenderedLogEvent> statusHelper;
         private readonly IDisposable logLoader;
-        private readonly IDeployer deployer;
         private readonly IDriverPackageImporter packageImporter;
         private readonly IOpenFileService openFileService;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
         private readonly ObservableAsPropertyHelper<bool> hasWimHelper;
         private ObservableAsPropertyHelper<WimMetadataViewModel> pickWimFileObs;
+        private DeployerItem selectedDeployerItem;
 
-        public MainViewModel(IObservable<LogEvent> logEvents, IDeployer deployer, IDriverPackageImporter packageImporter, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService)
+        public MainViewModel(IObservable<LogEvent> logEvents, ICollection<DeployerItem> deployersItems, IDriverPackageImporter packageImporter, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService, Func<Task<Phone>> getPhoneFunc)
         {
             DualBootViewModel = new DualBootViewModel(dlgCoord);
 
-            this.deployer = deployer;
+            DeployersItems = deployersItems;
+
             this.packageImporter = packageImporter;
             this.openFileService = openFileService;
             this.dlgCoord = dlgCoord;
             this.visualizerService = visualizerService;
+            this.getPhoneFunc = getPhoneFunc;
 
             ShowWarningCommand = ReactiveCommand.CreateFromTask(() => dlgCoord.ShowMessageAsync(this, Resources.TermsOfUseTitle, Resources.WarningNotice));
 
             SetupPickWimCommand();
 
-            var canDeploy = this.WhenAnyObservable(x => x.WimMetadata.SelectedImageObs)
+            var isDeployerSelected = this.WhenAnyValue(model => model.SelectedDeployerItem, (DeployerItem x) => x != null);
+            var isSelectedWim = this.WhenAnyObservable(x => x.WimMetadata.SelectedImageObs)
                 .Select(metadata => metadata != null);
+
+            var canDeploy = isSelectedWim.CombineLatest(isDeployerSelected, (hasWim, hasDeployer) => hasWim && hasDeployer);
 
             FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), dlgCoord);
             WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), dlgCoord);
@@ -105,6 +112,16 @@ namespace Intaller.Wpf
             hasWimHelper = this.WhenAnyValue(model => model.WimMetadata, (WimMetadataViewModel x) => x != null).ToProperty(this, x => x.HasWim);
         }
 
+        public IEnumerable<DeployerItem> DeployersItems { get; }
+
+        public DeployerItem SelectedDeployerItem
+        {
+            get => selectedDeployerItem;
+            set => this.RaiseAndSetIfChanged(ref selectedDeployerItem, value);
+        }
+
+        private IDeployer SelectedDeployer => SelectedDeployerItem.Deployer;
+
         public bool HasWim => hasWimHelper.Value;
 
         private async Task InstallDriverPackage()
@@ -128,7 +145,8 @@ namespace Intaller.Wpf
                 visualizerService.Show("TextViewer", new MessageViewModel("Changelog", message), (_, __) => { }, OwnerOption.MainWindow);
             }
 
-            await packageImporter.ImportDriverPackage(fileName, FileSystemPaths.DriversPath, progressSubject);
+            // TODO:
+            await packageImporter.ImportDriverPackage(fileName, "", progressSubject);
         }
 
         public CommandWrapper<Unit, Unit> ImportDriverPackageWrapper { get; }
@@ -194,7 +212,7 @@ namespace Intaller.Wpf
                 var windowsImageInfo = imageReader.Load(file);
                 if (windowsImageInfo.Images.All(x => x.Architecture != Architecture.Arm64))
                 {
-                    throw new InvalidWimFileException("The selected .WIM file doesn't contain any image for ARM64. Please, select a .wim file that targets this architecture.");
+                    throw new InvalidWimFileException(Resources.WimFileNoValidArchitecture);
                 }
 
                 var vm = new WimMetadataViewModel(windowsImageInfo, path);
@@ -214,9 +232,14 @@ namespace Intaller.Wpf
                 ImagePath = WimMetadata.Path,
                 ImageIndex = WimMetadata.SelectedDiskImage.Index,
             };
+            
+            await SelectedDeployer.DeployCoreAndWindows(installOptions, await GetPhone(), progressSubject);
+            await dlgCoord.ShowMessageAsync(this, Resources.Finished, Resources.WindowsDeployedSuccessfully);
+        }
 
-            await deployer.DeployUefiAndWindows(installOptions, progressSubject);
-            await dlgCoord.ShowMessageAsync(this, "Finished", Resources.WindowsDeployedSuccessfully);
+        private Task<Phone> GetPhone()
+        {
+            return getPhoneFunc();
         }
 
         private async Task DeployWindows()
@@ -227,26 +250,26 @@ namespace Intaller.Wpf
                 ImageIndex = WimMetadata.SelectedDiskImage.Index,
             };
 
-            await deployer.DeployWindows(installOptions, progressSubject);
-            await dlgCoord.ShowMessageAsync(this, "Finished", Resources.WindowsDeployedSuccessfully);
+            await SelectedDeployer.DeployWindows(installOptions, await GetPhone(), progressSubject);
+            await dlgCoord.ShowMessageAsync(this, Resources.Finished, Resources.WindowsDeployedSuccessfully);
         }
 
         private async Task InjectPostOobeDrivers()
         {
             try
             {
-                await deployer.InjectPostOobeDrivers();
+                await SelectedDeployer.InjectPostOobeDrivers(await GetPhone());
             }
             catch (DirectoryNotFoundException e)
             {
-                throw new InvalidOperationException("Sorry, there are no POST-OOBE drivers available to inject.\nThe driver package that is currently installed might not need to install any additional driver after Windows Setup.", e);
+                throw new InvalidOperationException(Resources.NoPostOobeDrivers, e);
             }
             catch (InvalidOperationException e)
             {
-                throw new InvalidOperationException("Cannot inject the Post-OOBE drivers", e);
+                throw new InvalidOperationException(Resources.CannotInjectPostOobe, e);
             }
 
-            await dlgCoord.ShowMessageAsync(this, "Finished", Resources.DriversInjectedSucessfully);
+            await dlgCoord.ShowMessageAsync(this, Resources.Finished, Resources.DriversInjectedSucessfully);
         }
 
         public ReadOnlyObservableCollection<RenderedLogEvent> Events => logEvents;

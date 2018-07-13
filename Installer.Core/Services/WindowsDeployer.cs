@@ -17,26 +17,27 @@ namespace Installer.Core.Services
         private const string BootPartitionLabel = "BOOT";
         private const string WindowsPartitonLabel = "WindowsARM";
         private const string BcdBootPath = @"c:\Windows\SysNative\bcdboot.exe";
-        private readonly Phone phone;
+        
         private readonly IWindowsImageService windowsImageService;
+        private readonly DriverPaths driverPaths;
 
 
-        public WindowsDeployer(IWindowsImageService windowsImageService, Phone phone)
+        public WindowsDeployer(IWindowsImageService windowsImageService, DriverPaths driverPaths)
         {
             this.windowsImageService = windowsImageService;
-            this.phone = phone;
+            this.driverPaths = driverPaths;
         }
 
-        public async Task Deploy(string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null)
+        public async Task Deploy(InstallOptions options, Phone phone, IObserver<double> progressObserver = null)
         {
             Log.Information("Deploying Windows 10 ARM64...");
 
-            await RemoveExistingWindowsPartitions();
-            await AllocateSpace();
-            var partitions = await CreatePartitions();
+            await RemoveExistingWindowsPartitions(phone);
+            await AllocateSpace(phone);
+            var partitions = await CreatePartitions(phone);
 
-            await ApplyWindowsImage(partitions, imagePath, imageIndex, progressObserver);
-            await InjectBasicDrivers(partitions.Windows);
+            await ApplyWindowsImage(partitions, options, progressObserver);
+            await InjectDrivers(partitions.Windows);
             await MakeBootable(partitions);
 
             Log.Information("Windows Image deployed");
@@ -56,28 +57,27 @@ namespace Installer.Core.Services
             await volumes.Boot.Partition.SetGptType(PartitionType.Esp);
         }
 
-        private Task RemoveExistingWindowsPartitions()
+        private Task RemoveExistingWindowsPartitions(Phone phone)
         {
             Log.Information("Cleaning existing Windows 10 ARM64 partitions...");
 
             return phone.RemoveExistingWindowsPartitions();
         }
 
-        private Task InjectBasicDrivers(Volume windowsVolume)
+        private Task InjectDrivers(Volume windowsVolume)
         {
             Log.Information("Injecting Basic Drivers...");
-            return windowsImageService.InjectDrivers(FileSystemPaths.DriversPath, windowsVolume);
+            return windowsImageService.InjectDrivers(driverPaths.PreOobe, windowsVolume);
         }
 
-        private async Task ApplyWindowsImage(WindowsVolumes volumes, string imagePath, int imageIndex = 1,
-            IObserver<double> progressObserver = null)
+        private async Task ApplyWindowsImage(WindowsVolumes volumes, InstallOptions options, IObserver<double> progressObserver = null)
         {
             Log.Information("Applying Windows Image...");
-            await windowsImageService.ApplyImage(volumes.Windows, imagePath, imageIndex, progressObserver);
+            await windowsImageService.ApplyImage(volumes.Windows, options.ImagePath, options.ImageIndex, progressObserver);
             progressObserver?.OnNext(double.NaN);
         }
 
-        private async Task<WindowsVolumes> CreatePartitions()
+        private async Task<WindowsVolumes> CreatePartitions(Phone phone)
         {
             Log.Information("Creating Windows partitions...");
 
@@ -98,7 +98,7 @@ namespace Installer.Core.Services
             return new WindowsVolumes(await phone.GetBootVolume(), await phone.GetWindowsVolume());
         }
 
-        private async Task AllocateSpace()
+        private async Task AllocateSpace(Phone phone)
         {
             Log.Information("Verifying the available space...");
 
@@ -108,12 +108,12 @@ namespace Installer.Core.Services
             if (available < SpaceNeededForWindows)
             {
                 Log.Warning("There's not enough space in the phone");
-                await TakeSpaceFromDataPartition();
+                await TakeSpaceFromDataPartition(phone);
                 Log.Information("Data partition resized correctly");
             }
         }
 
-        private async Task TakeSpaceFromDataPartition()
+        private async Task TakeSpaceFromDataPartition(Phone phone)
         {
             var dataVolume = await phone.GetDataVolume();
 
@@ -122,16 +122,16 @@ namespace Installer.Core.Services
             await dataVolume.Partition.Resize((ulong) finalSize);
         }
 
-        public async Task InjectPostOobeDrivers()
+        public async Task InjectPostOobeDrivers(Phone phone)
         {
             Log.Information("Injection of 'Post Windows Setup' drivers");
 
-            if (!Directory.Exists(FileSystemPaths.PostOobeDriverLocation))
+            if (!Directory.Exists(driverPaths.PostOobe))
             {
                 throw new DirectoryNotFoundException("There Post-OOBE folder doesn't exist");
             }
 
-            if (Directory.GetFiles(FileSystemPaths.PostOobeDriverLocation, "*.inf").Any())
+            if (Directory.GetFiles(driverPaths.PostOobe, "*.inf").Any())
             {
                 throw new InvalidOperationException("There are no drivers inside the Post-OOBE folder");
             }
@@ -147,21 +147,16 @@ namespace Installer.Core.Services
             Log.Information("Injecting 'Post Windows Setup' Drivers...");
             var windowsVolume = await phone.GetWindowsVolume();
 
-            await windowsImageService.InjectDrivers(FileSystemPaths.PostOobeDriverLocation, windowsVolume);
+            await windowsImageService.InjectDrivers(driverPaths.PostOobe, windowsVolume);
 
             Log.Information("Drivers installed successfully");
         }
 
-        public class WindowsVolumes
+        public Task<bool> AreDeploymentFilesValid()
         {
-            public WindowsVolumes(Volume bootVolume, Volume windowsVolume)
-            {
-                Boot = bootVolume;
-                Windows = windowsVolume;
-            }
-
-            public Volume Boot { get; }
-            public Volume Windows { get; }
+            var pathsToCheck = new[] { driverPaths.PreOobe };
+            var areValid = pathsToCheck.EnsureExistingPaths();
+            return Task.FromResult(areValid);
         }
     }
 }

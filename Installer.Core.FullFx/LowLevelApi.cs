@@ -46,7 +46,9 @@ namespace Installer.Core.FullFx
             var disks = await GetDisks();
             foreach (var disk in disks)
             {
-                if (HasCorrectSize(disk))
+                var hasCorrectSize = HasCorrectSize(disk);
+
+                if (true)
                 {
                     var volumes = await disk.GetVolumes();
                     var mainOs = volumes.FirstOrDefault(x => x.Label == MainOsLabel);
@@ -54,7 +56,7 @@ namespace Installer.Core.FullFx
                     {
                         return disk;
                     }
-                }                
+                }
             }
 
             throw new PhoneDiskNotFoundException("Cannot get the Phone Disk. Please, verify that the Phone is in Mass Storage Mode.");
@@ -108,24 +110,6 @@ namespace Installer.Core.FullFx
             var allocatedSize = new ByteSize((ulong)disk.GetPropertyValue("AllocatedSize"));
 
             return new Disk(lowLevelApi, number, size, allocatedSize);
-        }
-
-        public Task EnsurePartitionMounted(string label, string filesystemType)
-        {
-            ps.Commands.Clear();
-            ps.AddCommand("EnsurePartitionMountedForVolume")
-                .AddParameter("label", label)
-                .AddParameter("fileSystemType", filesystemType);
-
-            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
-        }
-
-        public Task RemoveExistingWindowsPartitions()
-        {
-            ps.Commands.Clear();
-            ps.AddCommand("RemoveExistingWindowsPartitions");
-
-            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
         }
 
 

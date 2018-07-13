@@ -1,11 +1,18 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Installer.Core.Utils
 {
     public static class FileUtils
     {
+        public static bool EnsureExistingPaths(this string[] pathsToCheck)
+        {
+            return pathsToCheck.All(PathExists);
+        }
+
         public static async Task Copy(string sourceFile, string destinationFile, CancellationToken cancellationToken)
         {
             var fileOptions = FileOptions.Asynchronous | FileOptions.SequentialScan;
@@ -50,7 +57,7 @@ namespace Installer.Core.Utils
             }
         }
 
-        public static bool TestPath(string path)
+        public static bool PathExists(string path)
         {
             return File.Exists(path) || Directory.Exists(path);
         }

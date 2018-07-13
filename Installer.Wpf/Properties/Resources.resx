@@ -135,4 +135,17 @@ By clicking "OK" you accept the aforementioned risks.</value>
   <data name="TermsOfUseTitle" xml:space="preserve">
     <value>Disclaimer Notice and Terms of Use</value>
   </data>
+  <data name="NoPostOobeDrivers" xml:space="preserve">
+    <value>Sorry, there are no POST-OOBE drivers available to inject.
+The driver package that is currently installed might not need to install any additional driver after Windows Setup.</value>
+  </data>
+  <data name="CannotInjectPostOobe" xml:space="preserve">
+    <value>Cannot inject the Post-OOBE drivers</value>
+  </data>
+  <data name="Finished" xml:space="preserve">
+    <value>Finished</value>
+  </data>
+  <data name="WimFileNoValidArchitecture" xml:space="preserve">
+    <value>The selected .WIM file doesn't contain any image for ARM64. Please, select a .wim file that targets this architecture.</value>
+  </data>
 </root>

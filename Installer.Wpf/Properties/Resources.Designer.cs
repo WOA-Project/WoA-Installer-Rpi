@@ -61,11 +61,39 @@ namespace Intaller.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot inject the Post-OOBE drivers.
+        /// </summary>
+        internal static string CannotInjectPostOobe {
+            get {
+                return ResourceManager.GetString("CannotInjectPostOobe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The drivers have been injected correctly.
         /// </summary>
         internal static string DriversInjectedSucessfully {
             get {
                 return ResourceManager.GetString("DriversInjectedSucessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished.
+        /// </summary>
+        internal static string Finished {
+            get {
+                return ResourceManager.GetString("Finished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorry, there are no POST-OOBE drivers available to inject.
+        ///The driver package that is currently installed might not need to install any additional driver after Windows Setup..
+        /// </summary>
+        internal static string NoPostOobeDrivers {
+            get {
+                return ResourceManager.GetString("NoPostOobeDrivers", resourceCulture);
             }
         }
         
@@ -88,6 +116,15 @@ namespace Intaller.Wpf.Properties {
         internal static string WarningNotice {
             get {
                 return ResourceManager.GetString("WarningNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The selected .WIM file doesn&apos;t contain any image for ARM64. Please, select a .wim file that targets this architecture..
+        /// </summary>
+        internal static string WimFileNoValidArchitecture {
+            get {
+                return ResourceManager.GetString("WimFileNoValidArchitecture", resourceCulture);
             }
         }
         

@@ -6,8 +6,6 @@ namespace Installer.Core.FileSystem
     public interface ILowLevelApi
     {
         Task<Disk> GetPhoneDisk();
-        Task EnsurePartitionMounted(string label, string filesystemType);
-        Task RemoveExistingWindowsPartitions();
         Task ResizePartition(Partition partition, ulong sizeInBytes);
         Task<List<Partition>> GetPartitions(Disk disk);
         Task<Volume> GetVolume(Partition partition);

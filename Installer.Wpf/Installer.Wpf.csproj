@@ -79,6 +79,7 @@
     </ApplicationDefinition>
     <Compile Include="BusyButton.cs" />
     <Compile Include="CommandWrapper.cs" />
+    <Compile Include="DeployerItem.cs" />
     <Compile Include="DualBootViewModel.cs" />
     <Compile Include="MessageViewModel.cs" />
     <Compile Include="Parts\DualBootPart.xaml.cs">
@@ -96,6 +97,7 @@
     <Compile Include="Parts\Sections\WimOptionsPart.xaml.cs">
       <DependentUpon>WimOptionsPart.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PhoneModel.cs" />
     <Compile Include="RenderedLogEvent.cs" />
     <Compile Include="Parts\StatusPart.xaml.cs">
       <DependentUpon>StatusPart.xaml</DependentUpon>

@@ -1,109 +1,81 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Installer.Core.Exceptions;
-using Installer.Core.FileSystem;
 using Installer.Core.Services;
-using Installer.Core.Utils;
 using Serilog;
 
 namespace Installer.Core
 {
     public class Deployer : IDeployer
     {
-        private readonly ILowLevelApi lowLevelApi;
-        private readonly IWindowsImageService imageService;
+        private readonly ICoreDeployer coreDeployer;
+        private readonly IWindowsDeployer windowsDeployer;
 
-        public Deployer(ILowLevelApi lowLevelApi, IWindowsImageService imageService)
+        public Deployer(ICoreDeployer coreDeployer, IWindowsDeployer windowsDeployer)
         {
-            this.lowLevelApi = lowLevelApi;
-            this.imageService = imageService;
+            this.coreDeployer = coreDeployer;
+            this.windowsDeployer = windowsDeployer;
         }
 
-        public async Task DeployUefiAndWindows(InstallOptions options, IObserver<double> progressObserver = null)
+        public async Task DeployCoreAndWindows(InstallOptions options, Phone phone, IObserver<double> progressObserver = null)
         {
-            EnsureValidFilesRepository();
+            await EnsureValidCoreWindowsDeployment();
 
-            var disk = await lowLevelApi.GetPhoneDisk();
-            var phone = new Phone(disk);
-            var efiespVolume = await phone.GetEfiespVolume();
+            Log.Information("Deploying Core And Windows 10 ARM64...");
 
-            Log.Information("Retrieving information from Phone Disk/partitions...");
+            await coreDeployer.Deploy(phone);
+            await windowsDeployer.Deploy(options, phone, progressObserver);
 
-            await DeployUefi(efiespVolume);
-            var bcdInvoker = new BcdInvoker(efiespVolume.GetBcdFullFilename());
-            new BcdConfigurator(bcdInvoker, efiespVolume).SetupBcd();
-            await AddDeveloperMenu(bcdInvoker, efiespVolume);
-            await new WindowsDeployer(imageService, phone).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
-
-            Log.Information("Full installation complete!");
+            Log.Information("Deployment successful");
         }
 
-        private void EnsureValidFilesRepository()
+        public async Task DeployWindows(InstallOptions options, Phone phone, IObserver<double> progressObserver = null)
         {
-            Log.Information(@"Ensuring we have a correct Files repository under ""Files folder""");
+            await EnsureValidWindowsDeployment();
 
-            var paths = new[]
-            {
-                Path.Combine("Core", "BootShim.efi"),
-                Path.Combine("Core", "UEFI.elf"),
-                Path.Combine("Drivers", "Pre-OOBE"),                
-                "Developer Menu",
-            };
+            Log.Information("Deploying Windows 10 ARM64...");
 
-            foreach (var path in paths)
+            await windowsDeployer.Deploy(options, phone, progressObserver);
+
+            Log.Information("Deployment successful");
+        }
+
+        private async Task EnsureValidWindowsDeployment()
+        {
+            await EnsureWindowsFiles();
+        }
+
+        private async Task EnsureValidCoreWindowsDeployment()
+        {
+            await EnsureCoreFiles();
+            await EnsureWindowsFiles();
+        }
+
+        private async Task EnsureCoreFiles()
+        {
+            var areValid = await coreDeployer.AreDeploymentFilesValid();
+            if (!areValid)
             {
-                Log.Verbose("Testing path {Path}", path);
-                if (!FileUtils.TestPath(Path.Combine("Files", path)))
-                {
-                    throw new InvalidRepositoryException(Resources.EnsureValidFilesRepository);
-                }
+                throw new InvalidDeploymentRepositoryException("The Files repository isn't valid. Please, check that you've installed a valid Driver Package");
             }
-
-            Log.Information(@"Files repository seems to be valid");
         }
 
-        public async Task DeployWindows(InstallOptions options, IObserver<double> progressObserver)
+        private async Task EnsureWindowsFiles()
         {
-            EnsureValidFilesRepository();
-
-            var disk = await lowLevelApi.GetPhoneDisk();
-            var phone = new Phone(disk);
-
-            await new WindowsDeployer(imageService, phone).Deploy(options.ImagePath, options.ImageIndex, progressObserver);
-
-            Log.Information("Windows deployment succeeded!");
+            var areValid = await windowsDeployer.AreDeploymentFilesValid();
+            if (!areValid)
+            {
+                throw new InvalidDeploymentRepositoryException("The Files repository isn't valid. Please, check that you've installed a valid Driver Package");
+            }
         }
 
-        public async Task InjectPostOobeDrivers()
+        public async Task InjectPostOobeDrivers(Phone phone)
         {
-            var disk = await lowLevelApi.GetPhoneDisk();
-            var phone = new Phone(disk);
-            await new WindowsDeployer(imageService, phone).InjectPostOobeDrivers();
-        }
+            Log.Information("Injecting Post-OOBE drivers...");
 
-        private async Task AddDeveloperMenu(BcdInvoker bcdInvoker, Volume efiespVolume)
-        {
-            Log.Information("Adding Development Menu...");
+            await windowsDeployer.InjectPostOobeDrivers(phone);
 
-            var rootDir = efiespVolume.RootDir.Name;
-
-            var destination = Path.Combine(rootDir, "Windows", "System32", "BOOT");
-            await FileUtils.CopyDirectory(new DirectoryInfo(Path.Combine("Files", "Developer Menu")), new DirectoryInfo(destination));
-            var guid = FormattingUtils.GetGuid(bcdInvoker.Invoke(@"/create /d ""Developer Menu"" /application BOOTAPP"));
-            bcdInvoker.Invoke($@"/set {{{guid}}} path \Windows\System32\BOOT\developermenu.efi");
-            bcdInvoker.Invoke($@"/set {{{guid}}} device partition={rootDir}");
-            bcdInvoker.Invoke($@"/displayorder {{{guid}}} /addlast");
-        }
-
-        private async Task DeployUefi(Volume efiespVolume)
-        {
-            Log.Information("Deploying UEFI...");
-
-            var rootDir = efiespVolume.RootDir.Name;
-            await FileUtils.Copy(Path.Combine("Files", "Core", "UEFI.elf"), Path.Combine(rootDir, "UEFI.elf"));
-            await FileUtils.Copy(Path.Combine("Files", "Core", "emmc_appsboot.mbn"), Path.Combine(rootDir, "emmc_appsboot.mbn"));
-            await FileUtils.Copy(Path.Combine("Files", "Core", "BootShim.efi"), Path.Combine(rootDir, "EFI", "BOOT", "BootShim.efi"));
+            Log.Information("Injection of drivers successful");
         }
     }
 }

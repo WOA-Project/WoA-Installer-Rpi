@@ -5,8 +5,8 @@ namespace Installer.Core
 {
     public interface IDeployer
     {
-        Task DeployUefiAndWindows(InstallOptions options, IObserver<double> progressObserver);
-        Task DeployWindows(InstallOptions options, IObserver<double> progressObserver);
-        Task InjectPostOobeDrivers();
+        Task DeployCoreAndWindows(InstallOptions options, Phone phone, IObserver<double> progressObserver = null);
+        Task DeployWindows(InstallOptions options, Phone phone, IObserver<double> progressObserver = null);
+        Task InjectPostOobeDrivers(Phone phone);
     }
 }
