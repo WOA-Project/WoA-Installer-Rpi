@@ -34,6 +34,7 @@ namespace Intaller.Wpf
         private readonly ISubject<double> progressSubject = new BehaviorSubject<double>(double.NaN);
         private readonly ObservableAsPropertyHelper<RenderedLogEvent> statusHelper;
         private readonly IDisposable logLoader;
+        private readonly ICollection<DriverPackageImporterItem> driverPackageImporterItems;
         private readonly IDriverPackageImporter packageImporter;
         private readonly IOpenFileService openFileService;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
@@ -41,12 +42,13 @@ namespace Intaller.Wpf
         private ObservableAsPropertyHelper<WimMetadataViewModel> pickWimFileObs;
         private DeployerItem selectedDeployerItem;
 
-        public MainViewModel(IObservable<LogEvent> logEvents, ICollection<DeployerItem> deployersItems, IDriverPackageImporter packageImporter, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService, Func<Task<Phone>> getPhoneFunc)
+        public MainViewModel(IObservable<LogEvent> logEvents, ICollection<DeployerItem> deployersItems, ICollection<DriverPackageImporterItem> driverPackageImporterItems, IDriverPackageImporter packageImporter, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService, Func<Task<Phone>> getPhoneFunc)
         {
             DualBootViewModel = new DualBootViewModel(dlgCoord);
 
             DeployersItems = deployersItems;
 
+            this.driverPackageImporterItems = driverPackageImporterItems;
             this.packageImporter = packageImporter;
             this.openFileService = openFileService;
             this.dlgCoord = dlgCoord;
@@ -126,7 +128,9 @@ namespace Intaller.Wpf
 
         private async Task InstallDriverPackage()
         {
-            openFileService.Filter = "7-Zip files|*.7z";
+            var extensions = string.Join(";" , driverPackageImporterItems.Select(x => $"*.{x.Extension}"));
+
+            openFileService.Filter = $"Driver packages|{extensions}";
             openFileService.FileName = "";
             openFileService.InitialDirectory = Settings.Default.DriverPackFolder;
 
@@ -139,14 +143,25 @@ namespace Intaller.Wpf
             var fileName = openFileService.FileName;
             Settings.Default.DriverPackFolder = Path.GetDirectoryName(fileName);
 
-            var message = await packageImporter.GetReadmeText(fileName);
+            var item = GetImporterItemForFile(fileName);
+            var importer = item.DriverPackageImporter;
+
+
+            var message = await importer.GetReadmeText(fileName);
             if (!string.IsNullOrEmpty(message))
             {
                 visualizerService.Show("TextViewer", new MessageViewModel("Changelog", message), (_, __) => { }, OwnerOption.MainWindow);
             }
 
-            // TODO:
-            await packageImporter.ImportDriverPackage(fileName, "", progressSubject);
+            await importer.ImportDriverPackage(fileName, "", progressSubject);
+        }
+
+        private DriverPackageImporterItem GetImporterItemForFile(string fileName)
+        {
+            var extension = Path.GetExtension(fileName);
+
+            var importerItem = driverPackageImporterItems.First(item => string.Equals(extension, "." + item.Extension , StringComparison.InvariantCultureIgnoreCase));
+            return importerItem;
         }
 
         public CommandWrapper<Unit, Unit> ImportDriverPackageWrapper { get; }

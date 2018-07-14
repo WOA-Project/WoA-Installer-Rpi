@@ -75,12 +75,12 @@ namespace Installer.Core
             var isOobeFinished = await IsOobeFinished();
 
             var bootPartition = await GetBootPartition();
-            var isEnabled = Equals(bootPartition.PartitionType, PartitionType.Basic);
 
+            var isEnabled = bootPartition != null && Equals(bootPartition.PartitionType, PartitionType.Basic);
+            
             var isCapable = isWoaPresent && isWPhonePresent && isOobeFinished;
             var status = new DualBootStatus(isCapable, isEnabled);
-
-
+            
             Log.Information("Dual Boot Status retrieved");
             Log.Verbose("Dual Boot Status is {@Status}", status);
 

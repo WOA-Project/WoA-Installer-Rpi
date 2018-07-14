@@ -2,20 +2,21 @@ namespace Intaller.Wpf
 {
     public class PhoneModel
     {
-        public int Id { get; }
-        public string Name { get; }
-        public static PhoneModel Lumia950 = new PhoneModel(1, "Microsoft Lumia 950");
-        public static PhoneModel Lumia950Xl = new PhoneModel(2, "Microsoft Lumia 950 XL");
-        
-        private PhoneModel(int id, string name)
+        public static readonly PhoneModel Lumia950 = new PhoneModel(PhoneType.Lumia950, "Microsoft Lumia 950");
+        public static readonly PhoneModel Lumia950Xl = new PhoneModel(PhoneType.Lumia950Xl, "Microsoft Lumia 950 XL");
+
+        private PhoneModel(PhoneType phoneType, string name)
         {
-            Id = id;
+            PhoneType = phoneType;
             Name = name;
         }
 
+        public PhoneType PhoneType { get; }
+        public string Name { get; }
+
         protected bool Equals(PhoneModel other)
         {
-            return Id == other.Id;
+            return PhoneType == other.PhoneType;
         }
 
         public override bool Equals(object obj)
@@ -40,7 +41,13 @@ namespace Intaller.Wpf
 
         public override int GetHashCode()
         {
-            return Id;
+            return (int) PhoneType;
         }
+    }
+
+    public enum PhoneType
+    {
+        Lumia950Xl,
+        Lumia950
     }
 }

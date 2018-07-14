@@ -13,6 +13,14 @@ namespace Installer.Core.Utils
             return pathsToCheck.All(PathExists);
         }
 
+        public static void EnsureEmptyDirectory(string destination)
+        {
+            if (Directory.Exists(destination))
+            {
+                Directory.Delete(destination, true);
+            }
+        }
+
         public static async Task Copy(string sourceFile, string destinationFile, CancellationToken cancellationToken)
         {
             var fileOptions = FileOptions.Asynchronous | FileOptions.SequentialScan;
