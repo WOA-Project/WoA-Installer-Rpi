@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Installer.Core
+namespace Installer.Core.Exceptions
 {
     internal class PathNotFoundException : Exception
     {

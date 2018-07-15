@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Installer.Core.FullFx
+namespace Installer.Core.Exceptions
 {
     public class PhoneDiskNotFoundException : Exception
     {

@@ -80,59 +80,59 @@
     <Compile Include="BusyButton.cs" />
     <Compile Include="CommandWrapper.cs" />
     <Compile Include="CompositionRoot.cs" />
-    <Compile Include="DeployerItem.cs" />
-    <Compile Include="DriverPackageImporterItem.cs" />
-    <Compile Include="DualBootViewModel.cs" />
-    <Compile Include="MessageViewModel.cs" />
-    <Compile Include="Parts\DualBootPart.xaml.cs">
+    <Compile Include="ViewModels\DeployerItem.cs" />
+    <Compile Include="ViewModels\DriverPackageImporterItem.cs" />
+    <Compile Include="ViewModels\DualBootViewModel.cs" />
+    <Compile Include="ViewModels\MessageViewModel.cs" />
+    <Compile Include="Views\Parts\DualBootPart.xaml.cs">
       <DependentUpon>DualBootPart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Parts\Sections\AdvancedPart.xaml.cs">
+    <Compile Include="Views\Parts\Sections\AdvancedPart.xaml.cs">
       <DependentUpon>AdvancedPart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Parts\Sections\InstallPart.xaml.cs">
+    <Compile Include="Views\Parts\Sections\InstallPart.xaml.cs">
       <DependentUpon>InstallPart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Parts\LogPart.xaml.cs">
+    <Compile Include="Views\Parts\LogPart.xaml.cs">
       <DependentUpon>LogPart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Parts\Sections\PhoneModelPart.xaml.cs">
+    <Compile Include="Views\Parts\Sections\PhoneModelPart.xaml.cs">
       <DependentUpon>PhoneModelPart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Parts\Sections\WimOptionsPart.xaml.cs">
+    <Compile Include="Views\Parts\Sections\WimOptionsPart.xaml.cs">
       <DependentUpon>WimOptionsPart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PhoneModel.cs" />
-    <Compile Include="RenderedLogEvent.cs" />
-    <Compile Include="Parts\StatusPart.xaml.cs">
+    <Compile Include="ViewModels\PhoneModel.cs" />
+    <Compile Include="ViewModels\RenderedLogEvent.cs" />
+    <Compile Include="Views\Parts\StatusPart.xaml.cs">
       <DependentUpon>StatusPart.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TextViewerWindow.xaml.cs">
+    <Compile Include="Views\TextViewerWindow.xaml.cs">
       <DependentUpon>TextViewerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewServices.cs" />
-    <Compile Include="WimMetadataViewModel.cs" />
+    <Compile Include="ViewModels\WimMetadataViewModel.cs" />
     <None Include="..\Installer.Core.FullFx\Functions.ps1">
       <Link>Functions.ps1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Compile Include="MainViewModel.cs" />
-    <Page Include="Parts\DualBootPart.xaml">
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Page Include="Views\Parts\DualBootPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Parts\Sections\AdvancedPart.xaml">
+    <Page Include="Views\Parts\Sections\AdvancedPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Parts\Sections\InstallPart.xaml">
+    <Page Include="Views\Parts\Sections\InstallPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Parts\LogPart.xaml">
+    <Page Include="Views\Parts\LogPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -140,23 +140,23 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Parts\Sections\PhoneModelPart.xaml">
+    <Page Include="Views\Parts\Sections\PhoneModelPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Parts\Sections\WimOptionsPart.xaml">
+    <Page Include="Views\Parts\Sections\WimOptionsPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Parts\StatusPart.xaml">
+    <Page Include="Views\Parts\StatusPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TextViewerWindow.xaml">
+    <Page Include="Views\TextViewerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -277,6 +277,9 @@
   <ItemGroup>
     <Resource Include="Assets\950.png" />
     <Resource Include="Assets\950xl.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

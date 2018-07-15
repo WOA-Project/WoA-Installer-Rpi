@@ -20,7 +20,7 @@ using ReactiveUI;
 using Serilog;
 using Serilog.Events;
 
-namespace Intaller.Wpf
+namespace Intaller.Wpf.ViewModels
 {
     public class MainViewModel : ReactiveObject, IDisposable
     {

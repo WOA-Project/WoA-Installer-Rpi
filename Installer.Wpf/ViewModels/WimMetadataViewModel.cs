@@ -4,7 +4,7 @@ using System.Linq;
 using Installer.Core.Services.Wim;
 using ReactiveUI;
 
-namespace Intaller.Wpf
+namespace Intaller.Wpf.ViewModels
 {
     public class WimMetadataViewModel : ReactiveObject
     {

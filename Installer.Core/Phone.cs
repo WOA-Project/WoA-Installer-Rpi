@@ -235,9 +235,9 @@ namespace Installer.Core
             Log.Verbose("Trying to remove previously existing {Partition} partition", partitionName);
             if (partition != null)
             {
-                Log.Verbose("{Partition} exists: Removing it...");
+                Log.Verbose("{Partition} exists: Removing it...", partition);
                 await partition.Remove();
-                Log.Verbose("{Partition} removed");
+                Log.Verbose("{Partition} removed", partition);
             }
         }        
     }

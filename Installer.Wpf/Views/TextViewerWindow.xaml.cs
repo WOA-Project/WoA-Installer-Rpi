@@ -1,4 +1,4 @@
-﻿namespace Intaller.Wpf
+﻿namespace Intaller.Wpf.Views
 {
     
     public partial class TextViewerWindow

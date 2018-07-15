@@ -6,6 +6,7 @@ using System.Management.Automation;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using ByteSizeLib;
+using Installer.Core.Exceptions;
 using Installer.Core.FileSystem;
 using Registry;
 using Serilog;
@@ -47,8 +48,7 @@ namespace Installer.Core.FullFx
             foreach (var disk in disks)
             {
                 var hasCorrectSize = HasCorrectSize(disk);
-
-                if (true)
+                if (hasCorrectSize)
                 {
                     var volumes = await disk.GetVolumes();
                     var mainOs = volumes.FirstOrDefault(x => x.Label == MainOsLabel);
@@ -113,19 +113,23 @@ namespace Installer.Core.FullFx
         }
 
 
-        public async Task ResizePartition(Partition partition, ulong sizeInBytes)
+        public async Task ResizePartition(Partition partition, ByteSize size)
         {
             ps.Commands.Clear();
 
-            ps.AddCommand("ResizePartition")
-                .AddParameter("diskNumber", partition.Disk.Number)
-                .AddParameter("partitionNumber", partition.Number)
-                .AddParameter("sizeInBytes", sizeInBytes);
+            ps.AddCommand("Resize-Partition")
+                .AddParameter("DiskNumber", partition.Disk.Number)
+                .AddParameter("PartitionNumber", partition.Number)
+                .AddParameter("Size", size.Bytes);
 
             await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
             if (ps.HadErrors)
             {
-                throw new InvalidOperationException(@"Cannot resize the partition");
+                var errors = string.Join(",", ps.Streams.Error.ReadAll());
+                var invalidOperationException = new InvalidOperationException($@"Cannot resize the partition. Details: {errors}");
+                Log.Error(invalidOperationException, "The resize operation has failed");
+                
+                throw invalidOperationException;
             }
         }
 
@@ -171,7 +175,7 @@ namespace Installer.Core.FullFx
             return new Volume(partition)
             {
                 Partition = partition,
-                Size = Convert.ToUInt64(volume.GetPropertyValue("Size")),
+                Size = new ByteSize(Convert.ToUInt64(volume.GetPropertyValue("Size"))),
                 Label = (string)volume.GetPropertyValue("FileSystemLabel"),
                 Letter = (char?)volume.GetPropertyValue("DriveLetter")
             };

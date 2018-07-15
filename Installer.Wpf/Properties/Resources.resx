@@ -119,7 +119,8 @@
   </resheader>
   <data name="WindowsDeployedSuccessfully" xml:space="preserve">
     <value>Done!
-You can now reboot your phone and choose "Windows 10" to start the Windows 10 ARM Setup.
+Now, please, **eject the Phone safely** to avoid data corruption issues and reboot your Phone.
+After reboot, choose "Windows 10" in the Boot Menu to start the Windows 10 ARM Setup.
 Enjoy!</value>
   </data>
   <data name="WarningNotice" xml:space="preserve">

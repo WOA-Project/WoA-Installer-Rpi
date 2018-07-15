@@ -35,9 +35,22 @@ namespace Installer.Core
 
             Log.Information("Deploying Windows 10 ARM64...");
 
+            await EnsureDualBootDisabled(phone);
+
             await windowsDeployer.Deploy(options, phone, progressObserver);
 
             Log.Information("Deployment successful");
+        }
+
+        private static async Task EnsureDualBootDisabled(Phone phone)
+        {
+            Log.Information("Checking Dual Boot");
+            var dualBootStatus = await phone.GetDualBootStatus();
+            if (dualBootStatus.IsEnabled)
+            {
+                Log.Information("Dual Boot is enabled: Disabling it to avoid boot problems (you can reenble it after completing Windows Setup)...");
+                await phone.EnableDualBoot(false);
+            }
         }
 
         private async Task EnsureValidWindowsDeployment()

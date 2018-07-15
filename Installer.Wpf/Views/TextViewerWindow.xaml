@@ -1,13 +1,13 @@
-﻿<mah:MetroWindow x:Class="Intaller.Wpf.TextViewerWindow"
+﻿<mah:MetroWindow x:Class="Intaller.Wpf.Views.TextViewerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wpf="clr-namespace:Intaller.Wpf"
-        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:viewModels="clr-namespace:Intaller.Wpf.ViewModels"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800" WindowStartupLocation="CenterOwner"
-        d:DataContext="{d:DesignInstance wpf:MessageViewModel}">
+        d:DataContext="{d:DesignInstance viewModels:MessageViewModel}">
     <ScrollViewer>
         <TextBlock Margin="8" Text="{Binding Text}" />
     </ScrollViewer>

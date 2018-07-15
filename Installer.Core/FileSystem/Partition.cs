@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using ByteSizeLib;
 
 namespace Installer.Core.FileSystem
 {
@@ -21,7 +22,7 @@ namespace Installer.Core.FileSystem
             return $"{nameof(Disk)}: {Disk}, {nameof(Number)}: {Number}";
         }
 
-        public async Task Resize(ulong sizeInBytes)
+        public async Task Resize(ByteSize sizeInBytes)
         {
             await LowLevelApi.ResizePartition(this, sizeInBytes);
         }

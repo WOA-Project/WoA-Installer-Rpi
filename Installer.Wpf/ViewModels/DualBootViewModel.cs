@@ -7,9 +7,8 @@ using Installer.Core;
 using Installer.Core.FullFx;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
-using Serilog;
 
-namespace Intaller.Wpf
+namespace Intaller.Wpf.ViewModels
 {
     public class DualBootViewModel : ReactiveObject
     {

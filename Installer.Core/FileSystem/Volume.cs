@@ -3,6 +3,7 @@ using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using ByteSizeLib;
 using Installer.Core.Utils;
 using Serilog;
 
@@ -18,7 +19,7 @@ namespace Installer.Core.FileSystem
         }
 
         public string Label { get; set; }
-        public ulong Size { get; set; }
+        public ByteSize Size { get; set; }
         public Partition Partition { get; set; }
         public char? Letter { get; set; }
 

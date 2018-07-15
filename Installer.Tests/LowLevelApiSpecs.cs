@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using ByteSizeLib;
 using Installer.Core;
 using Installer.Core.FileSystem;
 using Installer.Core.FullFx;
@@ -98,16 +99,11 @@ namespace Application.Tests
         [Fact]
         public async Task ResizePartition()
         {
-            var sut = new LowLevelApi();
-            var partitions = await sut.GetPartitions(await sut.GetPhoneDisk());
-            var volumes = await partitions.ToObservable()
-                .Select(x => Observable.FromAsync(() => sut.GetVolume(x)))
-                .Merge(1)
-                .ToList();
-
-            var volumeToResize = volumes.First(x => x.Label == "Data");
-            var sizeInBytes = 2 * (ulong)1_000_000_000;
-            await sut.ResizePartition(volumeToResize.Partition, sizeInBytes);
+            var api = new LowLevelApi();
+            var phoneDisk = await api.GetPhoneDisk();
+            var phone = new Phone(phoneDisk);
+            var dataVol = await phone.GetDataVolume();
+            await dataVol.Partition.Resize(ByteSize.FromGigaBytes(10));
         }
 
         [Fact]

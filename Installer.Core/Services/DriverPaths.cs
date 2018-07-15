@@ -11,8 +11,7 @@ namespace Installer.Core.Services
             this.rootPath = rootPath;
         }
         
-        public string PreOobe => Path.Combine(rootPath, "Drivers", "Post-OOBE");
+        public string PreOobe => Path.Combine(rootPath, "Drivers", "Pre-OOBE");
         public string PostOobe => Path.Combine(rootPath, "Drivers", "Post-OOBE");
-
     }
 }

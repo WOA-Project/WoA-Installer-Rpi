@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using ByteSizeLib;
 
 namespace Installer.Core.FileSystem
 {
     public interface ILowLevelApi
     {
         Task<Disk> GetPhoneDisk();
-        Task ResizePartition(Partition partition, ulong sizeInBytes);
+        Task ResizePartition(Partition partition, ByteSize sizeInBytes);
         Task<List<Partition>> GetPartitions(Disk disk);
         Task<Volume> GetVolume(Partition partition);
         Task<Partition> CreateReservedPartition(Disk disk, ulong sizeInBytes);

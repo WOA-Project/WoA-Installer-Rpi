@@ -1,4 +1,4 @@
-﻿namespace Intaller.Wpf.Parts.Sections
+﻿namespace Intaller.Wpf.Views.Parts.Sections
 {
     /// <summary>
     /// Interaction logic for InstallPart.xaml

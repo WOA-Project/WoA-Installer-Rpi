@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Intaller.Wpf.Parts
+namespace Intaller.Wpf.Views.Parts
 {
     /// <summary>
     /// Interaction logic for LogPart.xaml

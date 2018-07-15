@@ -124,9 +124,9 @@ namespace Installer.Core.Services
 
             var dataVolume = await phone.GetDataVolume();
             
-            var finalSize = dataVolume.Size - SpaceNeededForWindows.Bytes;
+            var finalSize = dataVolume.Size - SpaceNeededForWindows;
 
-            await dataVolume.Partition.Resize((ulong) finalSize);
+            await dataVolume.Partition.Resize(finalSize);
         }
 
         public async Task InjectPostOobeDrivers(Phone phone)

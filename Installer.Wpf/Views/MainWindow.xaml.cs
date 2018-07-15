@@ -2,7 +2,7 @@
 using Serilog;
 using Serilog.Events;
 
-namespace Intaller.Wpf
+namespace Intaller.Wpf.Views
 {
     public partial class MainWindow
     {

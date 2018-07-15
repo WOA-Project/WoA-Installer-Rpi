@@ -6,6 +6,8 @@ using Cinch.Reloaded.Services.Implementation;
 using Installer.Core;
 using Installer.Core.FullFx;
 using Installer.Core.Services;
+using Intaller.Wpf.ViewModels;
+using Intaller.Wpf.Views;
 using MahApps.Metro.Controls.Dialogs;
 using Serilog.Events;
 using SharpCompress.Archives.SevenZip;

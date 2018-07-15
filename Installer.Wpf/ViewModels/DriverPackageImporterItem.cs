@@ -1,6 +1,6 @@
 using Installer.Core.Services;
 
-namespace Intaller.Wpf
+namespace Intaller.Wpf.ViewModels
 {
     public class DriverPackageImporterItem
     {

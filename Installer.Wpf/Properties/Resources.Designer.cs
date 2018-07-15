@@ -130,7 +130,8 @@ namespace Intaller.Wpf.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Done!
-        ///You can now reboot your phone and choose &quot;Windows 10&quot; to start the Windows 10 ARM Setup.
+        ///Now, please, **eject the Phone safely** to avoid data corruption issues and reboot your Phone.
+        ///After reboot, choose &quot;Windows 10&quot; in the Boot Menu to start the Windows 10 ARM Setup.
         ///Enjoy!.
         /// </summary>
         internal static string WindowsDeployedSuccessfully {
