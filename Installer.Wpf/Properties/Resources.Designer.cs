@@ -109,7 +109,7 @@ namespace Intaller.Wpf.Properties {
         /// <summary>
         ///   Looks up a localized string similar to - This tool comes with no warranty. 
         ///- The authors can&apos;t be hold responsible for any damage it may cause to your device.    
-        ///- This tool intended for usage with Lumia 950 XL **ONLY**.
+        ///- This tool intended for usage with Lumia 950 and 950 XL **ONLY**.
         ///    
         ///By clicking &quot;OK&quot; you accept the aforementioned risks..
         /// </summary>

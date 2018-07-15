@@ -13,7 +13,6 @@ using Cinch.Reloaded.Services.Interfaces;
 using DynamicData;
 using Installer.Core;
 using Installer.Core.Exceptions;
-using Installer.Core.Services;
 using Installer.Core.Services.Wim;
 using Intaller.Wpf.Properties;
 using MahApps.Metro.Controls.Dialogs;
@@ -35,27 +34,25 @@ namespace Intaller.Wpf
         private readonly ObservableAsPropertyHelper<RenderedLogEvent> statusHelper;
         private readonly IDisposable logLoader;
         private readonly ICollection<DriverPackageImporterItem> driverPackageImporterItems;
-        private readonly IDriverPackageImporter packageImporter;
         private readonly IOpenFileService openFileService;
         private readonly ObservableAsPropertyHelper<bool> isProgressVisibleHelper;
         private readonly ObservableAsPropertyHelper<bool> hasWimHelper;
         private ObservableAsPropertyHelper<WimMetadataViewModel> pickWimFileObs;
         private DeployerItem selectedDeployerItem;
 
-        public MainViewModel(IObservable<LogEvent> logEvents, ICollection<DeployerItem> deployersItems, ICollection<DriverPackageImporterItem> driverPackageImporterItems, IDriverPackageImporter packageImporter, IOpenFileService openFileService, IDialogCoordinator dlgCoord, IExtendedUIVisualizerService visualizerService, Func<Task<Phone>> getPhoneFunc)
+        public MainViewModel(IObservable<LogEvent> logEvents, ICollection<DeployerItem> deployersItems, ICollection<DriverPackageImporterItem> driverPackageImporterItems, ViewServices viewServices, Func<Task<Phone>> getPhoneFunc)
         {
-            DualBootViewModel = new DualBootViewModel(dlgCoord);
+            DualBootViewModel = new DualBootViewModel(viewServices.DialogCoordinator);
 
             DeployersItems = deployersItems;
 
             this.driverPackageImporterItems = driverPackageImporterItems;
-            this.packageImporter = packageImporter;
-            this.openFileService = openFileService;
-            this.dlgCoord = dlgCoord;
-            this.visualizerService = visualizerService;
+            this.openFileService = viewServices.OpenFileService;
+            this.dlgCoord = viewServices.DialogCoordinator;
+            this.visualizerService = viewServices.VisualizerService;
             this.getPhoneFunc = getPhoneFunc;
 
-            ShowWarningCommand = ReactiveCommand.CreateFromTask(() => dlgCoord.ShowMessageAsync(this, Resources.TermsOfUseTitle, Resources.WarningNotice));
+            ShowWarningCommand = ReactiveCommand.CreateFromTask(() => viewServices.DialogCoordinator.ShowMessageAsync(this, Resources.TermsOfUseTitle, Resources.WarningNotice));
 
             SetupPickWimCommand();
 
@@ -65,11 +62,11 @@ namespace Intaller.Wpf
 
             var canDeploy = isSelectedWim.CombineLatest(isDeployerSelected, (hasWim, hasDeployer) => hasWim && hasDeployer);
 
-            FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), dlgCoord);
-            WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), dlgCoord);
-            InjectDriversWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InjectPostOobeDrivers), dlgCoord);
+            FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), viewServices.DialogCoordinator);
+            WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), viewServices.DialogCoordinator);
+            InjectDriversWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InjectPostOobeDrivers, isDeployerSelected), viewServices.DialogCoordinator);
 
-            ImportDriverPackageWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InstallDriverPackage), dlgCoord);
+            ImportDriverPackageWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InstallDriverPackage), viewServices.DialogCoordinator);
 
             var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting,
                 WindowsInstallWrapper.Command.IsExecuting,
@@ -154,6 +151,8 @@ namespace Intaller.Wpf
             }
 
             await importer.ImportDriverPackage(fileName, "", progressSubject);
+            await dlgCoord.ShowMessageAsync(this, "Done", "Driver Package imported");
+            Log.Information("Driver Package imported");
         }
 
         private DriverPackageImporterItem GetImporterItemForFile(string fileName)

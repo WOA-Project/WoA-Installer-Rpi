@@ -53,6 +53,8 @@ namespace Installer.Core
 
         private async Task EnsureCoreFiles()
         {
+            Log.Verbose("Checking Core Deployment Files...");
+
             var areValid = await coreDeployer.AreDeploymentFilesValid();
             if (!areValid)
             {
@@ -62,10 +64,12 @@ namespace Installer.Core
 
         private async Task EnsureWindowsFiles()
         {
+            Log.Verbose("Checking Windows Deployment Files...");
+
             var areValid = await windowsDeployer.AreDeploymentFilesValid();
             if (!areValid)
             {
-                throw new InvalidDeploymentRepositoryException("The Files repository isn't valid. Please, check that you've installed a valid Driver Package");
+                throw new InvalidDeploymentRepositoryException("The Files repository doesn't contain the required files. Please, check that you've installed a valid Driver Package");
             }
         }
 

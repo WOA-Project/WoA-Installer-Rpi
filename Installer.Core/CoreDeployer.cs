@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Installer.Core.Exceptions;
 using Installer.Core.FileSystem;
 using Installer.Core.Services;
 using Installer.Core.Utils;
@@ -26,10 +25,11 @@ namespace Installer.Core
           
         private async Task AddDeveloperMenu(Volume efiespVolume)
         {
+            Log.Information("Adding Development Menu...");
+            
             var bcdInvoker = new BcdInvoker(efiespVolume.GetBcdFullFilename());
             new BcdConfigurator(bcdInvoker, efiespVolume).SetupBcd();
-            Log.Information("Adding Development Menu...");
-
+            
             var rootDir = efiespVolume.RootDir.Name;
 
             var destination = Path.Combine(rootDir, "Windows", "System32", "BOOT");
@@ -66,7 +66,7 @@ namespace Installer.Core
         {
             var efiespVolume = await phone.GetEfiespVolume();
 
-            Log.Information("Deploying Core (UEFI and Development Men)");
+            Log.Information("Deploying Core (UEFI and Development Menu...)");
 
             await DeployUefi(efiespVolume);
             await AddDeveloperMenu(efiespVolume);

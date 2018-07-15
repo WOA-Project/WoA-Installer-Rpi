@@ -40,7 +40,7 @@
                                   ToolTip="Use this option to install Windows into a Phone that has just been unlocked." />
                 <local:BusyButton VerticalAlignment="Center" Command="{Binding WindowsInstallWrapper.Command}"
                                   IsBusy="{Binding WindowsInstallWrapper.IsExecuting}" Content="Windows Only"
-                                  ToolTip="Use this option to install/reinstall Windows. This will NOT modify your BCD nor you current UEFI."
+                                  ToolTip="Use this option to install/reinstall Windows. This will NOT modify your current BCD / UEFI."
                                   Image="/Assets/windows-only.png" Margin="4,0,0,0" />
             </UniformGrid>
 

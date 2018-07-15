@@ -23,7 +23,7 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Image Source="{Binding Model.PhoneType, Converter={StaticResource IdToImageConverter}}"/>
-                        <TextBlock Grid.Row="1" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding Model.Name}" />
+                        <TextBlock Margin="0,4" Grid.Row="1" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding Model.Name}" />
                     </Grid>
 
                 </DataTemplate>

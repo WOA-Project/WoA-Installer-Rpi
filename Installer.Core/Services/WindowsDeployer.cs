@@ -43,7 +43,7 @@ namespace Installer.Core.Services
             Log.Information("Windows Image deployed");
         }
 
-        public async Task MakeBootable(WindowsVolumes volumes)
+        private async Task MakeBootable(WindowsVolumes volumes)
         {
             Log.Information("Making Windows installation bootable...");
 
@@ -66,7 +66,7 @@ namespace Installer.Core.Services
 
         private Task InjectDrivers(Volume windowsVolume)
         {
-            Log.Information("Injecting Basic Drivers...");
+            Log.Information("Injecting Drivers...");
             return windowsImageService.InjectDrivers(driverPaths.PreOobe, windowsVolume);
         }
 
@@ -107,24 +107,31 @@ namespace Installer.Core.Services
 
             if (available < SpaceNeededForWindows)
             {
-                Log.Warning("There's not enough space in the phone");
+                Log.Warning("There's not enough space in the phone. Trying to take required space from the Data partition");
+
                 await TakeSpaceFromDataPartition(phone);
                 Log.Information("Data partition resized correctly");
+            }
+            else
+            {
+                Log.Verbose("We have enough available space to deploy Windows");
             }
         }
 
         private async Task TakeSpaceFromDataPartition(Phone phone)
         {
-            var dataVolume = await phone.GetDataVolume();
+            Log.Information("Shrinking Data partition...");
 
-            Log.Warning("We will try to resize the Data partition to get the required space...");
+            var dataVolume = await phone.GetDataVolume();
+            
             var finalSize = dataVolume.Size - SpaceNeededForWindows.Bytes;
+
             await dataVolume.Partition.Resize((ulong) finalSize);
         }
 
         public async Task InjectPostOobeDrivers(Phone phone)
         {
-            Log.Information("Injection of 'Post Windows Setup' drivers");
+            Log.Information("Injection of 'Post Windows Setup' drivers...");
 
             if (!Directory.Exists(driverPaths.PostOobe))
             {

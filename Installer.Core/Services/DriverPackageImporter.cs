@@ -6,12 +6,13 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Installer.Core.Exceptions;
 using Installer.Core.Utils;
+using Serilog;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 
 namespace Installer.Core.Services
 {
-    public class SharpCompressImporter<TEntry, TVolume, TArchive> : IDriverPackageImporter 
+    public class DriverPackageImporter<TEntry, TVolume, TArchive> : IDriverPackageImporter 
         where TEntry: IArchiveEntry 
         where TVolume:IVolume
         where TArchive:AbstractArchive<TEntry, TVolume>
@@ -20,7 +21,7 @@ namespace Installer.Core.Services
         private readonly List<(string, string)> pathMaps;
         private readonly string changelogFilename;
 
-        public SharpCompressImporter(Func<string, TArchive> getArchive, string rootPath)
+        public DriverPackageImporter(Func<string, TArchive> getArchive, string rootPath)
         {
             this.getArchive = getArchive;
             pathMaps = new List<(string, string)>
@@ -36,6 +37,8 @@ namespace Installer.Core.Services
 
         public async Task ImportDriverPackage(string packagePath, string destination, IObserver<double> progressObserver = null)
         {
+            Log.Information("Importing Driver Package from {File}", packagePath);
+
             using (var package = getArchive(packagePath))
             {
                 var files = package.Entries.Where(x => !x.IsDirectory);
@@ -51,6 +54,8 @@ namespace Installer.Core.Services
                 CreateDestinationDirectories(entries);
                 await Extract(entries, progressObserver);
             }
+
+            Log.Information("Driver Package imported successfully", packagePath);
         }
 
         private void CreateDestinationDirectories(List<PendingEntry<TEntry>> paths)
