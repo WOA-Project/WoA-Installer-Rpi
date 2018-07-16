@@ -15,6 +15,8 @@ namespace Installer.Core
         private Volume efiEspVolume;
         private Volume windowsVolume;
 
+        public static readonly Guid WinPhoneBcdGuid = Guid.Parse("7619dcc9-fafe-11d9-b411-000476eba25f");
+
         public Phone(Disk disk)
         {
             Disk = disk;
@@ -191,13 +193,11 @@ namespace Installer.Core
         private async Task DisableDualBoot()
         {
             Log.Information("Disabling Dual Boot...");
-
-            var winPhoneBcdGuid = Guid.Parse("7619dcc9-fafe-11d9-b411-000476eba25f");
-
+            
             var bootVolume = await GetBootVolume();
             await bootVolume.Partition.SetGptType(PartitionType.Esp);
             var bcdInvoker = new BcdInvoker((await GetEfiespVolume()).GetBcdFullFilename());
-            bcdInvoker.Invoke($@"/displayorder {{{winPhoneBcdGuid}}} /remove");
+            bcdInvoker.Invoke($@"/displayorder {{{WinPhoneBcdGuid}}} /remove");
 
             Log.Information("Dual Boot disabled");
         }
@@ -239,6 +239,17 @@ namespace Installer.Core
                 await partition.Remove();
                 Log.Verbose("{Partition} removed", partition);
             }
-        }        
+        }
+
+        public async Task RemoveWindowsPhoneBcdEntry()
+        {
+            Log.Verbose("Removing Windows Phone BCD entry...");
+
+            var efiespVolume = await GetEfiespVolume();
+            var bcdInvoker = new BcdInvoker(efiespVolume.GetBcdFullFilename());
+            bcdInvoker.Invoke($@"/displayorder {{{Phone.WinPhoneBcdGuid}}} /remove");
+
+            Log.Verbose("Windows Phone BCD entry removed");
+        }
     }
 }

@@ -116,7 +116,7 @@ namespace Installer.Core.FullFx
             ps.AddCommand("Resize-Partition")
                 .AddParameter("DiskNumber", partition.Disk.Number)
                 .AddParameter("PartitionNumber", partition.Number)
-                .AddParameter("Size", size.Bytes);
+                .AddParameter("Size", (uint)size.Bytes);
 
             await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
             if (ps.HadErrors)

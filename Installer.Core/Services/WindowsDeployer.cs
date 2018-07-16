@@ -11,7 +11,7 @@ namespace Installer.Core.Services
 {
     public class WindowsDeployer : IWindowsDeployer
     {
-        private static readonly ByteSize SpaceNeededForWindows = ByteSize.FromGigaBytes(19);
+        private static readonly ByteSize SpaceNeededForWindows = ByteSize.FromGigaBytes(18);
         private static readonly ByteSize ReservedPartitionSize = ByteSize.FromMegaBytes(200);
         private static readonly ByteSize BootPartitionSize = ByteSize.FromMegaBytes(100);
         private const string BootPartitionLabel = "BOOT";

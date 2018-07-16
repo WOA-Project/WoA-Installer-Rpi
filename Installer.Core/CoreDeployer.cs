@@ -67,6 +67,6 @@ namespace Installer.Core
             await AddDeveloperMenu(efiespVolume);
 
             Log.Information("Core deployed (UEFI and Development Menu)");
-        }
+        }       
     }
 }
