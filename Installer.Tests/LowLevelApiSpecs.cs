@@ -93,7 +93,7 @@ namespace Application.Tests
         public async Task GetAvailableLetter()
         {
             var sut = new LowLevelApi();
-            var letter = await sut.GetFreeDriveLetter();
+            var letter = sut.GetFreeDriveLetter();
         }
 
         [Fact]

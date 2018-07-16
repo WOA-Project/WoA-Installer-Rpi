@@ -35,7 +35,7 @@ namespace Installer.Core.FileSystem
         public async Task Mount()
         {
             Log.Verbose("Mounting volume {Volume}", this);
-            var driveLetter = await LowLevelApi.GetFreeDriveLetter();
+            var driveLetter = LowLevelApi.GetFreeDriveLetter();
             await LowLevelApi.AssignDriveLetter(this, driveLetter);
 
             await Observable.Defer(() => Observable.Return(UpdateLetter(driveLetter))).RetryWithBackoffStrategy();

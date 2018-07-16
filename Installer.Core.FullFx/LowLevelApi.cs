@@ -253,9 +253,9 @@ namespace Installer.Core.FullFx
             return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
         }
 
-        public async Task<char> GetFreeDriveLetter()
+        public char GetFreeDriveLetter()
         {
-            var drives = Enumerable.Range((int) 'C', (int) 'Z').Select(i => (char)i);
+            var drives = Enumerable.Range((int)'C', (int)'Z').Select(i => (char)i);
             var usedDrives = DriveInfo.GetDrives().Select(x => char.ToUpper(x.Name[0]));
 
             var available = drives.Except(usedDrives);

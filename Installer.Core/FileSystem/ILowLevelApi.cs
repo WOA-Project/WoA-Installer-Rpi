@@ -14,7 +14,7 @@ namespace Installer.Core.FileSystem
         Task<Partition> CreatePartition(Disk disk, ulong sizeInBytes);
         Task SetPartitionType(Partition partition, PartitionType partitionType);
         Task Format(Volume volume, FileSystemFormat ntfs, string fileSystemLabel);
-        Task<char> GetFreeDriveLetter();
+        char GetFreeDriveLetter();
         Task AssignDriveLetter(Volume volume, char letter);
         Task<IList<Volume>> GetVolumes(Disk disk);
         Task RemovePartition(Partition partition);
