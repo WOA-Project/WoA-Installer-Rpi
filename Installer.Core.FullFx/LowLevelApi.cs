@@ -23,15 +23,12 @@ namespace Installer.Core.FullFx
         public LowLevelApi()
         {
             ps = PowerShell.Create();
-            ps.AddScript(File.ReadAllText("Functions.ps1"));
-            ps.Invoke();
         }
 
         public async Task<ICollection<Disk>> GetDisks()
         {
             ps.Commands.Clear();
-            var cmd = $@"Get-Disk";
-            ps.AddScript(cmd);
+            ps.AddScript("Get-Disk");
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
             
@@ -47,8 +44,7 @@ namespace Installer.Core.FullFx
             var disks = await GetDisks();
             foreach (var disk in disks)
             {
-                var hasCorrectSize = HasCorrectSize(disk);
-                if (hasCorrectSize)
+                if (HasCorrectSize(disk))
                 {
                     var volumes = await disk.GetVolumes();
                     var mainOs = volumes.FirstOrDefault(x => x.Label == MainOsLabel);
@@ -136,27 +132,16 @@ namespace Installer.Core.FullFx
         public async Task<List<Partition>> GetPartitions(Disk disk)
         {
             ps.Commands.Clear();
-            ps.AddCommand("GetPartitions")
-                .AddParameter("diskNumber", disk.Number);
+            ps.AddScript($"Get-Disk -Number {disk.Number} | Get-Partition");
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
 
-            var volumes = results
+            var partitions = results
                 .Select(x => x.ImmediateBaseObject)
-                .Select(x =>
-                {
-                    var hasType = Guid.TryParse((string)x.GetPropertyValue("GptType"), out var guid);
+                .Select(x => ToPartition(disk, x))
+                .ToList();
 
-                    return new Partition(disk)
-                    {
-                        Number = (uint)x.GetPropertyValue("PartitionNumber"),
-                        Id = (string)x.GetPropertyValue("UniqueId"),
-                        Letter = (char)x.GetPropertyValue("DriveLetter"),
-                        PartitionType = hasType ? PartitionType.FromGuid(guid) : null,
-                    };
-                });
-
-            return volumes.ToList();
+            return partitions;
         }
 
         public async Task<Volume> GetVolume(Partition partition)
@@ -216,7 +201,7 @@ namespace Installer.Core.FullFx
             return ToPartition(disk, partition);
         }
 
-        private Partition ToPartition(Disk disk, object partition)
+        private static Partition ToPartition(Disk disk, object partition)
         {
             return new Partition(disk)
             {
@@ -255,7 +240,7 @@ namespace Installer.Core.FullFx
 
         public char GetFreeDriveLetter()
         {
-            var drives = Enumerable.Range((int)'C', (int)'Z').Select(i => (char)i);
+            var drives = Enumerable.Range('C', 'Z').Select(i => (char)i);
             var usedDrives = DriveInfo.GetDrives().Select(x => char.ToUpper(x.Name[0]));
 
             var available = drives.Except(usedDrives);

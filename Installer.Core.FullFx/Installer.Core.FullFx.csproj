@@ -65,10 +65,5 @@
       <Version>2.7.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Functions.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

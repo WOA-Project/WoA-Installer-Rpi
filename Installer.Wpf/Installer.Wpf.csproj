@@ -83,6 +83,7 @@
     <Compile Include="ViewModels\DeployerItem.cs" />
     <Compile Include="ViewModels\DriverPackageImporterItem.cs" />
     <Compile Include="ViewModels\DualBootViewModel.cs" />
+    <Compile Include="Services\FilePickMixin.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="Views\Parts\DualBootPart.xaml.cs">
       <DependentUpon>DualBootPart.xaml</DependentUpon>
@@ -113,12 +114,8 @@
     <Compile Include="Views\TextViewerWindow.xaml.cs">
       <DependentUpon>TextViewerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewServices.cs" />
+    <Compile Include="Services\ViewServices.cs" />
     <Compile Include="ViewModels\WimMetadataViewModel.cs" />
-    <None Include="..\Installer.Core.FullFx\Functions.ps1">
-      <Link>Functions.ps1</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Page Include="Views\Parts\DualBootPart.xaml">
       <SubType>Designer</SubType>
@@ -278,8 +275,6 @@
     <Resource Include="Assets\950.png" />
     <Resource Include="Assets\950xl.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

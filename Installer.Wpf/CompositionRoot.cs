@@ -6,6 +6,7 @@ using Cinch.Reloaded.Services.Implementation;
 using Installer.Core;
 using Installer.Core.FullFx;
 using Installer.Core.Services;
+using Intaller.Wpf.Services;
 using Intaller.Wpf.ViewModels;
 using Intaller.Wpf.Views;
 using MahApps.Metro.Controls.Dialogs;
@@ -24,7 +25,7 @@ namespace Intaller.Wpf
             var visualizerService = new ExtendedWpfUIVisualizerService();
             visualizerService.Register("TextViewer", typeof(TextViewerWindow));
 
-            IDictionary<PhoneModel, IDeployer> deployerDict = new Dictionary<PhoneModel, IDeployer>()
+            IDictionary<PhoneModel, IDeployer> deployerDict = new Dictionary<PhoneModel, IDeployer>
             {
                 {PhoneModel.Lumia950Xl, GetDeployer(Path.Combine("Files", "Lumia 950 XL"))},
                 {PhoneModel.Lumia950, GetDeployer(Path.Combine("Files", "Lumia 950"))},

@@ -9,12 +9,12 @@ using System.Reactive.Subjects;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Cinch.Reloaded.Services.Implementation;
-using Cinch.Reloaded.Services.Interfaces;
 using DynamicData;
 using Installer.Core;
 using Installer.Core.Exceptions;
 using Installer.Core.Services.Wim;
 using Intaller.Wpf.Properties;
+using Intaller.Wpf.Services;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
 using Serilog;
@@ -38,7 +38,9 @@ namespace Intaller.Wpf.ViewModels
         private ObservableAsPropertyHelper<WimMetadataViewModel> pickWimFileObs;
         private DeployerItem selectedDeployerItem;
 
-        public MainViewModel(IObservable<LogEvent> logEvents, ICollection<DeployerItem> deployersItems, ICollection<DriverPackageImporterItem> driverPackageImporterItems, ViewServices viewServices, Func<Task<Phone>> getPhoneFunc)
+        public MainViewModel(IObservable<LogEvent> logEvents, ICollection<DeployerItem> deployersItems,
+            ICollection<DriverPackageImporterItem> driverPackageImporterItems, ViewServices viewServices,
+            Func<Task<Phone>> getPhoneFunc)
         {
             DualBootViewModel = new DualBootViewModel(viewServices.DialogCoordinator);
 
@@ -48,21 +50,30 @@ namespace Intaller.Wpf.ViewModels
             this.viewServices = viewServices;
             this.getPhoneFunc = getPhoneFunc;
 
-            ShowWarningCommand = ReactiveCommand.CreateFromTask(() => viewServices.DialogCoordinator.ShowMessageAsync(this, Resources.TermsOfUseTitle, Resources.WarningNotice));
+            ShowWarningCommand = ReactiveCommand.CreateFromTask(() =>
+                viewServices.DialogCoordinator.ShowMessageAsync(this, Resources.TermsOfUseTitle,
+                    Resources.WarningNotice));
 
             SetupPickWimCommand();
 
-            var isDeployerSelected = this.WhenAnyValue(model => model.SelectedDeployerItem, (DeployerItem x) => x != null);
+            var isDeployerSelected =
+                this.WhenAnyValue(model => model.SelectedDeployerItem, (DeployerItem x) => x != null);
             var isSelectedWim = this.WhenAnyObservable(x => x.WimMetadata.SelectedImageObs)
                 .Select(metadata => metadata != null);
 
-            var canDeploy = isSelectedWim.CombineLatest(isDeployerSelected, (hasWim, hasDeployer) => hasWim && hasDeployer);
+            var canDeploy =
+                isSelectedWim.CombineLatest(isDeployerSelected, (hasWim, hasDeployer) => hasWim && hasDeployer);
 
-            FullInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), viewServices.DialogCoordinator);
-            WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), viewServices.DialogCoordinator);
-            InjectDriversWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(InjectPostOobeDrivers, isDeployerSelected), viewServices.DialogCoordinator);
+            FullInstallWrapper = new CommandWrapper<Unit, Unit>(this,
+                ReactiveCommand.CreateFromTask(DeployUefiAndWindows, canDeploy), viewServices.DialogCoordinator);
+            WindowsInstallWrapper = new CommandWrapper<Unit, Unit>(this,
+                ReactiveCommand.CreateFromTask(DeployWindows, canDeploy), viewServices.DialogCoordinator);
+            InjectDriversWrapper = new CommandWrapper<Unit, Unit>(this,
+                ReactiveCommand.CreateFromTask(InjectPostOobeDrivers, isDeployerSelected),
+                viewServices.DialogCoordinator);
 
-            ImportDriverPackageWrapper = new CommandWrapper<Unit, Unit>(this, ReactiveCommand.CreateFromTask(ImportDriverPackage), viewServices.DialogCoordinator);
+            ImportDriverPackageWrapper = new CommandWrapper<Unit, Unit>(this,
+                ReactiveCommand.CreateFromTask(ImportDriverPackage), viewServices.DialogCoordinator);
 
             var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting,
                 WindowsInstallWrapper.Command.IsExecuting,
@@ -80,8 +91,8 @@ namespace Intaller.Wpf.ViewModels
                 .ToProperty(this, model => model.Progress);
 
             isProgressVisibleHelper = progressSubject
-                    .Select(d => !double.IsNaN(d))
-                    .ToProperty(this, x => x.IsProgressVisible);
+                .Select(d => !double.IsNaN(d))
+                .ToProperty(this, x => x.IsProgressVisible);
 
             statusHelper = logEvents
                 .Where(x => x.Level == LogEventLevel.Information)
@@ -104,7 +115,8 @@ namespace Intaller.Wpf.ViewModels
                 .DisposeMany()
                 .Subscribe();
 
-            hasWimHelper = this.WhenAnyValue(model => model.WimMetadata, (WimMetadataViewModel x) => x != null).ToProperty(this, x => x.HasWim);
+            hasWimHelper = this.WhenAnyValue(model => model.WimMetadata, (WimMetadataViewModel x) => x != null)
+                .ToProperty(this, x => x.HasWim);
         }
 
         public IEnumerable<DeployerItem> DeployersItems { get; }
@@ -122,16 +134,22 @@ namespace Intaller.Wpf.ViewModels
         private async Task ImportDriverPackage()
         {
             var extensions = driverPackageImporterItems.Select(x => $"*.{x.Extension}");
-            var fileName = PickFileName(viewServices.OpenFileService, "Driver package", extensions,
-                () => Settings.Default.DriverPackFolder, fn => Settings.Default.DriverPackFolder = fn);
+
+            var fileName = viewServices.OpenFileService.Pick(new List<(string, IEnumerable<string>)> { ("Driver package", extensions) }, () => Settings.Default.DriverPackFolder, fn => Settings.Default.DriverPackFolder = fn);
+
+            if (fileName == null)
+            {
+                return;
+            }
 
             var item = GetImporterItemForFile(fileName);
             var importer = item.DriverPackageImporter;
-            
+
             var message = await importer.GetReadmeText(fileName);
             if (!string.IsNullOrEmpty(message))
             {
-                viewServices.VisualizerService.Show("TextViewer", new MessageViewModel("Changelog", message), (_, __) => { }, OwnerOption.MainWindow);
+                viewServices.VisualizerService.Show("TextViewer", new MessageViewModel("Changelog", message),
+                    (_, __) => { }, OwnerOption.MainWindow);
             }
 
             await importer.ImportDriverPackage(fileName, "", progressSubject);
@@ -143,7 +161,8 @@ namespace Intaller.Wpf.ViewModels
         {
             var extension = Path.GetExtension(fileName);
 
-            var importerItem = driverPackageImporterItems.First(item => string.Equals(extension, "." + item.Extension , StringComparison.InvariantCultureIgnoreCase));
+            var importerItem = driverPackageImporterItems.First(item =>
+                string.Equals(extension, "." + item.Extension, StringComparison.InvariantCultureIgnoreCase));
             return importerItem;
         }
 
@@ -165,43 +184,12 @@ namespace Intaller.Wpf.ViewModels
             {
                 Log.Error(e, "WIM file error");
                 viewServices.DialogCoordinator.ShowMessageAsync(this, "Invalid WIM file", e.Message);
-            });            
-        }
-
-        private string PickWimFile()
-        {
-            var fileName = PickFileName(viewServices.OpenFileService, "WIM Files", new[] { "*.wim" }, () => Settings.Default.WimFolder, x => Settings.Default.WimFolder = x);
-            Log.Verbose("A WIM file has been selected: {FileName}", fileName);
-            
-            var defaultWimFolder = Path.GetDirectoryName(fileName);
-            Settings.Default.WimFolder = defaultWimFolder;
-            
-            return fileName;
-        }
-
-        private static string PickFileName(IOpenFileService openFileService, string description, IEnumerable<string> extensions,
-            Func<string> getCurrentFolder,
-            Action<string> setCurrentFolder)
-        {
-            var extStr = string.Join(";" , extensions);
-
-            openFileService.Filter = $"{description}|{extStr}";
-            openFileService.FileName = "";
-            openFileService.InitialDirectory = getCurrentFolder();
-            if (openFileService.ShowDialog(null) == true)
-            {
-                var pickFileName = openFileService.FileName;
-                var directoryName = Path.GetDirectoryName(pickFileName);
-                setCurrentFolder(directoryName);
-                Log.Verbose("Default directory for WimFolder has been set to {Folder}", directoryName);
-                return pickFileName;
-            }
-
-            return null;
+            });
         }
 
         private IObservable<WimMetadataViewModel> PickWimFileObs =>
-            Observable.Return(PickWimFile()).Where(x => !string.IsNullOrEmpty(x)).Select(LoadWimMetadata);
+            Observable.Return(viewServices.OpenFileService.Pick(new List<(string, IEnumerable<string>)> { ("WIM files", new[] { "install.wim" }) },
+                () => Settings.Default.WimFolder, x => Settings.Default.WimFolder = x)).Where(x => x != null).Select(LoadWimMetadata);
 
         public WimMetadataViewModel WimMetadata => pickWimFileObs.Value;
 
@@ -235,9 +223,10 @@ namespace Intaller.Wpf.ViewModels
                 ImagePath = WimMetadata.Path,
                 ImageIndex = WimMetadata.SelectedDiskImage.Index,
             };
-            
+
             await SelectedDeployer.DeployCoreAndWindows(installOptions, await GetPhone(), progressSubject);
-            await viewServices.DialogCoordinator.ShowMessageAsync(this, Resources.Finished, Resources.WindowsDeployedSuccessfully);
+            await viewServices.DialogCoordinator.ShowMessageAsync(this, Resources.Finished,
+                Resources.WindowsDeployedSuccessfully);
         }
 
         private Task<Phone> GetPhone()
@@ -254,7 +243,8 @@ namespace Intaller.Wpf.ViewModels
             };
 
             await SelectedDeployer.DeployWindows(installOptions, await GetPhone(), progressSubject);
-            await viewServices.DialogCoordinator.ShowMessageAsync(this, Resources.Finished, Resources.WindowsDeployedSuccessfully);
+            await viewServices.DialogCoordinator.ShowMessageAsync(this, Resources.Finished,
+                Resources.WindowsDeployedSuccessfully);
         }
 
         private async Task InjectPostOobeDrivers()
@@ -272,7 +262,8 @@ namespace Intaller.Wpf.ViewModels
                 throw new InvalidOperationException(Resources.CannotInjectPostOobe, e);
             }
 
-            await viewServices.DialogCoordinator.ShowMessageAsync(this, Resources.Finished, Resources.DriversInjectedSucessfully);
+            await viewServices.DialogCoordinator.ShowMessageAsync(this, Resources.Finished,
+                Resources.DriversInjectedSucessfully);
         }
 
         public ReadOnlyObservableCollection<RenderedLogEvent> Events => logEvents;
