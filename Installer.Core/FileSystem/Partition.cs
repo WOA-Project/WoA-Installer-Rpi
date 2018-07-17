@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using ByteSizeLib;
+using Serilog;
 
 namespace Installer.Core.FileSystem
 {
@@ -32,9 +33,11 @@ namespace Installer.Core.FileSystem
             return LowLevelApi.GetVolume(this);
         }
 
-        public Task SetGptType(PartitionType partitionType)
+        public async Task SetGptType(PartitionType partitionType)
         {
-            return LowLevelApi.SetPartitionType(this, partitionType);
+            Log.Verbose("Setting partition type to {Partition} from {OldType} to {NewType}", this, PartitionType, partitionType);
+            await LowLevelApi.SetPartitionType(this, partitionType);
+            Log.Verbose("Partition type set");
         }
 
         public Task Remove()

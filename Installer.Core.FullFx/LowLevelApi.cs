@@ -121,12 +121,18 @@ namespace Installer.Core.FullFx
             await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
             if (ps.HadErrors)
             {
-                var errors = string.Join(",", ps.Streams.Error.ReadAll());
-                var invalidOperationException = new InvalidOperationException($@"Cannot resize the partition. Details: {errors}");
-                Log.Error(invalidOperationException, "The resize operation has failed");
-                
-                throw invalidOperationException;
+                Throw("The resize operation has failed");
             }
+        }
+
+        private void Throw(string message) 
+        {
+            var errors = string.Join(",", ps.Streams.Error.ReadAll());
+
+            var invalidOperationException = new InvalidOperationException($@"{message}. Details: {errors}");
+            Log.Error(invalidOperationException, message);
+
+            throw invalidOperationException;
         }
 
         public async Task<List<Partition>> GetPartitions(Disk disk)
@@ -217,7 +223,14 @@ namespace Installer.Core.FullFx
             var cmd = $@"Set-Partition -PartitionNumber {partition.Number} -DiskNumber {partition.Disk.Number} -GptType ""{{{partitionType.Guid}}}""";
             ps.AddScript(cmd);
 
-            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+            var result = Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+
+            if (ps.HadErrors)
+            {
+                Throw($"Cannot set the partition type {partitionType} to {partition}");
+            }
+            
+            return result;
         }
 
         public Task Format(Volume volume, FileSystemFormat fileSystemFormat, string fileSystemLabel)
