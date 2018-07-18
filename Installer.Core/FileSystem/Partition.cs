@@ -14,7 +14,7 @@ namespace Installer.Core.FileSystem
         public Disk Disk { get; private set; }
         public uint Number { get; set; }
         public string Id { get; set; }
-        public char Letter { get; set; }
+        public char? Letter { get; set; }
         public PartitionType PartitionType { get; set; }
         public ILowLevelApi LowLevelApi => Disk.LowLevelApi;
 

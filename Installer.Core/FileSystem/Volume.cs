@@ -57,7 +57,7 @@ namespace Installer.Core.FileSystem
 
         public override string ToString()
         {
-            return $"{nameof(Label)}: '{Label}', {nameof(Partition)}: {Partition}, {nameof(Letter)}: {Letter}";
+            return $"{nameof(Label)}: {Label}, {nameof(Size)}: {Size}, {nameof(Partition)}: {Partition}, {nameof(Letter)}: {Letter}";
         }
     }
 }

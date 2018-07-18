@@ -31,7 +31,7 @@ namespace Installer.Core.FullFx
             ps.AddScript("Get-Disk");
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
-            
+
             var disks = results
                 .Select(x => x.ImmediateBaseObject)
                 .Select(x => ToDisk(this, x));
@@ -44,7 +44,9 @@ namespace Installer.Core.FullFx
             var disks = await GetDisks();
             foreach (var disk in disks)
             {
-                if (HasCorrectSize(disk))
+                var hasCorrectSize = HasCorrectSize(disk);
+
+                if (true)
                 {
                     var volumes = await disk.GetVolumes();
                     var mainOs = volumes.FirstOrDefault(x => x.Label == MainOsLabel);
@@ -125,7 +127,7 @@ namespace Installer.Core.FullFx
             }
         }
 
-        private void Throw(string message) 
+        private void Throw(string message)
         {
             var errors = string.Join(",", ps.Streams.Error.ReadAll());
 
@@ -209,11 +211,15 @@ namespace Installer.Core.FullFx
 
         private static Partition ToPartition(Disk disk, object partition)
         {
+            string guid = (string)partition.GetPropertyValue("GptType");
+            var partitionType = guid != null ? PartitionType.FromGuid(Guid.Parse(guid)) : null;
+
             return new Partition(disk)
             {
                 Number = (uint)partition.GetPropertyValue("PartitionNumber"),
                 Id = (string)partition.GetPropertyValue("UniqueId"),
-                Letter = (char)partition.GetPropertyValue("DriveLetter")
+                Letter = (char?)partition.GetPropertyValue("DriveLetter"),
+                PartitionType = partitionType,
             };
         }
 
@@ -229,7 +235,7 @@ namespace Installer.Core.FullFx
             {
                 Throw($"Cannot set the partition type {partitionType} to {partition}");
             }
-            
+
             return result;
         }
 

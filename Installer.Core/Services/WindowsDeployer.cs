@@ -17,7 +17,7 @@ namespace Installer.Core.Services
         private const string BootPartitionLabel = "BOOT";
         private const string WindowsPartitonLabel = "WindowsARM";
         private const string BcdBootPath = @"c:\Windows\SysNative\bcdboot.exe";
-        
+
         private readonly IWindowsImageService windowsImageService;
         private readonly DriverPaths driverPaths;
 
@@ -38,12 +38,12 @@ namespace Installer.Core.Services
 
             await ApplyWindowsImage(partitions, options, progressObserver);
             await InjectDrivers(partitions.Windows);
-            await MakeBootable(partitions);
+            await MakeBootable(partitions, phone);
 
             Log.Information("Windows Image deployed");
         }
 
-        private async Task MakeBootable(WindowsVolumes volumes)
+        private async Task MakeBootable(WindowsVolumes volumes, Phone phone)
         {
             Log.Information("Making Windows installation bootable...");
 
@@ -55,6 +55,12 @@ namespace Installer.Core.Services
             bcd.Invoke("/set {default} testsigning on");
             bcd.Invoke("/set {default} nointegritychecks on");
             await volumes.Boot.Partition.SetGptType(PartitionType.Esp);
+            var updatedBootVolume = await phone.GetBootVolume();
+            Log.Verbose("Updated Boot Volume: {@Volume}", new { updatedBootVolume.Label, updatedBootVolume.Partition, });
+            if (!Equals(updatedBootVolume.Partition.PartitionType, PartitionType.Esp))
+            {
+                Log.Warning("The system partition should be {Esp}, but it's {ActualType}", PartitionType.Esp, updatedBootVolume.Partition.PartitionType);
+            }
         }
 
         private Task RemoveExistingWindowsPartitions(Phone phone)
@@ -81,9 +87,9 @@ namespace Installer.Core.Services
         {
             Log.Information("Creating Windows partitions...");
 
-            await phone.Disk.CreateReservedPartition((ulong) ReservedPartitionSize.Bytes);
+            await phone.Disk.CreateReservedPartition((ulong)ReservedPartitionSize.Bytes);
 
-            var bootPartition = await phone.Disk.CreatePartition((ulong) BootPartitionSize.Bytes);
+            var bootPartition = await phone.Disk.CreatePartition((ulong)BootPartitionSize.Bytes);
             var bootVolume = await bootPartition.GetVolume();
             await bootVolume.Mount();
             await bootVolume.Format(FileSystemFormat.Fat32, BootPartitionLabel);
@@ -123,7 +129,7 @@ namespace Installer.Core.Services
             Log.Information("Shrinking Data partition...");
 
             var dataVolume = await phone.GetDataVolume();
-            
+
             var finalSize = dataVolume.Size - SpaceNeededForWindows;
 
             await dataVolume.Partition.Resize(finalSize);
