@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using ByteSizeLib;
+using Serilog;
 
 namespace Installer.Core.FileSystem
 {
@@ -12,7 +14,7 @@ namespace Installer.Core.FileSystem
         public Disk Disk { get; private set; }
         public uint Number { get; set; }
         public string Id { get; set; }
-        public char Letter { get; set; }
+        public char? Letter { get; set; }
         public PartitionType PartitionType { get; set; }
         public ILowLevelApi LowLevelApi => Disk.LowLevelApi;
 
@@ -21,7 +23,7 @@ namespace Installer.Core.FileSystem
             return $"{nameof(Disk)}: {Disk}, {nameof(Number)}: {Number}";
         }
 
-        public async Task Resize(ulong sizeInBytes)
+        public async Task Resize(ByteSize sizeInBytes)
         {
             await LowLevelApi.ResizePartition(this, sizeInBytes);
         }
@@ -31,9 +33,11 @@ namespace Installer.Core.FileSystem
             return LowLevelApi.GetVolume(this);
         }
 
-        public Task SetGptType(PartitionType partitionType)
+        public async Task SetGptType(PartitionType partitionType)
         {
-            return LowLevelApi.SetPartitionType(this, partitionType);
+            Log.Verbose("Setting partition type to {Partition} from {OldType} to {NewType}", this, PartitionType, partitionType);
+            await LowLevelApi.SetPartitionType(this, partitionType);
+            Log.Verbose("Partition type set");
         }
 
         public Task Remove()

@@ -61,11 +61,39 @@ namespace Intaller.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot inject the Post-OOBE drivers.
+        /// </summary>
+        internal static string CannotInjectPostOobe {
+            get {
+                return ResourceManager.GetString("CannotInjectPostOobe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The drivers have been injected correctly.
         /// </summary>
         internal static string DriversInjectedSucessfully {
             get {
                 return ResourceManager.GetString("DriversInjectedSucessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished.
+        /// </summary>
+        internal static string Finished {
+            get {
+                return ResourceManager.GetString("Finished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorry, there are no POST-OOBE drivers available to inject.
+        ///The driver package that is currently installed might not need to install any additional driver after Windows Setup..
+        /// </summary>
+        internal static string NoPostOobeDrivers {
+            get {
+                return ResourceManager.GetString("NoPostOobeDrivers", resourceCulture);
             }
         }
         
@@ -81,7 +109,7 @@ namespace Intaller.Wpf.Properties {
         /// <summary>
         ///   Looks up a localized string similar to - This tool comes with no warranty. 
         ///- The authors can&apos;t be hold responsible for any damage it may cause to your device.    
-        ///- This tool intended for usage with Lumia 950 XL **ONLY**.
+        ///- This tool intended for usage with Lumia 950 and 950 XL **ONLY**.
         ///    
         ///By clicking &quot;OK&quot; you accept the aforementioned risks..
         /// </summary>
@@ -92,8 +120,18 @@ namespace Intaller.Wpf.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The selected .WIM file doesn&apos;t contain any image for ARM64. Please, select a .wim file that targets this architecture..
+        /// </summary>
+        internal static string WimFileNoValidArchitecture {
+            get {
+                return ResourceManager.GetString("WimFileNoValidArchitecture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Done!
-        ///You can now reboot your phone and choose &quot;Windows 10&quot; to start the Windows 10 ARM Setup.
+        ///Now, please, **eject the Phone safely** to avoid data corruption issues and reboot your Phone.
+        ///After reboot, choose &quot;Windows 10&quot; in the Boot Menu to start the Windows 10 ARM Setup.
         ///Enjoy!.
         /// </summary>
         internal static string WindowsDeployedSuccessfully {

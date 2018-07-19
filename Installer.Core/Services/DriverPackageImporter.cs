@@ -5,55 +5,102 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Installer.Core.Exceptions;
+using Installer.Core.Utils;
 using Serilog;
-using SharpCompress.Archives.SevenZip;
+using SharpCompress.Archives;
 using SharpCompress.Common;
 
 namespace Installer.Core.Services
 {
-    public class DriverPackageImporter : IDriverPackageImporter
+    public class DriverPackageImporter<TEntry, TVolume, TArchive> : IDriverPackageImporter 
+        where TEntry: IArchiveEntry 
+        where TVolume:IVolume
+        where TArchive:AbstractArchive<TEntry, TVolume>
     {
-        private const string RootFolder = "";
-        private static readonly string ChangelogFilename = $"{RootFolder}Changelog.txt";
+        private readonly Func<string, TArchive> getArchive;
+        private readonly List<(string, string)> pathMaps;
+        private readonly string changelogFilename;
 
-        public async Task ImportDriverPackage(string fileName, string destination, IObserver<double> progressObserver = null)
+        public DriverPackageImporter(Func<string, TArchive> getArchive, string rootPath)
         {
-            Log.Information("Importing Driver Package from {Filename}...", fileName);
-
-            var pathMapping = new Dictionary<string, string>
+            this.getArchive = getArchive;
+            pathMaps = new List<(string, string)>
             {
-                {$"{RootFolder}Cityman/", Path.Combine(destination, "Pre-OOBE")},
-                {$"{RootFolder}POSTOOBE/", Path.Combine(destination, "Post-OOBE")},
+                ("Cityman", Path.Combine(rootPath, "Lumia 950 XL", "Drivers", "Pre-OOBE")),
+                ("PostOOBE", Path.Combine(rootPath, "Lumia 950 XL", "Drivers", "Post-OOBE")),
+                ("Talkman", Path.Combine(rootPath, "Lumia 950", "Drivers", "Pre-OOBE")),
+                ("PostOOBE", Path.Combine(rootPath, "Lumia 950", "Drivers", "Post-OOBE")),
             };
 
-            using (var package = SevenZipArchive.Open(fileName))
-            {
-                SanityCheck(package);
-
-                var itemsToExtract = package.Entries.Where(entry => IsExtractable(entry, pathMapping)).Select(x => new PendingExtract() { Entry = x, Destination = DestinationFolder(x, pathMapping)})
-                    .ToList();
-
-                EnsureEmptyDestination(destination);
-                await Extract(itemsToExtract, progressObserver);
-            }
-
-            Log.Information("Driver Package imported correctly", fileName);
+            changelogFilename = $"Changelog.txt";
         }
 
-        private static void SanityCheck(SevenZipArchive archive)
+        public async Task ImportDriverPackage(string packagePath, string destination, IObserver<double> progressObserver = null)
         {
-            if (!archive.Entries.Any(x => x.Key.StartsWith($"{RootFolder}Cityman", StringComparison.InvariantCultureIgnoreCase)))
+            Log.Information("Importing Driver Package from {File}", packagePath);
+
+            using (var package = getArchive(packagePath))
             {
-                throw new InvalidDriverPackageException("The driver package seems to be invalid");
+                var files = package.Entries.Where(x => !x.IsDirectory);
+
+                var entries = GetPendingEntries(files, pathMaps).ToList();
+
+                if (!entries.Any())
+                {
+                    throw new InvalidDriverPackageException("The driver package seems to be invalid.");
+                }
+
+                EnsureEmptyPaths(pathMaps.Select(tuple => tuple.Item2));
+                CreateDestinationDirectories(entries);
+                await Extract(entries, progressObserver);
             }
+
+            Log.Information("Driver Package imported successfully", packagePath);
+        }
+
+        private void CreateDestinationDirectories(List<PendingEntry<TEntry>> paths)
+        {
+            var directories = paths.Select(x => Path.GetDirectoryName(x.Destination)).Distinct();
+            foreach (var path in directories)
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
+
+        private void EnsureEmptyPaths(IEnumerable<string> paths)
+        {
+            foreach (var path in paths)
+            {
+                FileUtils.EnsureEmptyDirectory(path);
+            }
+        }
+
+        private IEnumerable<PendingEntry<TEntry>> GetPendingEntries(IEnumerable<TEntry> packageEntries, IEnumerable<(string, string)> valueTuples)
+        {
+            return valueTuples.SelectMany(x => GetEntriesFromMapping(packageEntries, x));
+        }
+
+        private IEnumerable<PendingEntry<TEntry>> GetEntriesFromMapping(IEnumerable<TEntry> packageEntries, (string, string) valueTuple)
+        {
+            var oldRootPath = valueTuple.Item1;
+
+            var filteredEntries = packageEntries.Where(entry =>
+                entry.Key.StartsWith(oldRootPath, StringComparison.InvariantCultureIgnoreCase));
+
+            return filteredEntries.Select(x =>
+            {
+                var relative = new string(x.Key.Skip(oldRootPath.Length + 1).ToArray()).Replace("/", "\\");
+                var destination = Path.Combine(valueTuple.Item2, relative);
+                return new PendingEntry<TEntry>(x, destination);
+            });
         }
 
         public async Task<string> GetReadmeText(string fileName)
         {
             var memoryStream = new MemoryStream();
-            using (var package = SevenZipArchive.Open(fileName))
+            using (var package = getArchive(fileName))
             {
-                var readme = package.Entries.FirstOrDefault(x => string.Equals(x.Key, ChangelogFilename));
+                var readme = package.Entries.FirstOrDefault(x => string.Equals(x.Key, changelogFilename));
                 if (readme == null)
                 {
                     return null;
@@ -66,38 +113,10 @@ namespace Installer.Core.Services
                     var readToEnd = new StreamReader(memoryStream).ReadToEnd();
                     return readToEnd;
                 }
-            }            
-        }
-
-        private static void EnsureEmptyDestination(string destination)
-        {
-            if (Directory.Exists(destination))
-            {
-                Directory.Delete(destination, true);
             }
         }
 
-        private static bool IsExtractable(IEntry entry, Dictionary<string, string> paths)
-        {
-            return !entry.IsDirectory && paths.Keys.Any(key => entry.Key.StartsWith(key, StringComparison.CurrentCultureIgnoreCase));
-        }
-
-        private static string DestinationFolder(IEntry sevenZipArchiveEntry, IDictionary<string, string> paths)
-        {
-            var key = paths.Keys.FirstOrDefault(x => sevenZipArchiveEntry.Key.StartsWith(x, StringComparison.CurrentCultureIgnoreCase));
-            if (key == null)
-            {
-                throw new InvalidOperationException("They key cannot be null");
-            }
-
-            var destinationRoot = paths[key];
-            var rightPart = new string(sevenZipArchiveEntry.Key.Skip(key.Length + 1).ToArray());
-            var destinationFolder = Path.Combine(destinationRoot, rightPart);
-
-            return destinationFolder.Replace("/", "\\");
-        }
-
-        private static async Task Extract(ICollection<PendingExtract> entries, IObserver<double> progressObserver = null)
+        private static async Task Extract(ICollection<PendingEntry<TEntry>> entries, IObserver<double> progressObserver = null)
         {
             var count = entries.Count;
             double i = 0;
@@ -122,22 +141,28 @@ namespace Installer.Core.Services
             progressObserver?.OnNext(double.NaN);
         }
 
-        private static async Task ExtractEntryToFile(PendingExtract pe)
+        private static async Task ExtractEntryToFile(PendingEntry<TEntry> pe)
         {
             using (var input = pe.Entry.OpenEntryStream())
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(pe.Destination) ?? throw new InvalidOperationException("The directory name should not be null"));
+            {            
                 using (var output = File.OpenWrite(pe.Destination))
                 {
-                    await input.CopyToAsync(output);
-                }                                
+                    await input.CopyToAsync(output);                    
+                }
             }
         }
 
-        private class PendingExtract
+        private class PendingEntry<T> where T : IArchiveEntry
         {
-            public SevenZipArchiveEntry Entry { get; set; }
-            public string Destination { get; set; }
+            public PendingEntry(T entry, string destination)
+            {
+                Entry = entry;
+                Destination = destination;
+            }
+
+
+            public T Entry { get; }
+            public string Destination { get; }
         }
     }
 }

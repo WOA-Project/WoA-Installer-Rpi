@@ -13,14 +13,14 @@ namespace Application.Tests
         public async Task MakeBootable()
         {
             var lowLevelApi = new LowLevelApi();
-            var sut = new WindowsDeployer(new DismImageService(), new Phone(await lowLevelApi.GetPhoneDisk()));
+            var sut = new WindowsDeployer(new DismImageService(), new DriverPaths(""));
 
             var lowlevel = lowLevelApi;
             var volumes = await lowlevel.GetVolumes(await lowlevel.GetPhoneDisk());
             var winVolume = volumes.Single(v => v.Label == "WindowsARM");
             var bootVolume = volumes.Single(v => v.Label == "BOOT");
 
-            await sut.MakeBootable(new WindowsDeployer.WindowsVolumes(bootVolume, winVolume));
+            //await sut.MakeBootable(new WindowsVolumes());
         }
     }
 }

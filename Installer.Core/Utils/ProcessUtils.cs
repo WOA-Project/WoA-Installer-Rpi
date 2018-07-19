@@ -9,7 +9,6 @@ namespace Installer.Core.Utils
     {
         public static string Run(string command, string arguments)
         {
-
             var process = new Process
             {
                 StartInfo =
@@ -23,13 +22,18 @@ namespace Installer.Core.Utils
                 }
             };
 
+            Log.Verbose("Starting process {@Process}", new { process.StartInfo.FileName, process.StartInfo.Arguments });
             process.Start();
+            Log.Verbose("Process started sucessfully");
+
 
             string output = process.StandardOutput.ReadToEnd();
             Console.WriteLine(output);
             string err = process.StandardError.ReadToEnd();
             Console.WriteLine(err);
             process.WaitForExit();
+
+            Log.Verbose("Process output {Output}", output);
 
             return output;
         }

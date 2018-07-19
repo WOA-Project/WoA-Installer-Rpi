@@ -3,6 +3,7 @@ using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using ByteSizeLib;
 using Installer.Core.Utils;
 using Serilog;
 
@@ -18,7 +19,7 @@ namespace Installer.Core.FileSystem
         }
 
         public string Label { get; set; }
-        public ulong Size { get; set; }
+        public ByteSize Size { get; set; }
         public Partition Partition { get; set; }
         public char? Letter { get; set; }
 
@@ -34,7 +35,7 @@ namespace Installer.Core.FileSystem
         public async Task Mount()
         {
             Log.Verbose("Mounting volume {Volume}", this);
-            var driveLetter = await LowLevelApi.GetFreeDriveLetter();
+            var driveLetter = LowLevelApi.GetFreeDriveLetter();
             await LowLevelApi.AssignDriveLetter(this, driveLetter);
 
             await Observable.Defer(() => Observable.Return(UpdateLetter(driveLetter))).RetryWithBackoffStrategy();
@@ -56,7 +57,7 @@ namespace Installer.Core.FileSystem
 
         public override string ToString()
         {
-            return $"{nameof(Label)}: '{Label}', {nameof(Partition)}: {Partition}, {nameof(Letter)}: {Letter}";
+            return $"{nameof(Label)}: {Label}, {nameof(Size)}: {Size}, {nameof(Partition)}: {Partition}, {nameof(Letter)}: {Letter}";
         }
     }
 }

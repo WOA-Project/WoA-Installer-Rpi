@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using ByteSizeLib;
 using Installer.Core;
 using Installer.Core.FileSystem;
 using Installer.Core.FullFx;
@@ -31,13 +32,6 @@ namespace Application.Tests
         }
 
         [Fact]
-        public async Task EnsurePartitionMounted()
-        {
-            var sut = new LowLevelApi();
-            await sut.EnsurePartitionMounted("EFIESP", "FAT");
-        }
-
-        [Fact]
         public async Task Format()
         {
             var sut = new LowLevelApi();
@@ -63,16 +57,8 @@ namespace Application.Tests
         public async Task DeployWindows()
         {
             var api = new LowLevelApi();
-            var deployer = new WindowsDeployer(new DismImageService(), new Phone(await api.GetPhoneDisk()));
-            await deployer.Deploy(@"F:\sources\install.wim");
-        }
-
-
-        [Fact]
-        public async Task RemoveExistingWindowsPartitions()
-        {
-            var sut = new LowLevelApi();
-            await sut.RemoveExistingWindowsPartitions();
+            var deployer = new WindowsDeployer(new DismImageService(), new DriverPaths(""));
+            await deployer.Deploy(new InstallOptions(@"F:\sources\install.wim"), new Phone(null));
         }
 
         [Fact]
@@ -107,22 +93,17 @@ namespace Application.Tests
         public async Task GetAvailableLetter()
         {
             var sut = new LowLevelApi();
-            var letter = await sut.GetFreeDriveLetter();
+            var letter = sut.GetFreeDriveLetter();
         }
 
         [Fact]
         public async Task ResizePartition()
         {
-            var sut = new LowLevelApi();
-            var partitions = await sut.GetPartitions(await sut.GetPhoneDisk());
-            var volumes = await partitions.ToObservable()
-                .Select(x => Observable.FromAsync(() => sut.GetVolume(x)))
-                .Merge(1)
-                .ToList();
-
-            var volumeToResize = volumes.First(x => x.Label == "Data");
-            var sizeInBytes = 2 * (ulong)1_000_000_000;
-            await sut.ResizePartition(volumeToResize.Partition, sizeInBytes);
+            var api = new LowLevelApi();
+            var phoneDisk = await api.GetPhoneDisk();
+            var phone = new Phone(phoneDisk);
+            var dataVol = await phone.GetDataVolume();
+            await dataVol.Partition.Resize(ByteSize.FromGigaBytes(10));
         }
 
         [Fact]

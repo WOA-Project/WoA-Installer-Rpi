@@ -6,6 +6,7 @@ using System.Management.Automation;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using ByteSizeLib;
+using Installer.Core.Exceptions;
 using Installer.Core.FileSystem;
 using Registry;
 using Serilog;
@@ -22,18 +23,15 @@ namespace Installer.Core.FullFx
         public LowLevelApi()
         {
             ps = PowerShell.Create();
-            ps.AddScript(File.ReadAllText("Functions.ps1"));
-            ps.Invoke();
         }
 
         public async Task<ICollection<Disk>> GetDisks()
         {
             ps.Commands.Clear();
-            var cmd = $@"Get-Disk";
-            ps.AddScript(cmd);
+            ps.AddScript("Get-Disk");
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
-            
+
             var disks = results
                 .Select(x => x.ImmediateBaseObject)
                 .Select(x => ToDisk(this, x));
@@ -46,7 +44,9 @@ namespace Installer.Core.FullFx
             var disks = await GetDisks();
             foreach (var disk in disks)
             {
-                if (HasCorrectSize(disk))
+                var hasCorrectSize = HasCorrectSize(disk);
+
+                if (hasCorrectSize)
                 {
                     var volumes = await disk.GetVolumes();
                     var mainOs = volumes.FirstOrDefault(x => x.Label == MainOsLabel);
@@ -54,7 +54,7 @@ namespace Installer.Core.FullFx
                     {
                         return disk;
                     }
-                }                
+                }
             }
 
             throw new PhoneDiskNotFoundException("Cannot get the Phone Disk. Please, verify that the Phone is in Mass Storage Mode.");
@@ -110,65 +110,49 @@ namespace Installer.Core.FullFx
             return new Disk(lowLevelApi, number, size, allocatedSize);
         }
 
-        public Task EnsurePartitionMounted(string label, string filesystemType)
-        {
-            ps.Commands.Clear();
-            ps.AddCommand("EnsurePartitionMountedForVolume")
-                .AddParameter("label", label)
-                .AddParameter("fileSystemType", filesystemType);
 
-            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
-        }
-
-        public Task RemoveExistingWindowsPartitions()
-        {
-            ps.Commands.Clear();
-            ps.AddCommand("RemoveExistingWindowsPartitions");
-
-            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
-        }
-
-
-        public async Task ResizePartition(Partition partition, ulong sizeInBytes)
+        public async Task ResizePartition(Partition partition, ByteSize size)
         {
             ps.Commands.Clear();
 
-            ps.AddCommand("ResizePartition")
-                .AddParameter("diskNumber", partition.Disk.Number)
-                .AddParameter("partitionNumber", partition.Number)
-                .AddParameter("sizeInBytes", sizeInBytes);
+            var sizeBytes = (ulong)size.Bytes;
+            Log.Verbose("Resizing partition {Partition} to {Size} ({Bytes} bytes)", size, sizeBytes);
+
+            ps.AddCommand("Resize-Partition")
+                .AddParameter("DiskNumber", partition.Disk.Number)
+                .AddParameter("PartitionNumber", partition.Number)
+                .AddParameter("Size", sizeBytes);
 
             await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
             if (ps.HadErrors)
             {
-                throw new InvalidOperationException(@"Cannot resize the partition");
+                Throw("The resize operation has failed");
             }
+        }
+
+        private void Throw(string message)
+        {
+            var errors = string.Join(",", ps.Streams.Error.ReadAll());
+
+            var invalidOperationException = new InvalidOperationException($@"{message}. Details: {errors}");
+            Log.Error(invalidOperationException, message);
+
+            throw invalidOperationException;
         }
 
         public async Task<List<Partition>> GetPartitions(Disk disk)
         {
             ps.Commands.Clear();
-            ps.AddCommand("GetPartitions")
-                .AddParameter("diskNumber", disk.Number);
+            ps.AddScript($"Get-Disk -Number {disk.Number} | Get-Partition");
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
 
-            var volumes = results
+            var partitions = results
                 .Select(x => x.ImmediateBaseObject)
-                .Select(x =>
-                {
-                    var hasType = Guid.TryParse((string)x.GetPropertyValue("GptType"), out var guid);
+                .Select(x => ToPartition(disk, x))
+                .ToList();
 
-                    return new Partition(disk)
-                    {
-                        Number = (uint)x.GetPropertyValue("PartitionNumber"),
-                        Id = (string)x.GetPropertyValue("UniqueId"),
-                        Letter = (char)x.GetPropertyValue("DriveLetter"),
-                        PartitionType = hasType ? PartitionType.FromGuid(guid) : null,
-                    };
-                });
-
-            return volumes.ToList();
+            return partitions;
         }
 
         public async Task<Volume> GetVolume(Partition partition)
@@ -187,7 +171,7 @@ namespace Installer.Core.FullFx
             return new Volume(partition)
             {
                 Partition = partition,
-                Size = Convert.ToUInt64(volume.GetPropertyValue("Size")),
+                Size = new ByteSize(Convert.ToUInt64(volume.GetPropertyValue("Size"))),
                 Label = (string)volume.GetPropertyValue("FileSystemLabel"),
                 Letter = (char?)volume.GetPropertyValue("DriveLetter")
             };
@@ -228,13 +212,17 @@ namespace Installer.Core.FullFx
             return ToPartition(disk, partition);
         }
 
-        private Partition ToPartition(Disk disk, object partition)
+        private static Partition ToPartition(Disk disk, object partition)
         {
+            string guid = (string)partition.GetPropertyValue("GptType");
+            var partitionType = guid != null ? PartitionType.FromGuid(Guid.Parse(guid)) : null;
+
             return new Partition(disk)
             {
                 Number = (uint)partition.GetPropertyValue("PartitionNumber"),
                 Id = (string)partition.GetPropertyValue("UniqueId"),
-                Letter = (char)partition.GetPropertyValue("DriveLetter")
+                Letter = (char?)partition.GetPropertyValue("DriveLetter"),
+                PartitionType = partitionType,
             };
         }
 
@@ -244,7 +232,14 @@ namespace Installer.Core.FullFx
             var cmd = $@"Set-Partition -PartitionNumber {partition.Number} -DiskNumber {partition.Disk.Number} -GptType ""{{{partitionType.Guid}}}""";
             ps.AddScript(cmd);
 
-            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+            var result = Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+
+            if (ps.HadErrors)
+            {
+                Throw($"Cannot set the partition type {partitionType} to {partition}");
+            }
+
+            return result;
         }
 
         public Task Format(Volume volume, FileSystemFormat fileSystemFormat, string fileSystemLabel)
@@ -265,9 +260,9 @@ namespace Installer.Core.FullFx
             return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
         }
 
-        public async Task<char> GetFreeDriveLetter()
+        public char GetFreeDriveLetter()
         {
-            var drives = Enumerable.Range((int) 'C', (int) 'Z').Select(i => (char)i);
+            var drives = Enumerable.Range('C', 'Z').Select(i => (char)i);
             var usedDrives = DriveInfo.GetDrives().Select(x => char.ToUpper(x.Name[0]));
 
             var available = drives.Except(usedDrives);

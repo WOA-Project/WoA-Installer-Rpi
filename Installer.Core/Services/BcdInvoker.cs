@@ -1,4 +1,5 @@
 ﻿using Installer.Core.Utils;
+using Serilog;
 
 namespace Installer.Core.Services
 {
