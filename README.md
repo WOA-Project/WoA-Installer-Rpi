@@ -1,7 +1,7 @@
 # Lumia Windows 10 ARM64 Installer
 This is a GUI tool to install Windows On ARM for Lumia 950 XL
 
-![image](https://user-images.githubusercontent.com/3109851/42497991-52fd3b30-842b-11e8-992b-4be922a80803.png)
+![image](https://user-images.githubusercontent.com/3109851/42969544-c8a0660a-8ba6-11e8-84ab-487e3c0b8bb7.png)
 
 # Requirements
 - A Lumia 950 XL with an unlocked bootloader that can correctly enter Mass Storage Mode
