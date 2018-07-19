@@ -129,8 +129,8 @@ namespace Installer.Core.Services
             Log.Information("Shrinking Data partition...");
 
             var dataVolume = await phone.GetDataVolume();
-
             var finalSize = dataVolume.Size - SpaceNeededForWindows;
+            Log.Verbose("Resizing Data to {Size}", finalSize);
 
             await dataVolume.Partition.Resize(finalSize);
         }

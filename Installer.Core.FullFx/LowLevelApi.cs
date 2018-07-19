@@ -46,7 +46,7 @@ namespace Installer.Core.FullFx
             {
                 var hasCorrectSize = HasCorrectSize(disk);
 
-                if (true)
+                if (hasCorrectSize)
                 {
                     var volumes = await disk.GetVolumes();
                     var mainOs = volumes.FirstOrDefault(x => x.Label == MainOsLabel);
@@ -115,10 +115,13 @@ namespace Installer.Core.FullFx
         {
             ps.Commands.Clear();
 
+            var sizeBytes = (ulong)size.Bytes;
+            Log.Verbose("Resizing partition {Partition} to {Size} ({Bytes} bytes)", size, sizeBytes);
+
             ps.AddCommand("Resize-Partition")
                 .AddParameter("DiskNumber", partition.Disk.Number)
                 .AddParameter("PartitionNumber", partition.Number)
-                .AddParameter("Size", (uint)size.Bytes);
+                .AddParameter("Size", sizeBytes);
 
             await Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
             if (ps.HadErrors)

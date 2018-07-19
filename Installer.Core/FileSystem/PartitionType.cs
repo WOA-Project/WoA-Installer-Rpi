@@ -37,7 +37,7 @@ namespace Installer.Core.FileSystem
                 return type;
             }
 
-            Log.Warning("The partition type {Guid} is unknown", guid);
+            //Log.Warning("The partition type {Guid} is unknown", guid);
             return null;
         }
 
