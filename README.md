@@ -34,7 +34,8 @@ If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjm
 
 # Acknowledgements
 - [Eric Zimmerman](https://github.com/EricZimmerman) for [Registry project](https://github.com/EricZimmerman/Registry)
-- Gustave M. (retrieving metada from Windows Images)
+- Gustave M. (retrieving metadata from Windows Images)
 - MahApps.Metro https://mahapps.com/
 - https://reactiveui.net/
 - the people at [LumiaWOA](https://t.me/joinchat/Ey6mehEPg0Fe4utQNZ9yjA) for their testing.
+- [@Googulator](https://github.com/Googulator) for his method to install WoA in the Raspberry Pi
