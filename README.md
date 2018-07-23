@@ -22,11 +22,11 @@ This is a GUI tool to install Windows On ARM for supported devices
 # Importing the Core Package
 WoA Installer needs a package with the binary files required for deployment.
 
-You can download them here:
+## Download the Core Packages
 - [Core Package for Lumia 950/XL](https://1drv.ms/f/s!AtXoQFW327DIyMwPsYJNrdJTkgAW2g)
 - [Core Package for Raspberry Pi 3](https://1drv.ms/f/s!AtXoQFW327DIyMxxuCDKD5wMEfma8Q)
 
-Run WoA Installer and go to the Advanced section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use the application.
+Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy WoA withing the application under `Windows deployment`.
 
 # Donations are welcome!
 If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjmn
@@ -38,4 +38,4 @@ If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjm
 - MahApps.Metro https://mahapps.com/
 - https://reactiveui.net/
 - the people at [LumiaWOA](https://t.me/joinchat/Ey6mehEPg0Fe4utQNZ9yjA) for their testing.
-- [@Googulator](https://github.com/Googulator) for his method to install WoA in the Raspberry Pi
+- [Googulator](https://github.com/Googulator) for his method to install WoA in the Raspberry Pi
