@@ -5,12 +5,12 @@ This is a GUI tool to install Windows On ARM for supported devices
 - Raspberry Pi 3
 
 # WoA Installer for Lumia 950/XL
-![image](https://user-images.githubusercontent.com/3109851/43066047-e7134552-8e63-11e8-8ac7-895e601b60e3.png)
-
-# WoA Installer for Raspberry Pi 3
 ![image](https://user-images.githubusercontent.com/3109851/43066098-05c1f41c-8e64-11e8-935c-92748f36ecfd.png)
 
-# Requirements for Lumia 950/x
+# WoA Installer for Raspberry Pi 3
+![image](https://user-images.githubusercontent.com/3109851/43066047-e7134552-8e63-11e8-8ac7-895e601b60e3.png)
+
+# Requirements for Lumia 950/XL
 - A Lumia 950/XL with an unlocked bootloader that can correctly enter Mass Storage Mode
 - A Windows 10 ARM64 Image (.wim)
 - A USB-C cable to connect the Lumia to your PC
