@@ -28,7 +28,7 @@ namespace Installer.Core.FullFx
         public async Task<ICollection<Disk>> GetDisks()
         {
             ps.Commands.Clear();
-            ps.AddScript("Get-Disk");
+            ps.AddCommand("Get-Disk");
 
             var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
 
@@ -70,6 +70,15 @@ namespace Installer.Core.FullFx
         public async Task<IList<Volume>> GetVolumes(Disk disk)
         {
             var partitions = await GetPartitions(disk);
+
+            if (!partitions.Any())
+            {
+                Log.Verbose("Couldn't find any partition in {Disk}. Updating Storage Cache...", disk);
+                await UpdateStorageCache();
+                Log.Verbose("Retrying Get Partitions...", disk);
+                partitions = await GetPartitions(disk);
+            }
+
             var partitionsObs = partitions.ToObservable();
 
             var volumes = partitionsObs
@@ -92,6 +101,14 @@ namespace Installer.Core.FullFx
             return await volumes;
         }
 
+        private Task UpdateStorageCache()
+        {
+            ps.Commands.Clear();
+            ps.AddCommand($@"Update-HostStorageCache");
+
+            return Task.Factory.FromAsync(ps.BeginInvoke(), x => ps.EndInvoke(x));
+        }
+
         public Task RemovePartition(Partition partition)
         {
             ps.Commands.Clear();
@@ -107,7 +124,19 @@ namespace Installer.Core.FullFx
             var size = new ByteSize((ulong)disk.GetPropertyValue("Size"));
             var allocatedSize = new ByteSize((ulong)disk.GetPropertyValue("AllocatedSize"));
 
-            return new Disk(lowLevelApi, number, size, allocatedSize);
+            var diskProps = new DiskInfo
+            {
+                Number = number,
+                Size = size,
+                AllocatedSize = allocatedSize,
+                FriendlyName = (string)disk.GetPropertyValue("FriendlyName"),
+                IsSystem = (bool) disk.GetPropertyValue("IsSystem"),
+                IsBoot =  (bool) disk.GetPropertyValue("IsBoot"),
+                IsOffline =  (bool) disk.GetPropertyValue("IsOffline"),
+                IsReadOnly =  (bool) disk.GetPropertyValue("IsReadOnly"),
+            };
+
+            return new Disk(lowLevelApi, diskProps);
         }
 
 

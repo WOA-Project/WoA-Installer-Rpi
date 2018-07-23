@@ -7,12 +7,12 @@
                  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                  xmlns:sections="clr-namespace:Intaller.Wpf.Views.Parts.Sections"
                  xmlns:parts="clr-namespace:Intaller.Wpf.Views.Parts"
-                 xmlns:viewModels="clr-namespace:Intaller.Wpf.ViewModels"
+                 xmlns:viewModels="clr-namespace:Installer.Lumia.ViewModels;assembly=Installer.Lumia.ViewModels"
                  WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
         Icon="/Assets/appicon.png"
         
-        Title="Windows On ARM Installer for Lumia 950/XL" Width="920" Height="720"
+        Title="Windows On ARM Installer for Lumia 950/XL" Width="820" Height="620"
                  d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
         mah:DialogParticipation.Register="{Binding}">
     <i:Interaction.Triggers>
@@ -59,13 +59,13 @@
                         <TextBlock Text="{Binding}" ToolTip="Advanced tasks" />
                     </DataTemplate>
                 </TabItem.HeaderTemplate>
-                <sections:AdvancedPart />
+                <ScrollViewer>
+                    <sections:AdvancedPart />
+                </ScrollViewer>
             </TabItem>
         </TabControl>
         <Expander Grid.Row="2" Header="Log" IsExpanded="False" MaxHeight="400">
-            <ScrollViewer>
-                <parts:LogPart />
-            </ScrollViewer>
+            <parts:LogPart />
         </Expander>
         <parts:StatusPart Grid.Row="3" />
     </Grid>

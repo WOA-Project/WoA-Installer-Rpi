@@ -1,13 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Reactive.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using ByteSizeLib;
 using Installer.Core;
 using Installer.Core.FileSystem;
 using Installer.Core.FullFx;
 using Installer.Core.Services;
-using Serilog;
+using Installer.Lumia.Core;
 using Xunit;
 
 namespace Application.Tests
@@ -56,8 +54,7 @@ namespace Application.Tests
         [Fact]
         public async Task DeployWindows()
         {
-            var api = new LowLevelApi();
-            var deployer = new WindowsDeployer(new DismImageService(), new DriverPaths(""));
+            var deployer = new LumiaWindowsDeployer(new DismImageService(), new DriverPaths(""));
             await deployer.Deploy(new InstallOptions(@"F:\sources\install.wim"), new Phone(null));
         }
 

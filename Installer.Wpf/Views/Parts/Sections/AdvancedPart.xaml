@@ -1,21 +1,75 @@
 ﻿<UserControl x:Class="Intaller.Wpf.Views.Parts.Sections.AdvancedPart"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:wpf="clr-namespace:Intaller.Wpf"
-             xmlns:viewModels="clr-namespace:Intaller.Wpf.ViewModels"
-             mc:Ignorable="d" 
+             xmlns:core="clr-namespace:Installer.Wpf.Core;assembly=Installer.Wpf.Core"
+             xmlns:viewModels1="clr-namespace:Installer.Lumia.ViewModels;assembly=Installer.Lumia.ViewModels"
+             mc:Ignorable="d"
              x:Name="Root"
-    
-             d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
 
-    <StackPanel Margin="16">
-        <TextBlock Margin="8,8,8,18" TextWrapping="Wrap">You can import drive packages into the application so new Windows deployments will use them. Please, notice that this <Bold>will not inject the drivers</Bold>, will <Bold>stage them</Bold> for further deployments (inside the Windows Deployment section)</TextBlock>
-        <wpf:BusyButton 
-            VerticalAlignment="Center" HorizontalAlignment="Center" Height="50"
-            Content="Import Driver package" Command="{Binding ImportDriverPackageWrapper.Command}"
-            IsBusy="{Binding ImportDriverPackageWrapper.IsExecuting}" Image="/Assets/gears.png" />
-    </StackPanel>
+             d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels1:MainViewModel}"
+             Padding="8">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Margin="8,8,8,18" TextWrapping="Wrap">
+                You can import Core Packages with binaries (Core Files + Drivers) into the application so new Windows deployments will use them. Please, notice that this
+                <Bold>will deploy anything on the Phone</Bold>, this will only <Bold>stage the files in the package</Bold> to use in further deployments (inside the Windows Deployment section)
+            </TextBlock>
+            <core:BusyButton
+                VerticalAlignment="Center" HorizontalAlignment="Center" Height="50"
+                Content="Import Core Package" Command="{Binding ImportDriverPackageWrapper.Command}"
+                IsBusy="{Binding ImportDriverPackageWrapper.IsExecuting}" Image="/Assets/gears.png" />
+        </StackPanel>
+
+        <GroupBox Header="Post-Windows Setup Drivers" Grid.Row="1" Padding="20" Margin="0,20,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,20" FontSize="14">
+                    Some drivers should <Bold>only</Bold> be injected after Windows 10 ARM64 has been completely installed into the Phone. Injecting them will provide improved functionality and better overall experience.
+                </TextBlock>
+                <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Center">
+                    <ListView BorderBrush="Transparent" HorizontalAlignment="Center"
+                              ItemsSource="{Binding DeployersItems}" SelectedValuePath="Model.Name"
+                              SelectedItem="{Binding SelectedDeployerItem, Mode=TwoWay}">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1" />
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="8">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="64" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Image
+                                        Source="{Binding Model.PhoneType, Converter={StaticResource IdToImageConverter}}" />
+                                    <TextBlock Margin="0,4" Grid.Row="1" TextAlignment="Center"
+                                               VerticalAlignment="Center" Text="{Binding Model.Name}" />
+                                </Grid>
+
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <core:BusyButton VerticalAlignment="Center"
+                                     Command="{Binding InjectDriversWrapper.Command}"
+                                     IsBusy="{Binding InjectDriversWrapper.IsExecuting}" Content="Inject Drivers"
+                                     Image="/Assets/inject-drivers.png" Height="50" Width="140" />
+                </UniformGrid>
+            </Grid>
+
+        </GroupBox>
+
+    </Grid>
 
 </UserControl>

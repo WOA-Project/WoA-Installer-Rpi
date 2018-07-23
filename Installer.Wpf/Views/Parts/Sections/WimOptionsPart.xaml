@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:viewModels="clr-namespace:Intaller.Wpf.ViewModels"
+             xmlns:viewModels="clr-namespace:Installer.Lumia.ViewModels;assembly=Installer.Lumia.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
     <GroupBox Header="Windows Image (.WIM)">
-        <StackPanel>
+        <StackPanel VerticalAlignment="Center">
             <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" Margin="4">
                 Please, specify the Windows Image file (.wim) you wish to deploy.
             </TextBlock>
@@ -20,9 +20,9 @@
                 <Button Command="{Binding PickWimFileCommand}" Margin="8" Padding="4" Content="Browse..." Grid.Column="1" />
             </Grid>
 
-            <StackPanel IsEnabled="{Binding HasWim}" Orientation="Horizontal" ToolTip="This is the image (inside the .wim file) you want to deploy (WIM images can contain more than one edition like 'Pro' or 'Home'). If you don't know what this means, leave it with the default value.">
-                <TextBlock  VerticalAlignment="Center" Text="Image" Margin="10,0,12,0" TextAlignment="Center"/>
-                <ComboBox MinWidth="120"  ItemsSource="{Binding WimMetadata.Images}" SelectedItem="{Binding WimMetadata.SelectedDiskImage, Mode=TwoWay}">
+            <Grid IsEnabled="{Binding HasWim}"
+                  ToolTip="This is the image (inside the .wim file) you want to deploy (WIM images can contain more than one edition like 'Pro' or 'Home'). If you don't know what this means, leave it with the default value.">
+                <ComboBox ItemsSource="{Binding WimMetadata.Images}" SelectedItem="{Binding WimMetadata.SelectedDiskImage, Mode=TwoWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -43,7 +43,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-            </StackPanel>
+            </Grid>
 
         </StackPanel>
     </GroupBox>

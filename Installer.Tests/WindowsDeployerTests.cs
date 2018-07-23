@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Installer.Core;
 using Installer.Core.FullFx;
 using Installer.Core.Services;
+using Installer.Lumia.Core;
 using Xunit;
 
 namespace Application.Tests
@@ -13,7 +13,7 @@ namespace Application.Tests
         public async Task MakeBootable()
         {
             var lowLevelApi = new LowLevelApi();
-            var sut = new WindowsDeployer(new DismImageService(), new DriverPaths(""));
+            var sut = new LumiaWindowsDeployer(new DismImageService(), new DriverPaths(""));
 
             var lowlevel = lowLevelApi;
             var volumes = await lowlevel.GetVolumes(await lowlevel.GetPhoneDisk());

@@ -12,13 +12,29 @@ namespace Installer.Core.FileSystem
         public ByteSize Size { get; }
         public ByteSize AllocatedSize { get; }
 
-        public Disk(ILowLevelApi lowLevelApi, uint number, ByteSize size, ByteSize allocatedSize)
+        public Disk(ILowLevelApi lowLevelApi, DiskInfo diskProps)
         {
             LowLevelApi = lowLevelApi;
-            Number = number;
-            Size = size;
-            AllocatedSize = allocatedSize;
+            FriendlyName = diskProps.FriendlyName;
+            Number = diskProps.Number;
+            Size = diskProps.Size;
+            AllocatedSize = diskProps.AllocatedSize;
+            FriendlyName = diskProps.FriendlyName;
+            IsSystem = diskProps.IsSystem;
+            IsBoot = diskProps.IsBoot;
+            IsReadOnly= diskProps.IsReadOnly;
+            IsOffline = diskProps.IsOffline;
         }
+
+        public bool IsSystem { get; }
+
+        public bool IsBoot { get; }
+
+        public bool IsReadOnly { get; }
+
+        public bool IsOffline { get; }
+
+        public string FriendlyName { get; }
 
         public async Task<IList<Volume>> GetVolumes()
         {
@@ -49,7 +65,7 @@ namespace Installer.Core.FileSystem
 
         public override string ToString()
         {
-            return $"{nameof(Number)}: {Number}, {nameof(Size)}: {Size}, {nameof(AllocatedSize)}: {AllocatedSize}";
+            return $"{nameof(Number)}: {Number}, {nameof(Size)}: {Size.ToString()}, {nameof(AllocatedSize)}: {AllocatedSize.ToString()}";
         }
     }
 }

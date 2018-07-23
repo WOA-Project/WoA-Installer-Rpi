@@ -1,0 +1,36 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:valueConverters="clr-namespace:ValueConverters;assembly=ValueConverters"
+    xmlns:local="clr-namespace:Installer.Wpf.Core">
+
+    <valueConverters:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverterInverted" IsInverted="True" />
+
+    <Style TargetType="{x:Type local:BusyButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:BusyButton}">
+                    <Button DataContext="{Binding ElementName=UserControl}" Command="{TemplateBinding Command}" Padding="0,0,5,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+                            <Viewbox Margin="4,4,2,4" VerticalAlignment="Center">
+                                <mah:ContentControlEx VerticalAlignment="Center"
+                                                      HorizontalAlignment="Center" Content="{TemplateBinding Content}" Margin="4" />
+                            </Viewbox>
+                            <Image Visibility="{TemplateBinding IsBusy, Converter={StaticResource BooleanToVisibilityConverterInverted}}"
+                                   RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="1" Source="{TemplateBinding Image}" Margin="2,6,6,6" />
+                            <Viewbox VerticalAlignment="Center" Grid.Column="1" Margin="6">
+                                <mah:ProgressRing IsActive="{TemplateBinding IsBusy}" />
+                            </Viewbox>
+                        </Grid>
+                    </Button>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
+

@@ -8,7 +8,7 @@ using Serilog;
 
 namespace Installer.Core.Services.Wim
 {
-    public abstract class WindowsImageMetadataReaderBase
+    public abstract class WindowsImageMetadataReaderBase : IWindowsImageMetadataReader
     {
         private static XmlSerializer Serializer { get; } = new XmlSerializer(typeof(WimMetadata));
 
@@ -32,7 +32,7 @@ namespace Installer.Core.Services.Wim
             {
                 Images = metadata.Images.Select(x => new DiskImageMetadata
                 {
-                    Architecture = WindowsImageMetadataReader.GetArchitecture(x.Windows.Arch),
+                    Architecture = GetArchitecture(x.Windows.Arch),
                     Build = x.Windows.Version.Build,
                     DisplayName = x.Name,
                     Index = int.Parse(x.Index)

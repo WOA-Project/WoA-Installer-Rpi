@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicData" Version="6.4.0.2419" />
+    <PackageReference Include="ReactiveUI" Version="8.3.1" />
+    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="System.Reactive.Compatibility" Version="4.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Installer.Core.Lumia\Installer.Lumia.Core.csproj" />
+    <ProjectReference Include="..\Installer.Core.Raspberry\Installer.Raspberry.Core.csproj" />
+    <ProjectReference Include="..\Installer.Core\Installer.Core.csproj" />
+    <ProjectReference Include="..\Installer.UI\Installer.UI.csproj" />
+    <ProjectReference Include="..\Installer.ViewModels.Core\Installer.ViewModels.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

@@ -13,7 +13,7 @@ namespace Installer.Core.Utils
             return pathsToCheck.All(IsExistingPath);
         }
 
-        public static void EnsureEmptyDirectory(string path)
+        public static void DeleteDirectyRecursive(string path)
         {
             Log.Verbose("Ensuring that '{Directory}' is empty", path);
             

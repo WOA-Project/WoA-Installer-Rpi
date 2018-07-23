@@ -2,9 +2,9 @@
 
 namespace Installer.Core
 {
-    public interface ICoreDeployer
+    public interface ICoreDeployer<TDevice> where TDevice : Device
     {
         Task<bool> AreDeploymentFilesValid();
-        Task Deploy(Phone phone);
+        Task Deploy(TDevice phone);
     }
 }

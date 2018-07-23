@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{47C79FDD-FBDC-4382-8780-7B9E77C4A4F6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Installer.Wpf.Raspberry</RootNamespace>
+    <AssemblyName>Installer.Wpf.Raspberry</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Assets\appicon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Settings.Designer.cs">
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsService.cs" />
+    <Compile Include="Views\CompositionRoot.cs" />
+    <Compile Include="Views\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Parts\LogPart.xaml.cs">
+      <DependentUpon>LogPart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Parts\Sections\AdvancedPart.xaml.cs">
+      <DependentUpon>AdvancedPart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Parts\Sections\DiskSelectionPart.xaml.cs">
+      <DependentUpon>DiskSelectionPart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Parts\Sections\InstallPart.xaml.cs">
+      <DependentUpon>InstallPart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Parts\Sections\WimOptionsPart.xaml.cs">
+      <DependentUpon>WimOptionsPart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Parts\StatusPart.xaml.cs">
+      <DependentUpon>StatusPart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TextViewerWindow.xaml.cs">
+      <DependentUpon>TextViewerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Views\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Parts\LogPart.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Parts\Sections\AdvancedPart.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Parts\Sections\DiskSelectionPart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Parts\Sections\InstallPart.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Parts\Sections\WimOptionsPart.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Parts\StatusPart.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TextViewerWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="app.manifest" />
+    <None Include="Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MahApps.Metro">
+      <Version>1.6.5</Version>
+    </PackageReference>
+    <PackageReference Include="ReactiveUI.WPF">
+      <Version>8.3.1</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.Observable">
+      <Version>2.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.RollingFile">
+      <Version>3.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="ValueConverters">
+      <Version>1.0.7</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Installer.Core.FullFx\Installer.Core.FullFx.csproj">
+      <Project>{15D1B19B-6F1B-47AD-BE7B-F9BCA447CBC0}</Project>
+      <Name>Installer.Core.FullFx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Installer.Core.Raspberry\Installer.Raspberry.Core.csproj">
+      <Project>{BBB0938E-37FE-4D4D-BC45-670F6328AE03}</Project>
+      <Name>Installer.Raspberry.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Installer.Core\Installer.Core.csproj">
+      <Project>{97CF13C2-67D8-4BDF-80D3-00E31685603F}</Project>
+      <Name>Installer.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Installer.UI\Installer.UI.csproj">
+      <Project>{D15DB86E-52F8-48A6-9F46-276E34BD22AB}</Project>
+      <Name>Installer.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Installer.ViewModels.Core\Installer.ViewModels.Core.csproj">
+      <Project>{4CBD19E9-9D48-41A6-BCC7-19B1DC7A29D9}</Project>
+      <Name>Installer.ViewModels.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Installer.ViewModels.Raspberry\Installer.Raspberry.ViewModels.csproj">
+      <Project>{57ee0a2e-6e4f-427f-a2cb-107edf7b1976}</Project>
+      <Name>Installer.Raspberry.ViewModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Installer.Wpf.Core\Installer.Wpf.Core.csproj">
+      <Project>{AD8EA86C-AF60-4CCF-9CAA-07BBF5E039EC}</Project>
+      <Name>Installer.Wpf.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\950.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\950xl.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\disabledual.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\dual.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\gears.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\inject-drivers.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\windows-only.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\drive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appicon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\windowicon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\appicon.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />  
+</Project>

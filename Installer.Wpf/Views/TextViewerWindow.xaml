@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:viewModels="clr-namespace:Intaller.Wpf.ViewModels"
-        mc:Ignorable="d"
+                 xmlns:core="clr-namespace:Installer.ViewModels.Core;assembly=Installer.ViewModels.Core"
+                 mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800" WindowStartupLocation="CenterOwner"
-        d:DataContext="{d:DesignInstance viewModels:MessageViewModel}">
+        d:DataContext="{d:DesignInstance core:MessageViewModel}">
     <ScrollViewer>
         <TextBlock Margin="8" Text="{Binding Text}" />
     </ScrollViewer>

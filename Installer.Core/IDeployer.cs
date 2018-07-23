@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 
 namespace Installer.Core
 {
-    public interface IDeployer
+    public interface IDeployer<in TDevice> where TDevice : Device
     {
-        Task DeployCoreAndWindows(InstallOptions options, Phone phone, IObserver<double> progressObserver = null);
-        Task DeployWindows(InstallOptions options, Phone phone, IObserver<double> progressObserver = null);
-        Task InjectPostOobeDrivers(Phone phone);
+        Task DeployCoreAndWindows(InstallOptions options, TDevice device, IObserver<double> progressObserver = null);
+        Task DeployWindows(InstallOptions options, TDevice device, IObserver<double> progressObserver = null);
+        Task InjectPostOobeDrivers(TDevice device);
     }
 }

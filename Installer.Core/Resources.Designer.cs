@@ -22,7 +22,7 @@ namespace Installer.Core {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Installer.Core {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Installer.Core.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace Installer.Core {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -67,7 +67,7 @@ namespace Installer.Core {
         ///
         ///Please, complete Windows Setup first..
         /// </summary>
-        internal static string DriversInjectionWindowsNotFullyInstalled {
+        public static string DriversInjectionWindowsNotFullyInstalled {
             get {
                 return ResourceManager.GetString("DriversInjectionWindowsNotFullyInstalled", resourceCulture);
             }
@@ -77,7 +77,7 @@ namespace Installer.Core {
         ///   Looks up a localized string similar to Could not find a valid &quot;Files&quot; repository.
         ///Please, download a fresh copy and put it inside a folder name &quot;Files&quot; inside the root folder of this tool..
         /// </summary>
-        internal static string EnsureValidFilesRepository {
+        public static string EnsureValidFilesRepository {
             get {
                 return ResourceManager.GetString("EnsureValidFilesRepository", resourceCulture);
             }

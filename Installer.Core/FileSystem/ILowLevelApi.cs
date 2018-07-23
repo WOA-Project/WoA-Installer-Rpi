@@ -18,5 +18,6 @@ namespace Installer.Core.FileSystem
         Task AssignDriveLetter(Volume volume, char letter);
         Task<IList<Volume>> GetVolumes(Disk disk);
         Task RemovePartition(Partition partition);
+        Task<ICollection<Disk>> GetDisks();
     }
 }

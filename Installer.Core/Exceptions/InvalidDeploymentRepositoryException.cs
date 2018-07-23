@@ -2,7 +2,7 @@
 
 namespace Installer.Core.Exceptions
 {
-    internal class InvalidDeploymentRepositoryException : Exception
+    public class InvalidDeploymentRepositoryException : Exception
     {
         public InvalidDeploymentRepositoryException(string str) : base(str)
         {            

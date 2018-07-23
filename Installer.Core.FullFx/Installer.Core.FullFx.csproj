@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DismImageService.cs" />
+    <Compile Include="ImageFlasher.cs" />
     <Compile Include="InvalidImageException.cs" />
     <Compile Include="LowLevelApi.cs" />
     <Compile Include="PowerShellUtils.cs" />

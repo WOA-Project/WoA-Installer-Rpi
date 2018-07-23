@@ -5,7 +5,7 @@ using Serilog;
 
 namespace Installer.Core.Services.Wim
 {
-    public class WindowsImageMetadataReader : WindowsImageMetadataReaderBase, IWindowsImageMetadataReader
+    public class WindowsImageMetadataReader : WindowsImageMetadataReaderBase
     {
         private static long ToInt64LittleEndian(byte[] buffer, int offset)
         {

@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:wpf="clr-namespace:Intaller.Wpf"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:viewModels="clr-namespace:Intaller.Wpf.ViewModels"
+             xmlns:core="clr-namespace:Installer.Wpf.Core;assembly=Installer.Wpf.Core"
+             xmlns:viewModels="clr-namespace:Installer.Lumia.ViewModels;assembly=Installer.Lumia.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels:DualBootViewModel}"
              mah:DialogParticipation.Register="{Binding}">
@@ -18,7 +18,7 @@
             <TextBlock Margin="20" FontSize="20" TextWrapping="Wrap" Visibility="{Binding IsUpdated, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
                 Please, check the current status in order to see the avaliable options regarding <Bold>Dual Boot</Bold>.
             </TextBlock>
-            <wpf:BusyButton Margin="18" Width="180" Content="Check Dual Boot Status" Image="/Assets/refresh.png"
+            <core:BusyButton Margin="18" Width="180" Content="Check Dual Boot Status" Image="/Assets/refresh.png"
                             Command="{Binding UpdateStatusWrapper.Command}"
                             IsBusy="{Binding UpdateStatusWrapper.IsExecuting}" />
         </StackPanel>
@@ -35,11 +35,11 @@
 
                 <Grid>
                     <StackPanel Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverterInverted}}">
-                        <wpf:BusyButton Content="Enable Dual Boot" Width="180"
+                        <core:BusyButton Content="Enable Dual Boot" Width="180"
                                         Command="{Binding EnableDualBootWrapper.Command}"
                                         IsBusy="{Binding EnableDualBootWrapper.IsExecuting}" Image="/Assets/dual.png" />
                     </StackPanel>
-                    <wpf:BusyButton Content="Disable Dual Boot"
+                    <core:BusyButton Content="Disable Dual Boot"
                                     Width="180"
                                     Command="{Binding DisableDualBootWrapper.Command}"
                                     Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"

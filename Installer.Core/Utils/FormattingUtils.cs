@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Installer.Core.Utils
 {
-    internal static class FormattingUtils
+    public static class FormattingUtils
     {
         public static Guid GetGuid(string str)
         {
