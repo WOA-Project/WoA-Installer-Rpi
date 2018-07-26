@@ -22,7 +22,8 @@ namespace Installer.Core.FullFx
 
         public async Task ApplyImage(Volume volume, string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null)
         {
-            EnsureValidImage(imagePath, imageIndex);
+            var applyDir = volume?.RootDir.Name;
+            EnsureValidParameters(applyDir, imagePath, imageIndex);
 
             ISubject<string> outputSubject = new Subject<string>();
             IDisposable stdOutputSubscription = null;
@@ -35,7 +36,7 @@ namespace Installer.Core.FullFx
             }
             
             var dismName = "DISM";
-            var args = $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}";
+            var args = $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{applyDir}";
             Log.Verbose("We are about to run DISM: {ExecName} {Parameters}", dismName, args);
             var resultCode = await ProcessUtils.RunProcessAsync(dismName, args, outputObserver: outputSubject);
             if (resultCode != 0)
@@ -44,6 +45,21 @@ namespace Installer.Core.FullFx
             }
 
             stdOutputSubscription?.Dispose();
+        }
+
+        private static void EnsureValidParameters(string applyDir, string imagePath, int imageIndex)
+        {
+            if (imagePath == null)
+            {
+                throw new ArgumentNullException(nameof(imagePath));
+            }
+
+            if (applyDir == null)
+            {
+                throw new ArgumentException("The volume to apply the image is invalid");
+            }
+
+            EnsureValidImage(imagePath, imageIndex);
         }
 
         private static void EnsureValidImage(string imagePath, int imageIndex)
