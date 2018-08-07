@@ -30,7 +30,7 @@ Find them below.
 # Downloads
 
 ## WoA Installer
-- There are 2 version of WoA Installer. One for Raspberry Pi and another for the supported Lumias. You can download them from the [Releases](/Releases) section
+- There are 2 version of WoA Installer. One for Raspberry Pi and another for the supported Lumias. You can download them from the [Releases](https://github.com/SuperJMN/WoA-Installer/releases) section
 
 ## Core Packages
 - [Core Package for Raspberry Pi 3](https://1drv.ms/f/s!AtXoQFW327DIyMxxCDU_uUM6o6dn2A)
