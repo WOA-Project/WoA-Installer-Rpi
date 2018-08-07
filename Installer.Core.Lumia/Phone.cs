@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using ByteSizeLib;
 using Installer.Core;
+using Installer.Core.Exceptions;
 using Installer.Core.FileSystem;
 using Installer.Core.Services;
 using Serilog;
@@ -9,12 +12,15 @@ namespace Installer.Lumia.Core
 {
     public class Phone : Device
     {
+        private const string MainOsLabel = "MainOS";
+        private static readonly ByteSize MinimumPhoneDiskSize = ByteSize.FromGigaBytes(28);
+        private static readonly ByteSize MaximumPhoneDiskSize = ByteSize.FromGigaBytes(34);
+
+        private static readonly Guid WinPhoneBcdGuid = Guid.Parse("7619dcc9-fafe-11d9-b411-000476eba25f");
         private Volume efiEspVolume;
 
-        public static readonly Guid WinPhoneBcdGuid = Guid.Parse("7619dcc9-fafe-11d9-b411-000476eba25f");
-
         public Phone(Disk disk) : base(disk)
-        {            
+        {
         }
 
         public async Task<Volume> GetEfiespVolume()
@@ -39,10 +45,10 @@ namespace Installer.Lumia.Core
             var bootPartition = await GetBootPartition();
 
             var isEnabled = bootPartition != null && Equals(bootPartition.PartitionType, PartitionType.Basic);
-            
+
             var isCapable = isWoaPresent && isWPhonePresent && isOobeFinished;
             var status = new DualBootStatus(isCapable, isEnabled);
-            
+
             Log.Information("Dual Boot Status retrieved");
             Log.Verbose("Dual Boot Status is {@Status}", status);
 
@@ -89,7 +95,7 @@ namespace Installer.Lumia.Core
         private async Task DisableDualBoot()
         {
             Log.Information("Disabling Dual Boot...");
-            
+
             var bootVolume = await GetBootVolume();
             await bootVolume.Partition.SetGptType(PartitionType.Esp);
             var bcdInvoker = new BcdInvoker((await GetEfiespVolume()).GetBcdFullFilename());
@@ -109,7 +115,7 @@ namespace Installer.Lumia.Core
 
             var efiespVolume = await GetEfiespVolume();
             var bcdInvoker = new BcdInvoker(efiespVolume.GetBcdFullFilename());
-            bcdInvoker.Invoke($@"/displayorder {{{Phone.WinPhoneBcdGuid}}} /remove");
+            bcdInvoker.Invoke($@"/displayorder {{{WinPhoneBcdGuid}}} /remove");
 
             Log.Verbose("Windows Phone BCD entry removed");
         }
@@ -121,12 +127,43 @@ namespace Installer.Lumia.Core
             await RemovePartition("Reserved", await Disk.GetReservedPartition());
             await RemovePartition("WoA ESP", await GetBootPartition());
             var winVol = await GetWindowsVolume();
-            await RemovePartition("WoA", winVol?.Partition);           
+            await RemovePartition("WoA", winVol?.Partition);
         }
 
         public override async Task<Volume> GetBootVolume()
         {
-            return bootVolume ?? (bootVolume = await GetVolume("BOOT"));
+            return await GetVolume("BOOT");
+        }
+
+        public static async Task<Phone> GetPhone()
+        {
+            var diskService = ServiceFactory.Current.DiskService;
+
+            var disks = await diskService.GetDisks();
+            foreach (var disk in disks)
+            {
+                var hasCorrectSize = HasCorrectSize(disk);
+
+                if (hasCorrectSize)
+                {
+                    var volumes = await disk.GetVolumes();
+                    var mainOs = volumes.FirstOrDefault(x => x.Label == MainOsLabel);
+                    if (mainOs != null)
+                    {
+                        return new Phone(disk);
+                    }
+                }
+            }
+
+            throw new PhoneDiskNotFoundException(
+                "Cannot get the Phone Disk. Please, verify that the Phone is in Mass Storage Mode.");
+        }
+
+        private static bool HasCorrectSize(Disk disk)
+        {
+            var moreThanMinimum = disk.Size > MinimumPhoneDiskSize;
+            var lessThanMaximum = disk.Size < MaximumPhoneDiskSize;
+            return moreThanMinimum && lessThanMaximum;
         }
     }
 }

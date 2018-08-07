@@ -41,12 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultServiceFactory.cs" />
+    <Compile Include="ImageServiceBase.cs" />
     <Compile Include="DismImageService.cs" />
     <Compile Include="ImageFlasher.cs" />
     <Compile Include="InvalidImageException.cs" />
     <Compile Include="LowLevelApi.cs" />
     <Compile Include="PowerShellUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WimlibImageService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Installer.Core\Installer.Core.csproj">
@@ -59,6 +62,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ManagedWimLib">
+      <Version>1.0.0</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies">
       <Version>1.1.0</Version>
     </PackageReference>

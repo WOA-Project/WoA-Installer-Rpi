@@ -1,6 +1,6 @@
 ﻿using Installer.Raspberry.ViewModels;
 
-namespace Installer.Wpf.Raspberry
+namespace Installer.Raspberry.Application
 {
     public class SettingsService : ISettingsService
     {

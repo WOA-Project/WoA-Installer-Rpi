@@ -2,7 +2,7 @@
 using Serilog;
 using Serilog.Events;
 
-namespace Intaller.Wpf.Views
+namespace Installer.Lumia.Application.Views
 {
     public partial class MainWindow
     {

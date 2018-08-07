@@ -58,11 +58,16 @@ namespace Installer.Lumia.Core
             bcd.Invoke("/set {default} nointegritychecks on");
             await volumes.Boot.Partition.SetGptType(PartitionType.Esp);
             var updatedBootVolume = await phone.GetBootVolume();
-            Log.Verbose("Updated Boot Volume: {@Volume}", new { updatedBootVolume.Label, updatedBootVolume.Partition, });
-            if (!Equals(updatedBootVolume.Partition.PartitionType, PartitionType.Esp))
+
+            if (updatedBootVolume != null)
             {
-                Log.Warning("The system partition should be {Esp}, but it's {ActualType}", PartitionType.Esp, updatedBootVolume.Partition.PartitionType);
-            }
+                Log.Verbose("We shouldn't be able to get a reference to the Boot volume.");
+                Log.Verbose("Updated Boot Volume: {@Volume}", new { updatedBootVolume.Label, updatedBootVolume.Partition, });
+                if (!Equals(updatedBootVolume.Partition.PartitionType, PartitionType.Esp))
+                {
+                    Log.Warning("The system partition should be {Esp}, but it's {ActualType}", PartitionType.Esp, updatedBootVolume.Partition.PartitionType);
+                }
+            }            
         }
 
         private Task RemoveExistingWindowsPartitions(Phone phone)

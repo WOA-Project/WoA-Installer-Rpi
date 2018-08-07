@@ -8,13 +8,11 @@ namespace Installer.Core.Services
     {
         private readonly BcdInvoker invoker;
         private readonly Volume efiespVolume;
-        private readonly string bcdEdit;
 
         public BcdConfigurator(BcdInvoker invoker, Volume efiespVolume)
         {
             this.invoker = invoker;
             this.efiespVolume = efiespVolume;
-            bcdEdit = @"c:\Windows\SysNative\bcdedit.exe";
         }
 
         public void SetupBcd()
@@ -50,8 +48,8 @@ namespace Installer.Core.Services
         
         private Guid CreateBootShim()
         {
-            var run = ProcessUtils.Run(bcdEdit, $@"/STORE {efiespVolume.GetBcdFullFilename()} /create /d ""Windows 10"" /application BOOTAPP");
-            return FormattingUtils.GetGuid(run);
+            var invokeText = invoker.Invoke(@"/create /d ""Windows 10"" /application BOOTAPP");
+            return FormattingUtils.GetGuid(invokeText);
         }
     }
 }

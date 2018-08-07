@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Installer.Wpf.Raspberry.Views.Parts
+namespace Installer.Raspberry.Application.Views.Parts
 {
     /// <summary>
     /// Interaction logic for StatusPart.xaml

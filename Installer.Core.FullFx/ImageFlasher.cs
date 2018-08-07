@@ -19,8 +19,6 @@ namespace Installer.Core.FullFx
 
         public async Task Flash(Disk disk, string imagePath, IObserver<double> progressObserver = null)
         {
-            //EnsureValidImage(imagePath, imageIndex);
-
             ISubject<string> outputSubject = new Subject<string>();
             IDisposable stdOutputSubscription = null;
             bool isValidating = false;
@@ -41,7 +39,6 @@ namespace Installer.Core.FullFx
             }
             
             //etcher.exe -d \\.\PHYSICALDRIVE3 "..\Tutorial Googulator\gpt.zip" --yes
-
             var gptSchemeImagePath = Path.Combine("Files", "Core", "Gpt.zip");
 
             var platformSuffix = Environment.Is64BitProcess ? "x64" : "x86";

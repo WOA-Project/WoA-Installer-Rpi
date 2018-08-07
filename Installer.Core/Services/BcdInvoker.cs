@@ -1,5 +1,4 @@
 ﻿using Installer.Core.Utils;
-using Serilog;
 
 namespace Installer.Core.Services
 {
@@ -10,7 +9,7 @@ namespace Installer.Core.Services
 
         public BcdInvoker(string store)
         {
-            bcdEdit = @"c:\Windows\SysNative\bcdedit.exe";
+            bcdEdit = SystemPaths.BcdEdit;
             commonArgs = $@"/STORE ""{store}""";
         }
 

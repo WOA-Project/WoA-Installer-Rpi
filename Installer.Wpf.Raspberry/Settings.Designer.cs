@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Installer.Wpf.Raspberry {
+namespace Installer.Raspberry.Application {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

@@ -1,4 +1,4 @@
-﻿namespace Intaller.Wpf.Views
+﻿namespace Installer.Lumia.Application.Views
 {
     
     public partial class TextViewerWindow

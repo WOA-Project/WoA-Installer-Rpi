@@ -1,17 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
+using ManagedWimLib;
 
-namespace Installer.Wpf.Raspberry
+namespace Installer.Raspberry.Application
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            InitWimLib();
+        }
+
+        private static void InitWimLib()
+        {
+            if (Environment.Is64BitProcess)
+            {
+                Wim.GlobalInit(Path.Combine("x64", "libwim-15.dll"));
+            }
+            else
+            {
+                Wim.GlobalInit(Path.Combine("x86", "libwim-15.dll"));
+            }
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Wim.GlobalCleanup();
+            base.OnExit(e);
+        }
     }
 }

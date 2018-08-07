@@ -1,4 +1,4 @@
-﻿namespace Installer.Wpf.Raspberry.Views.Parts.Sections
+﻿namespace Installer.Raspberry.Application.Views.Parts.Sections
 {
     /// <summary>
     /// Interaction logic for InstallPart.xaml

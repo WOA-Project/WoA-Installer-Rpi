@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Intaller.Wpf.Views.Parts.Sections
+namespace Installer.Lumia.Application.Views.Parts.Sections
 {
     /// <summary>
     /// Interaction logic for PhoneModelPart.xaml

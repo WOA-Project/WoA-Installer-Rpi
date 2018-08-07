@@ -1,4 +1,4 @@
-﻿namespace Installer.Wpf.Raspberry.Views
+﻿namespace Installer.Raspberry.Application.Views
 {
     
     public partial class TextViewerWindow

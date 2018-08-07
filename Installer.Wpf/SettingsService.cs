@@ -1,7 +1,7 @@
-﻿using Installer.Lumia.ViewModels;
-using Intaller.Wpf.Properties;
+﻿using Installer.Lumia.Application.Properties;
+using Installer.Lumia.ViewModels;
 
-namespace Intaller.Wpf
+namespace Installer.Lumia.Application
 {
     public class SettingsService : ISettingsService
     {

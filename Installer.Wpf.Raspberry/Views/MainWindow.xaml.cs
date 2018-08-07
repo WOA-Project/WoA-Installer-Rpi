@@ -2,7 +2,7 @@
 using Serilog;
 using Serilog.Events;
 
-namespace Installer.Wpf.Raspberry.Views
+namespace Installer.Raspberry.Application.Views
 {
     public partial class MainWindow
     {
@@ -19,6 +19,6 @@ namespace Installer.Wpf.Raspberry.Views
                 .CreateLogger();
 
             DataContext = CompositionRoot.GetMainViewModel(logEvents);
-        }
+        }       
     }
 }

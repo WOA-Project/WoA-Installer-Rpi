@@ -1,4 +1,5 @@
 ﻿using System;
+using Installer.Core;
 using Installer.Core.FullFx;
 using Installer.Core.Services;
 using Installer.Raspberry.Core;
@@ -9,18 +10,17 @@ using Installer.Wpf.Core.Services;
 using MahApps.Metro.Controls.Dialogs;
 using Serilog.Events;
 
-namespace Installer.Wpf.Raspberry.Views
+namespace Installer.Raspberry.Application.Views
 {
     public static class CompositionRoot
     {
         public static object GetMainViewModel(IObservable<LogEvent> logEvents)
         {
-            var deployer = new RaspberryPiDeployer(new ImageFlasher(), new RaspberryPiWindowsDeployer(new DismImageService(), new DriverPaths(@"Files")));
+            ServiceFactory.Current = new DefaultServiceFactory();
 
-            var lowLevelApi = new LowLevelApi();
-            var diskService = new DiskService(lowLevelApi);
+            var deployer = new RaspberryPiDeployer(new ImageFlasher(), new RaspberryPiWindowsDeployer(ServiceFactory.Current.ImageService, new DriverPaths(@"Files")));
             var uiServices = new UIServices(new FilePicker(), new ViewService(), new DialogService(DialogCoordinator.Instance));
-            return new MainViewModel(logEvents, deployer, new PackageImporterFactory(), diskService, uiServices, new SettingsService());
+            return new MainViewModel(logEvents, deployer, new PackageImporterFactory(), ServiceFactory.Current.DiskService, uiServices, new SettingsService());
         }
     }
 }
