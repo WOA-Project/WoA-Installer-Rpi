@@ -14,7 +14,7 @@ namespace Installer.Raspberry.Core
     public class RaspberryPiWindowsDeployer : IWindowsDeployer<RaspberryPi>
     {
         private const string WindowsPartitonLabel = "WindowsARM";
-        private const string BcdBootPath = @"c:\Windows\SysNative\bcdboot.exe";
+        private static readonly string BcdBootPath = SystemPaths.BcdBoot;
 
         private readonly IWindowsImageService windowsImageService;
         private readonly DriverPaths driverPaths;

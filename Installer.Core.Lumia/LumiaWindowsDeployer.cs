@@ -18,7 +18,7 @@ namespace Installer.Lumia.Core
         private static readonly ByteSize BootPartitionSize = ByteSize.FromMegaBytes(100);
         private const string BootPartitionLabel = "BOOT";
         private const string WindowsPartitonLabel = "WindowsARM";
-        private const string BcdBootPath = @"c:\Windows\SysNative\bcdboot.exe";
+        private static readonly string BcdBootPath = SystemPaths.BcdBoot;
 
         private readonly IWindowsImageService windowsImageService;
         private readonly DriverPaths driverPaths;
