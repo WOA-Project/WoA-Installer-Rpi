@@ -13,7 +13,10 @@ Please, **join our Telegram groups** for help and guidance. You can get updates 
 
 
 ## WoA Installer for Lumia 950/XL
+Lumia 950 Series run Windows 10 ARM quite well, specially the XL. 
 ![image](https://user-images.githubusercontent.com/3109851/43066098-05c1f41c-8e64-11e8-935c-92748f36ecfd.png)
+### Dual Boot
+You don't have to ditch Windows 10 Phone :) You can dual boot! Using this tool, you can enable Dual Boot in literally 2 clicks. Please, check [this video]() to see a demonstration of the feature.
 
 ## WoA Installer for Raspberry Pi 3
 ![image](https://user-images.githubusercontent.com/3109851/43066047-e7134552-8e63-11e8-8ac7-895e601b60e3.png)
