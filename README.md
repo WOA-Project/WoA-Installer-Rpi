@@ -6,6 +6,12 @@ This is a GUI tool that will help you install Windows ARM64 (Windows On ARM) wit
 - Lumia 950 XL
 - Raspberry Pi 3
 
+# Getting Help
+Please, **join our Telegram groups** for help and guidance. You can get updates on the projects and ask our members! Moreover, we're really nice ;)
+* For Lumia 950/XL: [LumiaWOA](https://t.me/joinchat/Ey6mehEPg0Fe4utQNZ9yjA)
+* For Raspberry Pi 3: [RaspberryPiWOA](https://t.me/raspberrypiwoa)
+
+
 ## WoA Installer for Lumia 950/XL
 ![image](https://user-images.githubusercontent.com/3109851/43066098-05c1f41c-8e64-11e8-935c-92748f36ecfd.png)
 
@@ -15,6 +21,7 @@ This is a GUI tool that will help you install Windows ARM64 (Windows On ARM) wit
 # Requirements
 ## Lumia 950/XL
 - A Lumia 950/XL with an unlocked bootloader that can correctly enter Mass Storage Mode
+	- You can unlock the bootloader using [WPInternals](http://www.wpinternals.net)
 - A Windows 10 ARM64 Image (.wim)
 - A USB-C cable to connect the Lumia to your PC
 
@@ -48,6 +55,7 @@ This WoA Installer is possible because the great community behind it. I would li
 
 - [Ben Imbushuo](https://github.com/imbushuo) for Lumia's UEFI and misc stuff
 - [Gustave M.](https://twitter.com/gus33000) for drivers, for support, for testing...
+- René ([Heathcliff74XDA](http://www.twitter.com/Heathcliff74XDA)) for WPInternals. With you started everthing :)
 - Ard Bisheuvel for initial ATF and UEFI ports
 - Bas Timmer ([NTAuthority](https://github.com/nta)) for the Windows USB driver
 - [Andrei Warkentin](https://github.com/Googulator) for the 64-bit Pi UEFI, UEFI Pi (HDMI, USB, SD/MMC) drivers, improved ATF and Windows boot/runtime support.
