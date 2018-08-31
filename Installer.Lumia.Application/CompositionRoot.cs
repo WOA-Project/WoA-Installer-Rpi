@@ -24,8 +24,8 @@ namespace Installer.Lumia.Application
 
             IDictionary<PhoneModel, IDeployer<Phone>> deployerDict = new Dictionary<PhoneModel, IDeployer<Phone>>
             {
-                {PhoneModel.Lumia950Xl, GetDeployer(Path.Combine("Files", "Lumia 950 XL"))},
-                {PhoneModel.Lumia950, GetDeployer(Path.Combine("Files", "Lumia 950"))},
+                {PhoneModel.Lumia950Xl, GetDeployer(Path.Combine("Files", "Cityman"))},
+                {PhoneModel.Lumia950, GetDeployer(Path.Combine("Files", "Talkman"))}
             };
 
             var deployersItems = deployerDict.Select(pair => new DeployerItem(pair.Key, pair.Value)).ToList();
@@ -36,10 +36,11 @@ namespace Installer.Lumia.Application
                 new SettingsService(), Phone.GetPhone);
             return mainViewModel;
         }
-        
+
         private static LumiaDeployer GetDeployer(string rootFilesPath)
         {
-            return new LumiaDeployer(new LumiaCoreDeployer(rootFilesPath), new LumiaWindowsDeployer(ServiceFactory.Current.ImageService, new DriverPaths(rootFilesPath)));
+            return new LumiaDeployer(new LumiaCoreDeployer(rootFilesPath),
+                new LumiaWindowsDeployer(ServiceFactory.Current.ImageService, new DriverPaths(rootFilesPath)));
         }
     }
 }

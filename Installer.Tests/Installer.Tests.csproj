@@ -108,10 +108,6 @@
       <Project>{97cf13c2-67d8-4bdf-80d3-00e31685603f}</Project>
       <Name>Installer.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Installer.Wpf\Installer.Lumia.Application.csproj">
-      <Project>{19064893-A79C-4E75-9FEA-391F6CEA4917}</Project>
-      <Name>Installer.Lumia.Application</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Installer.Core.FullFx\Installer.Core.FullFx.csproj">
       <Project>{15D1B19B-6F1B-47AD-BE7B-F9BCA447CBC0}</Project>
       <Name>Installer.Core.FullFx</Name>
