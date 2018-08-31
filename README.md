@@ -55,8 +55,8 @@ You can **[download](https://github.com/SuperJMN/WoA-Installer/releases)** them 
 Here you can download the corresponding Core Package that contain the binary files required by WoA Installer. 
 
 Please, notice that each **Core Package is intented to use with its corresponding flavor of WoA Installer**. Thus, if you use WoA Installer for Lumia, you should use the Lumia Core Package, and if you use WoA Installer for Raspberry Pi, you should use the Raspberry Pi Core Package.
-- [Core Package for Raspberry Pi 3](https://1drv.ms/f/s!AtXoQFW327DIyMxxCDU_uUM6o6dn2A)
-- [Core Package for Lumia 950/XL](https://1drv.ms/f/s!AtXoQFW327DIyMwPjZhmauUCSSHXUA)
+- [Core Packages for Raspberry Pi 3](https://1drv.ms/f/s!AtXoQFW327DIyMxxCDU_uUM6o6dn2A)
+- [Core Packages for Lumia 950/XL](https://1drv.ms/f/s!AtXoQFW327DIyMwPjZhmauUCSSHXUA)
 
 ## Installing the Core Package
 Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy WoA withing the application under `Windows deployment`.
