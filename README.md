@@ -1,65 +1,19 @@
 ﻿# WoA Installer 
 This is **WoA Installer**, a Windows 10 ARM64 Installer for Lumia 950/XL and Raspberry Pi 3. It's is a very simple tool that will help you install Windows ARM64 (Windows On ARM) with ease.
 
-WoA Installer comes with 2 different flavors:
-* WoA Installer for Raspberry Pi 3
-* WoA Installer for Lumia.
+# Flavors
 
-You can download them separately 😊
+WoA Installer comes with 2 different flavors. Please, click on each one for more info:
 
-# Supported devices
+* [WoA Installer for Raspberry Pi 3](Docs/Raspberry.md) (compatible with Raspberry Pi 3 Model B/B+) 
+* [WoA Installer for Lumia](Docs/Lumia.md) (compatible with **Lumia 950** and **Lumia 950 XL**)
 
-- Lumia 950
-- Lumia 950 XL
-- Raspberry Pi 3
+Each one is a different application. They are download them separately 😊
 
 # Getting Help
 Please, **join our Telegram groups** for help and guidance. You can get updates on the projects and ask our members! Moreover, we're really nice 😉
 * For Lumia 950/XL: [LumiaWOA](https://t.me/joinchat/Ey6mehEPg0Fe4utQNZ9yjA)
 * For Raspberry Pi 3: [RaspberryPiWOA](https://t.me/raspberrypiwoa)
-
-
-## WoA Installer for Lumia 950/XL
-Lumia 950 Series run Windows 10 ARM quite well, specially the XL. 
-![image](https://user-images.githubusercontent.com/3109851/43066098-05c1f41c-8e64-11e8-935c-92748f36ecfd.png)
-### Dual Boot
-You don't have to ditch Windows 10 Phone 😃 You can **keep it!**! Using this tool, you can enable Dual Boot in literally 2 clicks. Please, check [this video](https://www.youtube.com/watch?v=3j2rWL4hHGc) to see a demonstration of the feature.
-
-## WoA Installer for Raspberry Pi 3
-![image](https://user-images.githubusercontent.com/3109851/43066047-e7134552-8e63-11e8-8ac7-895e601b60e3.png)
-
-# Requirements
-## Lumia 950/XL
-- A Lumia 950/XL with an unlocked bootloader that can correctly enter Mass Storage Mode
-	- You can unlock the bootloader using [WPInternals](http://www.wpinternals.net)
-- A Windows 10 ARM64 Image (.wim)
-- A USB-C cable to connect the Lumia to your PC
-
-## Raspberry Pi
-- Raspberry Pi 3 Model B (or B+)
-- MicroSD card. Recommended with A1 rating.
-
-# About Core Packages
-Please, notice the WoA Installer is only a tool with helps you with the deployment. WoA Installer needs a set of binaries, AKA the **Core Packages**, to do its job. **These binaries are not not mine** and are bundled and offered just for convenience to make your life easier, since this tool is focused on simplicity. 
-
-Find them below.
-
-# Downloads
-
-## WoA Installer
-- There are 2 flavors of WoA Installer. One is for Raspberry Pi and the other is for the supported Lumias (950 and 950 XL). 
-
-You can **[download](https://github.com/SuperJMN/WoA-Installer/releases)** them from the Releases section
-
-## Core Packages
-Here you can download the corresponding Core Package that contain the binary files required by WoA Installer. 
-
-Please, notice that each **Core Package is intented to use with its corresponding flavor of WoA Installer**. Thus, if you use WoA Installer for Lumia, you should use the Lumia Core Package, and if you use WoA Installer for Raspberry Pi, you should use the Raspberry Pi Core Package.
-- [Core Packages for Raspberry Pi 3](https://1drv.ms/f/s!AtXoQFW327DIyMxxCDU_uUM6o6dn2A)
-- [Core Packages for Lumia 950/XL](https://1drv.ms/f/s!AtXoQFW327DIyMwPjZhmauUCSSHXUA)
-
-## Installing the Core Package
-Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy WoA withing the application under `Windows deployment`.
 
 # Donations are welcome!
 If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjmn). Thanks in advance!!
