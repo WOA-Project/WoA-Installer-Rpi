@@ -4,7 +4,7 @@
 # Requirements
 - Raspberry Pi 3 Model B (or B+)
 - MicroSD card. Recommended with A1 rating.
-- Windows 10 ARM 64 (.wim file)
+- A Windows 10 ARM64 Image (.wim). Please, check [this link](GettingWoA.md) to get it.
 
 # About Core Packages
 Please, notice the WoA Installer is only a tool with helps you with the deployment. WoA Installer needs a set of binaries, AKA the **Core Package**, to do its job. **These binaries are not not mine** and are bundled and offered just for convenience to make your life easier, since this tool is focused on simplicity. 

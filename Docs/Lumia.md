@@ -8,8 +8,8 @@ You don't have to ditch Windows 10 Phone 😃 You can **keep it!**! Using this t
 # Requirements
 - A Lumia 950/XL with an unlocked bootloader that can correctly enter Mass Storage Mode
 	- You can unlock the bootloader using [WPInternals](http://www.wpinternals.net)
-- A Windows 10 ARM64 Image (.wim)
 - A USB-C cable to connect the Lumia to your PC
+- A Windows 10 ARM64 Image (.wim). Please, check [this link](GettingWoA.md) to get it.
 
 # About Core Packages
 Please, notice the WoA Installer is only a tool with helps you with the deployment. WoA Installer needs a set of binaries, AKA the **Core Packages**, to do its job. **These binaries are not not mine** and are bundled and offered just for convenience to make your life easier, since this tool is focused on simplicity. 
