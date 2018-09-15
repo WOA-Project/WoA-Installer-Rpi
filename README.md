@@ -8,7 +8,7 @@ WoA Installer comes with 2 different flavors. Please, click on each one for more
 * [WoA Installer for Raspberry Pi 3](Docs/Raspberry.md) (compatible with Raspberry Pi 3 Model B/B+) 
 * [WoA Installer for Lumia](Docs/Lumia.md) (compatible with **Lumia 950** and **Lumia 950 XL**)
 
-Each one is a different application. They are download them separately 😊
+Each one is a different application. Download them separately 😊
 
 # Getting Help
 Please, **join our Telegram groups** for help and guidance. You can get updates on the projects and ask our members! Moreover, we're really nice 😉
