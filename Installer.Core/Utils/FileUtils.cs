@@ -57,7 +57,6 @@ namespace Installer.Core.Utils
         {
             Log.Verbose("Copying directory {Source} to {Destination}", source, destination);
 
-
             foreach (var dir in source.GetDirectories())
             {
                 await CopyDirectory(dir, destination.CreateSubdirectory(dir.Name));
