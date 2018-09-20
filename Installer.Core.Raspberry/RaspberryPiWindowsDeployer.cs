@@ -19,7 +19,6 @@ namespace Installer.Raspberry.Core
         private readonly IWindowsImageService windowsImageService;
         private readonly DriverPaths driverPaths;
 
-
         public RaspberryPiWindowsDeployer(IWindowsImageService windowsImageService, DriverPaths driverPaths)
         {
             this.windowsImageService = windowsImageService;
