@@ -139,7 +139,6 @@ namespace Installer.Core.FullFx
             return new Disk(lowLevelApi, diskProps);
         }
 
-
         public async Task ResizePartition(Partition partition, ByteSize size)
         {
             ps.Commands.Clear();
