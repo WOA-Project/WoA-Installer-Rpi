@@ -27,7 +27,6 @@ namespace Installer.Core.Utils
             process.Start();
             Log.Verbose("Process started sucessfully");
 
-
             string output = process.StandardOutput.ReadToEnd();
             Console.WriteLine(output);
             string err = process.StandardError.ReadToEnd();
@@ -38,7 +37,6 @@ namespace Installer.Core.Utils
 
             return output;
         }
-
 
         public static async Task<int> RunProcessAsync(string fileName, string args = "", IObserver<string> outputObserver = null, IObserver<string> errorObserver = null)
         {

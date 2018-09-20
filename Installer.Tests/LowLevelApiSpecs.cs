@@ -10,7 +10,6 @@ using Xunit;
 
 namespace Application.Tests
 {
-
     public class LowLevelApiSpecs
     {
         [Fact]

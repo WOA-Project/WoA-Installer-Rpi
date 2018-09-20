@@ -22,7 +22,6 @@ namespace Installer.Core.Services.Wim
             return (uint)(a | b | c | d);
         }
 
-
         private static ulong ToUInt64LittleEndian(byte[] buffer, int offset)
         {
             return ((ulong)ToUInt32LittleEndian(buffer, offset + 4) << 32) | ToUInt32LittleEndian(buffer, offset + 0);

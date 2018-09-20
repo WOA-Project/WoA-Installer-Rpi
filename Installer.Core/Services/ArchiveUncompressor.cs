@@ -70,7 +70,6 @@ namespace Installer.Core.Services
             }
         }
 
-
         private static async Task Extract(ICollection<TEntry> entries, string destination, IObserver<double> progressObserver = null)
         {
             var count = entries.Count;

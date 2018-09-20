@@ -46,9 +46,7 @@ namespace Installer.Raspberry.ViewModels
 
         public MainViewModel(IObservable<LogEvent> events, IDeployer<RaspberryPi> deployer, IPackageImporterFactory importerFactory, DiskService diskService,
             UIServices uiServices, ISettingsService settingsService)
-        {
-           
-
+        {  
             this.deployer = deployer;
             this.importerFactory = importerFactory;
             this.uiServices = uiServices;

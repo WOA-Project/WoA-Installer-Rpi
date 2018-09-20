@@ -31,7 +31,7 @@ namespace Installer.Core.FullFx
                 {
                     case ProgressMsg.EXTRACT_FILE_STRUCTURE:
                         
-                        if (0 < m.EndFileCount)
+                        if (m.EndFileCount > 0)
                         {
                             percentComplete = m.CurrentFileCount * 10 / m.EndFileCount;
                         }
@@ -39,7 +39,7 @@ namespace Installer.Core.FullFx
                         break;
                     case ProgressMsg.EXTRACT_STREAMS:
                         
-                        if (0 < m.TotalBytes)
+                        if (m.TotalBytes > 0)
                         {
                             percentComplete = 10 + m.CompletedBytes * 80 / m.TotalBytes;
                         }
@@ -47,7 +47,7 @@ namespace Installer.Core.FullFx
                         break;
                     case ProgressMsg.EXTRACT_METADATA:
                         
-                        if (0 < m.EndFileCount)
+                        if (m.EndFileCount > 0)
                         {
                             percentComplete = 90 + m.CurrentFileCount * 10 / m.EndFileCount;
                         }
@@ -57,7 +57,6 @@ namespace Installer.Core.FullFx
 
                 progressObserver.OnNext((double)percentComplete / 100);
             }
-
 
             return CallbackStatus.CONTINUE;
         }
