@@ -23,7 +23,6 @@ namespace Installer.Lumia.Core
         private readonly IWindowsImageService windowsImageService;
         private readonly DriverPaths driverPaths;
 
-
         public LumiaWindowsDeployer(IWindowsImageService windowsImageService, DriverPaths driverPaths)
         {
             this.windowsImageService = windowsImageService;
