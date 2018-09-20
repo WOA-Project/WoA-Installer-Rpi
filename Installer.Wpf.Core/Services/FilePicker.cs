@@ -28,8 +28,8 @@ namespace Installer.Wpf.Core.Services
             if (dialog.ShowDialog(Application.Current.MainWindow) == true)
             {
                 return dialog.FileName;
-            };
-
+            }
+            
             return null;
         }
     }
