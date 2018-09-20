@@ -58,7 +58,6 @@ namespace Installer.Lumia.ViewModels
                 IsEnabled = !IsEnabled;
             });
 
-            
             DisableDualBootWrapper.Command.IsExecuting.Select(x => !x).Subscribe(isChangingDualBoot);
             EnableDualBootWrapper.Command.IsExecuting.Select(x => !x).Subscribe(isChangingDualBoot);
 
