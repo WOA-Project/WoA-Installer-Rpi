@@ -24,6 +24,7 @@ namespace Installer.Lumia.ViewModels
 {
     public class MainViewModel : ReactiveObject, IDisposable
     {
+        private const int VersionOfWindowsThatNeedsBootPatching = 17137;
         private readonly Func<Task<Phone>> getPhoneFunc;
         private readonly ObservableAsPropertyHelper<bool> isBusyHelper;
         private ReadOnlyObservableCollection<RenderedLogEvent> logEvents;
@@ -227,10 +228,13 @@ namespace Installer.Lumia.ViewModels
 
         private async Task DeployUefiAndWindows()
         {
+            var version = int.TryParse(WimMetadata.SelectedDiskImage.Build, out var v) ? v : 0;
+            
             var installOptions = new InstallOptions
             {
                 ImagePath = WimMetadata.Path,
                 ImageIndex = WimMetadata.SelectedDiskImage.Index,
+                PatchBoot = version > VersionOfWindowsThatNeedsBootPatching
             };
 
             await SelectedDeployer.DeployCoreAndWindows(installOptions, await GetPhone(), progressSubject);
@@ -245,10 +249,13 @@ namespace Installer.Lumia.ViewModels
 
         private async Task DeployWindows()
         {
+            var version = int.TryParse(WimMetadata.SelectedDiskImage.Build, out var v) ? v : 0;
+
             var installOptions = new InstallOptions
             {
                 ImagePath = WimMetadata.Path,
                 ImageIndex = WimMetadata.SelectedDiskImage.Index,
+                PatchBoot = version > VersionOfWindowsThatNeedsBootPatching
             };
 
             await SelectedDeployer.DeployWindows(installOptions, await GetPhone(), progressSubject);

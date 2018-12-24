@@ -21,13 +21,13 @@ namespace Installer.Lumia.Core
         private static readonly string BcdBootPath = SystemPaths.BcdBoot;
 
         private readonly IWindowsImageService windowsImageService;
-        private readonly DriverPaths driverPaths;
+        private readonly DeploymentPaths deploymentPaths;
 
 
-        public LumiaWindowsDeployer(IWindowsImageService windowsImageService, DriverPaths driverPaths)
+        public LumiaWindowsDeployer(IWindowsImageService windowsImageService, DeploymentPaths deploymentPaths)
         {
             this.windowsImageService = windowsImageService;
-            this.driverPaths = driverPaths;
+            this.deploymentPaths = deploymentPaths;
         }
 
         public async Task Deploy(InstallOptions options, Phone phone, IObserver<double> progressObserver = null)
@@ -40,12 +40,25 @@ namespace Installer.Lumia.Core
 
             await ApplyWindowsImage(partitions, options, progressObserver);
             await InjectDrivers(partitions.Windows);
-            await MakeBootable(partitions, phone);
-
+            await MakeBootable(partitions, phone, options);
+            
+            
             Log.Information("Windows Image deployed");
         }
 
-        private async Task MakeBootable(WindowsVolumes volumes, Phone phone)
+        private async Task PatchBootIfNecessary(Volume boot, InstallOptions partitionsBoot)
+        {
+            if (partitionsBoot.PatchBoot)
+            {
+                Log.Information("Patching boot...");
+                var source = new DirectoryInfo(deploymentPaths.BootPatchFolder);
+                var dest = new DirectoryInfo(Path.Combine(boot.RootDir.FullName, "EFI", "Boot"));
+                await FileUtils.CopyDirectory(source, dest);
+                Log.Information("Boot patched");
+            }
+        }
+
+        private async Task MakeBootable(WindowsVolumes volumes, Phone phone, InstallOptions options)
         {
             Log.Information("Making Windows installation bootable...");
 
@@ -56,6 +69,9 @@ namespace Installer.Lumia.Core
             await ProcessUtils.RunProcessAsync(BcdBootPath, $@"{windowsPath} /f UEFI /s {bootDriveLetter}:");
             bcd.Invoke("/set {default} testsigning on");
             bcd.Invoke("/set {default} nointegritychecks on");
+
+            await PatchBootIfNecessary(volumes.Boot, options);
+
             await volumes.Boot.Partition.SetGptType(PartitionType.Esp);
             var updatedBootVolume = await phone.GetBootVolume();
 
@@ -80,7 +96,7 @@ namespace Installer.Lumia.Core
         private Task InjectDrivers(Volume windowsVolume)
         {
             Log.Information("Injecting Drivers...");
-            return windowsImageService.InjectDrivers(driverPaths.PreOobe, windowsVolume);
+            return windowsImageService.InjectDrivers(deploymentPaths.PreOobe, windowsVolume);
         }
 
         private async Task ApplyWindowsImage(WindowsVolumes volumes, InstallOptions options, IObserver<double> progressObserver = null)
@@ -146,12 +162,12 @@ namespace Installer.Lumia.Core
         {
             Log.Information("Injection of 'Post Windows Setup' drivers...");
 
-            if (!Directory.Exists(driverPaths.PostOobe))
+            if (!Directory.Exists(deploymentPaths.PostOobe))
             {
                 throw new DirectoryNotFoundException("There Post-OOBE folder doesn't exist");
             }
 
-            if (Directory.GetFiles(driverPaths.PostOobe, "*.inf").Any())
+            if (Directory.GetFiles(deploymentPaths.PostOobe, "*.inf").Any())
             {
                 throw new InvalidOperationException("There are no drivers inside the Post-OOBE folder");
             }
@@ -167,14 +183,14 @@ namespace Installer.Lumia.Core
             Log.Information("Injecting 'Post Windows Setup' Drivers...");
             var windowsVolume = await phone.GetWindowsVolume();
 
-            await windowsImageService.InjectDrivers(driverPaths.PostOobe, windowsVolume);
+            await windowsImageService.InjectDrivers(deploymentPaths.PostOobe, windowsVolume);
 
             Log.Information("Drivers installed successfully");
         }
 
         public Task<bool> AreDeploymentFilesValid()
         {
-            var pathsToCheck = new[] { driverPaths.PreOobe };
+            var pathsToCheck = new[] { deploymentPaths.PreOobe };
             var areValid = pathsToCheck.EnsureExistingPaths();
             return Task.FromResult(areValid);
         }

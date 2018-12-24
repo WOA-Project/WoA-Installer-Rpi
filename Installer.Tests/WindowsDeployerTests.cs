@@ -13,7 +13,7 @@ namespace Application.Tests
         public async Task MakeBootable()
         {
             var lowLevelApi = new LowLevelApi();
-            var sut = new LumiaWindowsDeployer(new DismImageService(), new DriverPaths(""));
+            var sut = new LumiaWindowsDeployer(new DismImageService(), new DeploymentPaths(""));
 
             var lowlevel = lowLevelApi;
             var volumes = await lowlevel.GetVolumes(await lowlevel.GetPhoneDisk());

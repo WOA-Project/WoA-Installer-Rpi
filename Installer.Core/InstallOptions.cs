@@ -15,5 +15,6 @@ namespace Installer.Core
 
         public string ImagePath { get; set; }
         public int ImageIndex { get; set; } = 1;
+        public bool PatchBoot { get; set; }
     }
 }

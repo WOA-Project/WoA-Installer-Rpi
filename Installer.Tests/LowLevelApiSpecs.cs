@@ -54,7 +54,7 @@ namespace Application.Tests
         [Fact]
         public async Task DeployWindows()
         {
-            var deployer = new LumiaWindowsDeployer(new DismImageService(), new DriverPaths(""));
+            var deployer = new LumiaWindowsDeployer(new DismImageService(), new DeploymentPaths(""));
             await deployer.Deploy(new InstallOptions(@"F:\sources\install.wim"), new Phone(null));
         }
 

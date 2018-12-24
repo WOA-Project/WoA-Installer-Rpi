@@ -40,7 +40,7 @@ namespace Installer.Lumia.Application
         private static LumiaDeployer GetDeployer(string rootFilesPath)
         {
             return new LumiaDeployer(new LumiaCoreDeployer(rootFilesPath),
-                new LumiaWindowsDeployer(ServiceFactory.Current.ImageService, new DriverPaths(rootFilesPath)));
+                new LumiaWindowsDeployer(ServiceFactory.Current.ImageService, new DeploymentPaths(rootFilesPath)));
         }
     }
 }

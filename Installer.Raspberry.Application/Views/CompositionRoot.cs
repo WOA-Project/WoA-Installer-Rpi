@@ -18,7 +18,7 @@ namespace Installer.Raspberry.Application.Views
         {
             ServiceFactory.Current = new DefaultServiceFactory();
 
-            var deployer = new RaspberryPiDeployer(new ImageFlasher(), new RaspberryPiWindowsDeployer(ServiceFactory.Current.ImageService, new DriverPaths(@"Files")));
+            var deployer = new RaspberryPiDeployer(new ImageFlasher(), new RaspberryPiWindowsDeployer(ServiceFactory.Current.ImageService, new DeploymentPaths(@"Files")));
             var uiServices = new UIServices(new FilePicker(), new ViewService(), new DialogService(DialogCoordinator.Instance));
             return new MainViewModel(logEvents, deployer, new PackageImporterFactory(), ServiceFactory.Current.DiskService, uiServices, new SettingsService());
         }
