@@ -19,13 +19,12 @@ Find them below.
 # Downloads
 
 ## 1. WoA Installer
-- There are 2 flavors of WoA Installer. One is for Raspberry Pi and the other is for the supported Lumias (950 and 950 XL). 
 
-You can download it from the **[Releases section](https://github.com/SuperJMN/WoA-Installer/releases)**. 
+Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/1.2.1/WoA.Installer.for.Lumia.zip)**
 
 ## 2. Core Package
 
-- Download it from **[here](https://1drv.ms/f/s!AtXoQFW327DIyMwPjZhmauUCSSHXUA)**.
+- Download the latest version **[here](https://1drv.ms/f/s!AtXoQFW327DIyMwPjZhmauUCSSHXUA)**.
 
 ## Installing the Core Package
 Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy Windows.
