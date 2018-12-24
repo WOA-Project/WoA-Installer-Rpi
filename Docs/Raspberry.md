@@ -15,7 +15,7 @@ Find them below.
 
 ## 1. WoA Installer
 
-You can download it from the **[Releases section](https://github.com/SuperJMN/WoA-Installer/releases)** 
+Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/v1.2/WoA.Installer.for.Raspberry.Pi.zip)** 
 
 ## 2. Core Package
 
