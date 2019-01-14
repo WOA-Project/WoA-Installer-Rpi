@@ -145,7 +145,7 @@ namespace Installer.Core.FullFx
             ps.Commands.Clear();
 
             var sizeBytes = (ulong)size.Bytes;
-            Log.Verbose("Resizing partition {Partition} to {Size} ({Bytes} bytes)", size, sizeBytes);
+            Log.Verbose("Resizing partition {Partition} to {Size}", partition, size);
 
             ps.AddCommand("Resize-Partition")
                 .AddParameter("DiskNumber", partition.Disk.Number)

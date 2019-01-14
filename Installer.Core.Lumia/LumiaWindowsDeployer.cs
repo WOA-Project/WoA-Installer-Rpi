@@ -134,6 +134,8 @@ namespace Installer.Lumia.Core
             var refreshedDisk = await phone.Disk.LowLevelApi.GetPhoneDisk();
             var available = refreshedDisk.Size - refreshedDisk.AllocatedSize;
 
+            Log.Verbose("We will need {Size} of free space for Windows", SpaceNeededForWindows);
+
             if (available < SpaceNeededForWindows)
             {
                 Log.Warning("There's not enough space in the phone. Trying to take required space from the Data partition");
@@ -152,7 +154,12 @@ namespace Installer.Lumia.Core
             Log.Information("Shrinking Data partition...");
 
             var dataVolume = await phone.GetDataVolume();
-            var finalSize = dataVolume.Size - SpaceNeededForWindows;
+
+            var dataSize = dataVolume.Size;
+
+            Log.Verbose("Data partition is reported to have a size of {Size}", dataSize);
+            
+            var finalSize = dataSize - SpaceNeededForWindows;
             Log.Verbose("Resizing Data to {Size}", finalSize);
 
             await dataVolume.Partition.Resize(finalSize);
