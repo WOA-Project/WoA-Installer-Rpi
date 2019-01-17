@@ -72,7 +72,12 @@ namespace Installer.Core.Utils
 
         private static bool IsExistingPath(string path)
         {
-            return File.Exists(path) || Directory.Exists(path);
+            var isExistingPath = File.Exists(path) || Directory.Exists(path);
+            var status = isExistingPath ? "exists" : "does not exist";
+           
+            Log.Verbose($"The '{{Path}}' {status}", path);
+
+            return isExistingPath;
         }
     }
 }
