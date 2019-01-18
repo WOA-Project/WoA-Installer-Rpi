@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Intaller.Wpf.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Installer.Lumia.Application.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="WimFolder" Type="System.String" Scope="User">
@@ -7,6 +7,9 @@
     </Setting>
     <Setting Name="DriverPackFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SizeReservedForWindows" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">18</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -27,46 +27,13 @@
                 IsBusy="{Binding ImportDriverPackageWrapper.IsExecuting}" Image="/Assets/gears.png" />
         </StackPanel>
 
-        <GroupBox Header="Post-Windows Setup Drivers" Grid.Row="1" Padding="20" Margin="0,20,0,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <TextBlock TextWrapping="Wrap" Margin="0,0,0,20" FontSize="14">
-                    Some drivers should <Bold>only</Bold> be injected after Windows 10 ARM64 has been completely installed into the Phone. Injecting them will provide improved functionality and better overall experience.
-                </TextBlock>
-                <UniformGrid Grid.Row="1" Rows="1" VerticalAlignment="Center">
-                    <ListView BorderBrush="Transparent" HorizontalAlignment="Center"
-                              ItemsSource="{Binding DeployersItems}" SelectedValuePath="Model.Name"
-                              SelectedItem="{Binding SelectedDeployerItem, Mode=TwoWay}">
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Rows="1" />
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="8">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="64" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Image
-                                        Source="{Binding Model.PhoneType, Converter={StaticResource IdToImageConverter}}" />
-                                    <TextBlock Margin="0,4" Grid.Row="1" TextAlignment="Center"
-                                               VerticalAlignment="Center" Text="{Binding Model.Name}" />
-                                </Grid>
-
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                    <core:BusyButton VerticalAlignment="Center"
-                                     Command="{Binding InjectDriversWrapper.Command}"
-                                     IsBusy="{Binding InjectDriversWrapper.IsExecuting}" Content="Inject Drivers"
-                                     Image="/Assets/inject-drivers.png" Height="50" Width="140" />
-                </UniformGrid>
-            </Grid>
+        <GroupBox Header="Misc" Grid.Row="1" Padding="20" Margin="0,20,0,0">
+            <HeaderedContentControl Header="Size to reserve for Windows (taken from the Data partition as needed)" HorizontalContentAlignment="Stretch">
+                <DockPanel>
+                    <TextBlock Padding="10" MinWidth="80" Text="{Binding SizeReservedForWindows}" DockPanel.Dock="Right" />
+                    <Slider Minimum="15" Maximum="24" Value="{Binding GbsReservedForWindows, Mode=TwoWay}" Height="30"  />
+                </DockPanel>
+            </HeaderedContentControl>
 
         </GroupBox>
 

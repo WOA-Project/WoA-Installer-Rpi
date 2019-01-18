@@ -16,5 +16,16 @@ namespace Installer.Lumia.Application
             get => Settings.Default.WimFolder;
             set => Settings.Default.WimFolder = value;
         }
+
+        public double SizeReservedForWindows
+        {
+            get => Settings.Default.SizeReservedForWindows;
+            set => Settings.Default.SizeReservedForWindows = value;
+        }
+
+        public void Save()
+        {
+            Settings.Default.Save();
+        }
     }
 }

@@ -9,6 +9,7 @@ using System.Reactive.Subjects;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using ByteSizeLib;
 using DynamicData;
 using Installer.Core;
 using Installer.Core.Exceptions;
@@ -39,6 +40,7 @@ namespace Installer.Lumia.ViewModels
         private readonly ObservableAsPropertyHelper<bool> hasWimHelper;
         private ObservableAsPropertyHelper<WimMetadataViewModel> pickWimFileObs;
         private DeployerItem selectedDeployerItem;
+        private readonly ObservableAsPropertyHelper<ByteSize> sizeReservedForWindows;
 
         public MainViewModel(IObservable<LogEvent> events, ICollection<DeployerItem> deployersItems, IPackageImporterFactory importerFactory, UIServices uiServices, ISettingsService settingsService, Func<Task<Phone>> getPhoneFunc)
         {
@@ -99,7 +101,13 @@ namespace Installer.Lumia.ViewModels
             
             hasWimHelper = this.WhenAnyValue(model => model.WimMetadata, (WimMetadataViewModel x) => x != null)
                 .ToProperty(this, x => x.HasWim);
+
+            sizeReservedForWindows =
+                this.WhenAnyValue(x => x.GbsReservedForWindows, ByteSize.FromGigaBytes)
+                    .ToProperty(this, x => x.SizeReservedForWindows);
         }
+
+        public ByteSize SizeReservedForWindows => sizeReservedForWindows.Value;
 
         private void SetupLogging(IObservable<LogEvent> events)
         {
@@ -293,6 +301,16 @@ namespace Installer.Lumia.ViewModels
 
         public DualBootViewModel DualBootViewModel { get; }
 
+        public double GbsReservedForWindows
+        {
+            get => settingsService.SizeReservedForWindows;
+            set
+            {
+                settingsService.SizeReservedForWindows = value;
+                this.RaisePropertyChanged(nameof(GbsReservedForWindows));
+            }
+        }
+
         public void Dispose()
         {
             isBusyHelper?.Dispose();
@@ -303,6 +321,7 @@ namespace Installer.Lumia.ViewModels
             hasWimHelper?.Dispose();
             ShowWarningCommand?.Dispose();
             PickWimFileCommand?.Dispose();
+            settingsService.Save();
         }
     }    
 }
