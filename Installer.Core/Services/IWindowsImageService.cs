@@ -8,5 +8,6 @@ namespace Installer.Core.Services
     {
         Task ApplyImage(Volume windowsVolume, string imagePath, int imageIndex = 1, IObserver<double> progressObserver = null);
         Task InjectDrivers(string path, Volume windowsPartition);
+        Task RemoveDriver(string path, Volume volume);
     }
 }

@@ -31,6 +31,7 @@ namespace Installer.Lumia.Application
             var deployersItems = deployerDict.Select(pair => new DeployerItem(pair.Key, pair.Value)).ToList();
             var viewService = new ViewService();
             viewService.Register("TextViewer", typeof(TextViewerWindow));
+            viewService.Register("MarkdownViewer", typeof(MarkdownViewerWindow));
             var mainViewModel = new MainViewModel(logEvents, deployersItems, new PackageImporterFactory(),
                 new UIServices(new FilePicker(), viewService, new DialogService(DialogCoordinator.Instance)),
                 new SettingsService(), Phone.GetPhone);

@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Gpu.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Gpu.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.4.0.2419" />
     <PackageReference Include="ReactiveUI" Version="8.3.1" />
     <PackageReference Include="System.Reactive" Version="4.0.0" />
@@ -12,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Installer.Core.FullFx\Installer.Core.FullFx.csproj" />
     <ProjectReference Include="..\Installer.Core.Lumia\Installer.Lumia.Core.csproj" />
     <ProjectReference Include="..\Installer.Core\Installer.Core.csproj" />
     <ProjectReference Include="..\Installer.UI\Installer.UI.csproj" />

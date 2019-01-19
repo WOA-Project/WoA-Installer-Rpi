@@ -75,5 +75,19 @@ namespace Installer.Core.FullFx
                     $"There has been a problem during deployment: DISM exited with code {resultCode}.");
             }
         }
+
+        public async Task RemoveDriver(string path, Volume volume)
+        {
+            var outputSubject = new Subject<string>();
+            var subscription = outputSubject.Subscribe(Log.Verbose);
+            var resultCode = await ProcessUtils.RunProcessAsync(SystemPaths.Dism, $@"/Remove-Driver /Image:{volume.RootDir.Name} /Driver:""{path}""", outputSubject, outputSubject);
+            subscription.Dispose();
+            
+            if (resultCode != 0)
+            {
+                throw new DeploymentException(
+                    $"There has been a problem during removal: DISM exited with code {resultCode}.");
+            }
+        }
     }
 }

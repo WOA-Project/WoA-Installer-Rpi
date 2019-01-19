@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,10 @@ using ByteSizeLib;
 using DynamicData;
 using Installer.Core;
 using Installer.Core.Exceptions;
+using Installer.Core.FileSystem;
+using Installer.Core.FullFx;
 using Installer.Core.Services.Wim;
+using Installer.Core.Utils;
 using Installer.Lumia.Core;
 using Installer.UI;
 using Installer.ViewModels.Core;
@@ -75,6 +79,9 @@ namespace Installer.Lumia.ViewModels
                 ReactiveCommand.CreateFromTask(InjectPostOobeDrivers, isDeployerSelected),
                 uiServices.DialogService);
 
+            InstallGpuWrapper = new CommandWrapper<Unit, Unit>(this,
+                ReactiveCommand.CreateFromTask(InstallGpu), uiServices.DialogService);
+
             ImportDriverPackageWrapper = new CommandWrapper<Unit, Unit>(this,
                 ReactiveCommand.CreateFromTask(ImportDriverPackage), uiServices.DialogService);
 
@@ -106,6 +113,8 @@ namespace Installer.Lumia.ViewModels
                 this.WhenAnyValue(x => x.GbsReservedForWindows, ByteSize.FromGigaBytes)
                     .ToProperty(this, x => x.SizeReservedForWindows);
         }
+
+        public CommandWrapper<Unit, Unit> InstallGpuWrapper { get; set; }
 
         public ByteSize SizeReservedForWindows => sizeReservedForWindows.Value;
 
@@ -253,6 +262,57 @@ namespace Installer.Lumia.ViewModels
         private Task<Phone> GetPhone()
         {
             return getPhoneFunc();
+        }
+
+        private async Task InstallGpu()
+        {
+            var phone = await GetPhone();
+
+            var nv = @"Files\Cityman\Drivers\GPU\NV";
+            var panel = @"Files\Cityman\Drivers\GPU\OEMPanel";
+
+            var pathsToCheck = new[] { nv, panel,}; 
+
+            await uiServices.DialogService.ShowAlert(this, "Warning", "This is applicable to the Lumia 950 XL ONLY");
+
+            if (pathsToCheck.EnsureExistingPaths())
+            {
+                await uiServices.DialogService.ShowAlert(this, "Error", "The required files for the GPU installation are missing");
+                return;
+            }
+
+            if (!(await phone.GetDualBootStatus()).IsEnabled)
+            {
+                await uiServices.DialogService.ShowAlert(this, "Error", "You should enable Dual Boot for the GPU installation to work");
+                return;
+            }
+
+            var imageService = new DismImageService();
+            var winVolume = await phone.GetWindowsVolume();
+
+            await imageService.RemoveDriver(nv, winVolume);
+            await imageService.InjectDrivers(nv, winVolume);
+
+            var publicDir = new DirectoryInfo(Path.Combine(winVolume.RootDir.Name, "Users", "Public"));
+            await FileUtils.CopyDirectory(new DirectoryInfo(nv), publicDir);
+            await FileUtils.CopyDirectory(new DirectoryInfo(panel), publicDir);
+
+            var msgText = LoadSteps();
+            var messageViewModel = new MessageViewModel("Manual steps", msgText);
+
+            uiServices.ViewService.Show("MarkdownViewer", messageViewModel);
+        }
+
+        private string LoadSteps()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "Installer.Lumia.ViewModels.Gpu.md";
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
         }
 
         private async Task DeployWindows()
