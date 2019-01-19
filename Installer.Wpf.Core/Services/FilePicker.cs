@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using Installer.Core.Utils;
 using Installer.UI;
 using Microsoft.Win32;
 
@@ -23,8 +24,12 @@ namespace Installer.Wpf.Core.Services
 
             dialog.Filter = filter;
             dialog.FileName = "";
-            dialog.InitialDirectory = InitialDirectory;
 
+            if (new[] {InitialDirectory}.EnsureExistingPaths())
+            {
+                dialog.InitialDirectory = InitialDirectory;
+            }
+            
             if (dialog.ShowDialog(Application.Current.MainWindow) == true)
             {
                 return dialog.FileName;

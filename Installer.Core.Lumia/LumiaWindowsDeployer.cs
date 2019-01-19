@@ -13,7 +13,6 @@ namespace Installer.Lumia.Core
 {
     public class LumiaWindowsDeployer : IWindowsDeployer<Phone>
     {
-        private static readonly ByteSize SpaceNeededForWindows = ByteSize.FromGigaBytes(18);
         private static readonly ByteSize ReservedPartitionSize = ByteSize.FromMegaBytes(200);
         private static readonly ByteSize BootPartitionSize = ByteSize.FromMegaBytes(100);
         private const string BootPartitionLabel = "BOOT";
@@ -35,7 +34,7 @@ namespace Installer.Lumia.Core
             Log.Information("Deploying Windows 10 ARM64...");
 
             await RemoveExistingWindowsPartitions(phone);
-            await AllocateSpace(phone);
+            await AllocateSpace(phone, options.SizeReservedForWindows);
             var partitions = await CreatePartitions(phone);
 
             await ApplyWindowsImage(partitions, options, progressObserver);
@@ -127,20 +126,20 @@ namespace Installer.Lumia.Core
             return new WindowsVolumes(await phone.GetBootVolume(), await phone.GetWindowsVolume());
         }
 
-        private async Task AllocateSpace(Phone phone)
+        private async Task AllocateSpace(Phone phone, ByteSize sizeReservedForWindows)
         {
             Log.Information("Verifying the available space...");
 
             var refreshedDisk = await phone.Disk.LowLevelApi.GetPhoneDisk();
             var available = refreshedDisk.Size - refreshedDisk.AllocatedSize;
 
-            Log.Verbose("We will need {Size} of free space for Windows", SpaceNeededForWindows);
+            Log.Verbose("We will need {Size} of free space for Windows", sizeReservedForWindows);
 
-            if (available < SpaceNeededForWindows)
+            if (available < sizeReservedForWindows)
             {
                 Log.Warning("There's not enough space in the phone. Trying to take required space from the Data partition");
 
-                await TakeSpaceFromDataPartition(phone);
+                await TakeSpaceFromDataPartition(phone, sizeReservedForWindows);
                 Log.Information("Data partition resized correctly");
             }
             else
@@ -149,7 +148,7 @@ namespace Installer.Lumia.Core
             }
         }
 
-        private async Task TakeSpaceFromDataPartition(Phone phone)
+        private async Task TakeSpaceFromDataPartition(Phone phone, ByteSize space)
         {
             Log.Information("Shrinking Data partition...");
 
@@ -159,7 +158,7 @@ namespace Installer.Lumia.Core
 
             Log.Verbose("Data partition is reported to have a size of {Size}", dataSize);
             
-            var finalSize = dataSize - SpaceNeededForWindows;
+            var finalSize = dataSize - space;
             Log.Verbose("Resizing Data to {Size}", finalSize);
 
             await dataVolume.Partition.Resize(finalSize);

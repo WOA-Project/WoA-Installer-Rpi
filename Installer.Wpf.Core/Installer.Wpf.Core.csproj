@@ -92,6 +92,10 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Installer.Core\Installer.Core.csproj">
+      <Project>{97CF13C2-67D8-4BDF-80D3-00E31685603F}</Project>
+      <Name>Installer.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Installer.UI\Installer.UI.csproj">
       <Project>{D15DB86E-52F8-48A6-9F46-276E34BD22AB}</Project>
       <Name>Installer.UI</Name>
