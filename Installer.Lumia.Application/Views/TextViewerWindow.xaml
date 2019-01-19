@@ -8,7 +8,10 @@
                  mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800" WindowStartupLocation="CenterOwner"
         d:DataContext="{d:DesignInstance core:MessageViewModel}">
-    <ScrollViewer>
-        <TextBlock Margin="8" Text="{Binding Text}" />
-    </ScrollViewer>
+    <DockPanel>
+        <Button DockPanel.Dock="Bottom" Margin="15" HorizontalAlignment="Center" Content="Close" Click="OnClick" />
+        <ScrollViewer>
+            <TextBlock Margin="8" Text="{Binding Text}" />
+        </ScrollViewer>
+    </DockPanel>
 </mah:MetroWindow>

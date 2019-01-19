@@ -12,6 +12,9 @@
     <mah:MetroWindow.Resources>
         <xaml:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" />
     </mah:MetroWindow.Resources>
-    <FlowDocumentScrollViewer Document="{Binding Text, Converter={StaticResource TextToFlowDocumentConverter}}" >
-    </FlowDocumentScrollViewer>
+    <DockPanel>
+        <Button DockPanel.Dock="Bottom" Margin="15" HorizontalAlignment="Center" Content="Close" Click="OnClick" />
+        <FlowDocumentScrollViewer Margin="10"
+                                  Document="{Binding Text, Converter={StaticResource TextToFlowDocumentConverter}}" />
+    </DockPanel>
 </mah:MetroWindow>

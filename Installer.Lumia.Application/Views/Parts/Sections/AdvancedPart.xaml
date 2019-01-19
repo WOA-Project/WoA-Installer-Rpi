@@ -29,7 +29,7 @@
 
         <StackPanel Grid.Row="1">
             <GroupBox Header="GPU" Grid.Row="1" Padding="20" Margin="0,20,0,0">
-                <HeaderedContentControl Header="Size to reserve for Windows (taken from the Data partition as needed)"
+                <HeaderedContentControl Header="EXPERIMENTAL: It will install the GPU drivers. Use it with caution. "
                                         HorizontalContentAlignment="Stretch">
                     <core:BusyButton Margin="20"
                         VerticalAlignment="Center" HorizontalAlignment="Center" Height="50"
@@ -45,7 +45,7 @@
                     <DockPanel>
                         <TextBlock Padding="10" MinWidth="80" Text="{Binding SizeReservedForWindows}"
                                    DockPanel.Dock="Right" />
-                        <Slider Minimum="15" Maximum="24" Value="{Binding GbsReservedForWindows, Mode=TwoWay}"
+                        <Slider Minimum="15" Maximum="24" SmallChange="0.5" LargeChange="1" TickFrequency="1" Value="{Binding GbsReservedForWindows, Mode=TwoWay}"
                                 Height="30" />
                     </DockPanel>
                 </HeaderedContentControl>
