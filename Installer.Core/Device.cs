@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -140,5 +141,11 @@ namespace Installer.Core
         }
 
         public abstract Task RemoveExistingWindowsPartitions();
+
+        public async Task<ICollection<DriverMetadata>> GetDrivers()
+        {
+            var windows = await GetWindowsVolume();
+            return await windows.GetDrivers();
+        }
     }
 }

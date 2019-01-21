@@ -268,14 +268,12 @@ namespace Installer.Lumia.ViewModels
         {
             var phone = await GetPhone();
 
-            var nv = @"Files\Cityman\Drivers\GPU\NV";
-            var panel = @"Files\Cityman\Drivers\GPU\OEMPanel";
+            var qctreeFolder = @"Files\Cityman\Drivers\GPU\QcTrEE";
+            var panelFolder = @"Files\Cityman\Drivers\GPU\OEMPanel";
 
-            var pathsToCheck = new[] { nv, panel,}; 
+            var pathsToCheck = new[] { qctreeFolder, panelFolder,}; 
 
-            await uiServices.DialogService.ShowAlert(this, "Warning", "This is applicable to the Lumia 950 XL ONLY");
-
-            if (pathsToCheck.EnsureExistingPaths())
+            if (!pathsToCheck.EnsureExistingPaths())
             {
                 await uiServices.DialogService.ShowAlert(this, "Error", "The required files for the GPU installation are missing");
                 return;
@@ -290,20 +288,21 @@ namespace Installer.Lumia.ViewModels
             var imageService = new DismImageService();
             var winVolume = await phone.GetWindowsVolume();
 
-            await imageService.RemoveDriver(nv, winVolume);
-            await imageService.InjectDrivers(nv, winVolume);
+            var oldQctree = (await phone.GetDrivers()).Single(x => x.OriginalFileName.Contains("qctree"));
+            await imageService.RemoveDriver(oldQctree.Driver, winVolume);
+            await imageService.InjectDrivers(qctreeFolder, winVolume);
 
-            var publicDir = new DirectoryInfo(Path.Combine(winVolume.RootDir.Name, "Users", "Public"));
-            await FileUtils.CopyDirectory(new DirectoryInfo(nv), publicDir);
-            await FileUtils.CopyDirectory(new DirectoryInfo(panel), publicDir);
+            var destPath = Path.Combine(winVolume.RootDir.Name, "Users", "Public", "OEMPanel");
+            var publicDir = new DirectoryInfo(destPath);
+            FileUtils.CreateDirectory(destPath);
+            await FileUtils.CopyDirectory(new DirectoryInfo(panelFolder), publicDir);
 
-            var msgText = LoadSteps();
-            var messageViewModel = new MessageViewModel("Manual steps", msgText);
+            var messageViewModel = new MessageViewModel("Manual steps", ManualStepsText());
 
             uiServices.ViewService.Show("MarkdownViewer", messageViewModel);
         }
 
-        private string LoadSteps()
+        private static string ManualStepsText()
         {
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "Installer.Lumia.ViewModels.Gpu.md";

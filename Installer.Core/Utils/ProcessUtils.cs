@@ -25,7 +25,7 @@ namespace Installer.Core.Utils
 
             Log.Verbose("Starting process {@Process}", new { process.StartInfo.FileName, process.StartInfo.Arguments });
             process.Start();
-            Log.Verbose("Process started sucessfully");
+            Log.Verbose("Process started successfully");
 
 
             string output = process.StandardOutput.ReadToEnd();

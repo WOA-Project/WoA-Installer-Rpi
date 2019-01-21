@@ -39,6 +39,20 @@ namespace Installer.Core.FullFx
             return disks.ToList();
         }
 
+        public async Task<ICollection<DriverMetadata>> GetDrivers(string path)
+        {
+            ps.Commands.Clear();
+            ps.AddCommand($"Get-WindowsDriver");
+            ps.AddParameter("Path", path);
+
+            var results = await Task.Factory.FromAsync(ps.BeginInvoke(), r => ps.EndInvoke(r));
+
+            var disks = results
+                .Select(ToDriverMetadata);
+
+            return disks.ToList();
+        }
+
         public async Task<Disk> GetPhoneDisk()
         {
             var disks = await GetDisks();
@@ -239,6 +253,19 @@ namespace Installer.Core.FullFx
             var partition = results.First().ImmediateBaseObject;
 
             return ToPartition(disk, partition);
+        }
+
+        private static DriverMetadata ToDriverMetadata(PSObject driverMetadata)
+        {
+            return new DriverMetadata
+            {
+                Driver = (string)driverMetadata.Properties["Driver"].Value,
+                OriginalFileName = (string)driverMetadata.Properties["OriginalFileName"].Value,
+                Inbox = (bool)driverMetadata.Properties["Inbox"].Value,
+                BootCritical = (bool)driverMetadata.Properties["BootCritical"].Value,
+                ProviderName = (string)driverMetadata.Properties["ProviderName"].Value,
+                Date = (DateTime)driverMetadata.Properties["Date"].Value,
+            };
         }
 
         private static Partition ToPartition(Disk disk, object partition)

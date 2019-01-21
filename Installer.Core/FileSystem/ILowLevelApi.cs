@@ -19,5 +19,6 @@ namespace Installer.Core.FileSystem
         Task<IList<Volume>> GetVolumes(Disk disk);
         Task RemovePartition(Partition partition);
         Task<ICollection<Disk>> GetDisks();
+        Task<ICollection<DriverMetadata>> GetDrivers(string path);
     }
 }

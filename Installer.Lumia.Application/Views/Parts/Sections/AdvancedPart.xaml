@@ -29,8 +29,15 @@
 
         <StackPanel Grid.Row="1">
             <GroupBox Header="GPU" Grid.Row="1" Padding="20" Margin="0,20,0,0">
-                <HeaderedContentControl Header="EXPERIMENTAL: It will install the GPU drivers. Use it with caution. "
-                                        HorizontalContentAlignment="Stretch">
+                <HeaderedContentControl
+                    HorizontalContentAlignment="Stretch">
+                    <HeaderedContentControl.Header>
+                        <TextBlock>
+                            EXPERIMENTAL: This will install the GPU drivers. Use it with caution.
+                            <LineBreak/>                                                           
+                            <Bold>ONLY for Lumia 950 XL.</Bold>
+                        </TextBlock>                        
+                    </HeaderedContentControl.Header>
                     <core:BusyButton Margin="20"
                         VerticalAlignment="Center" HorizontalAlignment="Center" Height="50"
                         Content="Install GPU" Command="{Binding InstallGpuWrapper.Command}"

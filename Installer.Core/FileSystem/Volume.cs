@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -58,6 +59,16 @@ namespace Installer.Core.FileSystem
         public override string ToString()
         {
             return $"{nameof(Label)}: {Label}, {nameof(Size)}: {Size}, {nameof(Partition)}: {Partition}, {nameof(Letter)}: {Letter}";
+        }
+
+        public Task<ICollection<DriverMetadata>> GetDrivers()
+        {
+            if (Partition.Letter == null)
+            {
+                throw new InvalidOperationException("The partition doesn't have a drive letter");
+            }
+
+            return LowLevelApi.GetDrivers(Partition.Letter + ":\\");
         }
     }
 }

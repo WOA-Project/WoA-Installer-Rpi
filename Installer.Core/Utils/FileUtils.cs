@@ -79,5 +79,13 @@ namespace Installer.Core.Utils
 
             return isExistingPath;
         }
+
+        public static void CreateDirectory(string destPath)
+        {
+            if (!IsExistingPath(destPath))
+            {
+                Directory.CreateDirectory(destPath);
+            }
+        }
     }
 }

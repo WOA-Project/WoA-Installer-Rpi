@@ -78,6 +78,15 @@ namespace Application.Tests
         }
 
         [Fact]
+        public async Task GetDrivers()
+        {
+            var phone = new Phone(await new LowLevelApi().GetPhoneDisk());
+            var drivers = await phone.GetDrivers();
+            var qctree = drivers.FirstOrDefault(metadata => metadata.OriginalFileName.Contains("qctree"));
+            Assert.NotNull(drivers);
+        }
+
+        [Fact]
         public async Task GetVolume()
         {
             var sut = new LowLevelApi();
