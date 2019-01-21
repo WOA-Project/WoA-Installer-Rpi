@@ -30,7 +30,9 @@ namespace Installer.Core.Services.Wim
 
             return new XmlWindowsImageMetadata
             {
-                Images = metadata.Images.Select(x => new DiskImageMetadata
+                Images = metadata.Images
+                    .Where(x => x.Windows != null)
+                    .Select(x => new DiskImageMetadata
                 {
                     Architecture = GetArchitecture(x.Windows.Arch),
                     Build = x.Windows.Version.Build,
