@@ -44,6 +44,7 @@ namespace Installer.Core.Services
             invoker.Invoke($@"/deletevalue {{bootmgr}} customactions");
             invoker.Invoke($@"/deletevalue {{bootmgr}} custom:54000001");
             invoker.Invoke($@"/deletevalue {{bootmgr}} custom:54000002");
+            invoker.Invoke($@"/deletevalue {{bootmgr}} processcustomactionsfirst");
         }
         
         private Guid CreateBootShim()
