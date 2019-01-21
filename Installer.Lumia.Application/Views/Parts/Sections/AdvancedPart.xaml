@@ -19,7 +19,7 @@
         <StackPanel>
             <TextBlock Margin="8,8,8,18" TextWrapping="Wrap">
                 You can import Core Packages with binaries (Core Files + Drivers) into the application so new Windows deployments will use them. Please, notice that this
-                <Bold>will deploy anything on the Phone</Bold>, this will only <Bold>stage the files in the package</Bold> to use in further deployments (inside the Windows Deployment section)
+                <Bold>WILL NOT deploy anything on the Phone</Bold>, this will only <Bold>stage the files in the package</Bold> to use in further deployments (inside the Windows Deployment section)
             </TextBlock>
             <core:BusyButton
                 VerticalAlignment="Center" HorizontalAlignment="Center" Height="50"
@@ -41,7 +41,7 @@
                     <core:BusyButton Margin="20"
                         VerticalAlignment="Center" HorizontalAlignment="Center" Height="50"
                         Content="Install GPU" Command="{Binding InstallGpuWrapper.Command}"
-                        IsBusy="{Binding ImportDriverPackageWrapper.IsExecuting}" Image="/Assets/gears.png" />
+                        IsBusy="{Binding InstallGpuWrapper.IsExecuting}" Image="/Assets/gpu.png" />
                 </HeaderedContentControl>
 
             </GroupBox>

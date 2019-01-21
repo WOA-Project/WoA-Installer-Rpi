@@ -88,7 +88,8 @@ namespace Installer.Lumia.ViewModels
             var isBusyObs = Observable.Merge(FullInstallWrapper.Command.IsExecuting,
                 WindowsInstallWrapper.Command.IsExecuting,
                 InjectDriversWrapper.Command.IsExecuting,
-                ImportDriverPackageWrapper.Command.IsExecuting);
+                ImportDriverPackageWrapper.Command.IsExecuting,
+                InstallGpuWrapper.Command.IsExecuting);
 
             var dualBootIsBusyObs = DualBootViewModel.IsBusyObs;
 
