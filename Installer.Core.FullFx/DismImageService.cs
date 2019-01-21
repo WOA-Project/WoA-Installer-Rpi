@@ -31,8 +31,8 @@ namespace Installer.Core.FullFx
             }
             
             var dismName = SystemPaths.Dism;
-            //var args = $@"/Apply-Image /compact /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}";
-            var args = $@"/Apply-Image /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}";
+            var args = $@"/Apply-Image /compact /ImageFile:""{imagePath}"" /Index:{imageIndex} /ApplyDir:{volume.RootDir.Name}";
+            
             Log.Verbose("We are about to run DISM: {ExecName} {Parameters}", dismName, args);
             var resultCode = await ProcessUtils.RunProcessAsync(dismName, args, outputObserver: outputSubject);
             if (resultCode != 0)

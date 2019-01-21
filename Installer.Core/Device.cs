@@ -11,9 +11,6 @@ namespace Installer.Core
 {
     public abstract class Device
     {
-        protected Volume bootVolume;
-        private Volume windowsVolume;
-
         protected Device(Disk disk)
         {
             Disk = disk;
@@ -47,7 +44,7 @@ namespace Installer.Core
 
         public async Task<Volume> GetWindowsVolume()
         {
-            return windowsVolume ?? (windowsVolume = await GetVolume("WindowsARM"));
+            return await GetVolume("WindowsARM");
         }
 
         protected async Task<bool> IsWoAPresent()

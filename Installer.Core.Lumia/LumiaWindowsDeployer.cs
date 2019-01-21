@@ -39,18 +39,9 @@ namespace Installer.Lumia.Core
 
             await ApplyWindowsImage(partitions, options, progressObserver);
             await InjectDrivers(partitions.Windows);
-            await CopyProvisionings(partitions.Windows);
             await MakeBootable(partitions, phone, options);
             
-            
             Log.Information("Windows Image deployed");
-        }
-
-        private async Task CopyProvisionings(Volume partitionsWindows)
-        {
-            var folder = @"Files\Cityman\Provisioning";
-            var destStr = Path.Combine(partitionsWindows.RootDir.Name, "Windows", "Provisioning", "Packages");
-            await FileUtils.CopyDirectory(new DirectoryInfo(folder), new DirectoryInfo(destStr));
         }
 
         private async Task PatchBootIfNecessary(Volume boot, InstallOptions partitionsBoot)

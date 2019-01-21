@@ -15,9 +15,9 @@ namespace Installer.Raspberry.Core
             await Task.CompletedTask;
         }
 
-        public override async Task<Volume> GetBootVolume()
+        public override Task<Volume> GetBootVolume()
         {
-            return bootVolume ?? (bootVolume = await GetVolume("EFIESP"));
+            return GetVolume("EFIESP");
         }
     }
 }

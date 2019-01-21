@@ -269,10 +269,9 @@ namespace Installer.Lumia.ViewModels
         {
             var phone = await GetPhone();
 
-            var qctreeFolder = @"Files\Cityman\Drivers\GPU\QcTrEE";
             var panelFolder = @"Files\Cityman\Drivers\GPU\OEMPanel";
 
-            var pathsToCheck = new[] { qctreeFolder, panelFolder,}; 
+            var pathsToCheck = new[] { panelFolder,}; 
 
             if (!pathsToCheck.EnsureExistingPaths())
             {
@@ -286,12 +285,7 @@ namespace Installer.Lumia.ViewModels
                 return;
             }
 
-            var imageService = new DismImageService();
             var winVolume = await phone.GetWindowsVolume();
-
-            var oldQctree = (await phone.GetDrivers()).Single(x => x.OriginalFileName.Contains("qctree"));
-            await imageService.RemoveDriver(oldQctree.Driver, winVolume);
-            await imageService.InjectDrivers(qctreeFolder, winVolume);
 
             var destPath = Path.Combine(winVolume.RootDir.Name, "Users", "Public", "OEMPanel");
             var publicDir = new DirectoryInfo(destPath);
@@ -308,8 +302,8 @@ namespace Installer.Lumia.ViewModels
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "Installer.Lumia.ViewModels.Gpu.md";
 
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (var reader = new StreamReader(stream ?? throw new InvalidOperationException($"Cannot get stream for {resourceName}")))
             {
                 return reader.ReadToEnd();
             }
