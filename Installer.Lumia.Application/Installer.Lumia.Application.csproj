@@ -7,7 +7,7 @@
     <ProjectGuid>{19064893-A79C-4E75-9FEA-391F6CEA4917}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Installer.Lumia.Application</RootNamespace>
-    <AssemblyName>Installer.Lumia.Application</AssemblyName>
+    <AssemblyName>WoA Installer for Lumia</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
