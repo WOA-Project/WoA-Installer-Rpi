@@ -30,4 +30,15 @@ Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releas
 Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy Windows.
 
 # Donations are welcome!
-If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjmn). Thanks in advance!!
+I'm SuperJMN, the creator of the tool. If you find this useful, feel free to [donate](http://paypal.me/superjmn) any amount. Maybe enough for a coffee? 😊 It encourages me to keep it up-to-date and improve it. Thanks in advance!!
+
+## But hey! I'm not alone
+They are the real heros: The Dev-Team.
+
+*Please, guys, consider donating the them.* **They made this possible.** It's one of the best ways to keep them motivated, along with respect to their work. Any amount is fine. Thanks!
+
+- **Gustave Monce** (gus33000) => https://www.paypal.me/gus33000
+- **Ben Imbushuo** => https://www.paypal.me/imbushuo
+- **Googulator** => https://www.paypal.me/Googulator
+- **HeathCliff** (René) => https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VY8N7BCBT9CS4
+- **ADeltaX** (Abdel) => https://paypal.me/hiimabdel
