@@ -16,17 +16,15 @@ namespace Installer.Lumia.Core
         private const string MainOsLabel = "MainOS";
         private static readonly ByteSize MinimumPhoneDiskSize = ByteSize.FromGigaBytes(28);
         private static readonly ByteSize MaximumPhoneDiskSize = ByteSize.FromGigaBytes(34);
-
         private static readonly Guid WinPhoneBcdGuid = Guid.Parse("7619dcc9-fafe-11d9-b411-000476eba25f");
-        private Volume efiEspVolume;
 
         public Phone(Disk disk) : base(disk)
         {
         }
 
-        public async Task<Volume> GetEfiespVolume()
+        public Task<Volume> GetEfiespVolume()
         {
-            return efiEspVolume ?? (efiEspVolume = await GetVolume("EFIESP"));
+            return GetVolume("EFIESP");
         }
 
         public static async Task<Phone> Load(ILowLevelApi lowLevelApi)
