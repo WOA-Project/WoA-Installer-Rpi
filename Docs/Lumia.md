@@ -20,11 +20,11 @@ Find them below.
 
 ## 1. WoA Installer
 
-Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/1.2.1/WoA.Installer.for.Lumia.zip)**
+Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/1.3-gpu/WoA.Installer.for.Lumia.zip)**
 
 ## 2. Core Package
 
-- Download the latest version **[here](https://1drv.ms/f/s!AtXoQFW327DIyMwPjZhmauUCSSHXUA)**.
+- Download the latest version **[here](https://1drv.ms/u/s!AtXoQFW327DIyd19VP7d5P_1KVWZjQ)**.
 
 ## Installing the Core Package
 Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy Windows.
