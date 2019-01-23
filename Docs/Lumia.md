@@ -20,14 +20,25 @@ Find them below.
 
 ## 1. WoA Installer
 
-Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/1.2.1/WoA.Installer.for.Lumia.zip)**
+Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/1.3-gpu/WoA.Installer.for.Lumia.zip)**
 
 ## 2. Core Package
 
-- Download the latest version **[here](https://1drv.ms/f/s!AtXoQFW327DIyMwPjZhmauUCSSHXUA)**.
+- Download the latest version **[here](https://1drv.ms/u/s!AtXoQFW327DIyd1_FvtyAMTQvjbh5w)**.
 
 ## Installing the Core Package
 Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy Windows.
 
 # Donations are welcome!
-If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjmn). Thanks in advance!!
+I'm SuperJMN, the creator of the tool. If you find this useful, feel free to [donate](http://paypal.me/superjmn) any amount. Maybe enough for a coffee? 😊 It encourages me to keep it up-to-date and improve it. Thanks in advance!!
+
+## But hey! I'm not alone
+They are the real heros: The Dev-Team.
+
+*Please, guys, consider donating the them.* **They made this possible.** It's one of the best ways to keep them motivated, along with respect to their work. Any amount is fine. Thanks!
+
+- **Gustave Monce** (gus33000) => https://www.paypal.me/gus33000
+- **Ben Imbushuo** => https://www.paypal.me/imbushuo
+- **Googulator** => https://www.paypal.me/Googulator
+- **HeathCliff** (René) => https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VY8N7BCBT9CS4
+- **ADeltaX** (Abdel) => https://paypal.me/hiimabdel
