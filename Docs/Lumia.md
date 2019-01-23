@@ -24,7 +24,7 @@ Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releas
 
 ## 2. Core Package
 
-- Download the latest version **[here](https://1drv.ms/u/s!AtXoQFW327DIyd19VP7d5P_1KVWZjQ)**.
+- Download the latest version **[here](https://1drv.ms/u/s!AtXoQFW327DIyd1_FvtyAMTQvjbh5w)**.
 
 ## Installing the Core Package
 Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy Windows.
