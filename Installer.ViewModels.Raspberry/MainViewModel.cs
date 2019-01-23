@@ -199,9 +199,8 @@ namespace Installer.Raspberry.ViewModels
 
         private async Task DeployUefiAndWindows()
         {
-            var installOptions = new InstallOptions
+            var installOptions = new InstallOptions(WimMetadata.Path)
             {
-                ImagePath = WimMetadata.Path,
                 ImageIndex = WimMetadata.SelectedDiskImage.Index
             };
 

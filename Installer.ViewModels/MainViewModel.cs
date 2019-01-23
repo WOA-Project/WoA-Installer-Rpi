@@ -248,9 +248,9 @@ namespace Installer.Lumia.ViewModels
         {
             var version = int.TryParse(WimMetadata.SelectedDiskImage.Build, out var v) ? v : 0;
             
-            var installOptions = new InstallOptions
+            var installOptions = new InstallOptions(WimMetadata.Path)
             {
-                ImagePath = WimMetadata.Path,
+                SizeReservedForWindows = SizeReservedForWindows,
                 ImageIndex = WimMetadata.SelectedDiskImage.Index,
                 PatchBoot = version > VersionOfWindowsThatNeedsBootPatching
             };
@@ -313,9 +313,9 @@ namespace Installer.Lumia.ViewModels
         {
             var version = int.TryParse(WimMetadata.SelectedDiskImage.Build, out var v) ? v : 0;
 
-            var installOptions = new InstallOptions
+            var installOptions = new InstallOptions(WimMetadata.Path)
             {
-                ImagePath = WimMetadata.Path,
+                SizeReservedForWindows = SizeReservedForWindows,
                 ImageIndex = WimMetadata.SelectedDiskImage.Index,
                 PatchBoot = version > VersionOfWindowsThatNeedsBootPatching
             };
