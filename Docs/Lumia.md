@@ -6,8 +6,8 @@ Lumia 950 Series run Windows 10 ARM quite well, specially the XL.
 You don't have to ditch Windows 10 Phone 😃 You can **keep it!**! Using this tool, you can enable Dual Boot in literally 2 clicks. Please, check [this video](https://www.youtube.com/watch?v=3j2rWL4hHGc) to see a demonstration of the feature.
 
 # Requirements
-- A Lumia 950/XL with an unlocked bootloader that can correctly enter Mass Storage Mode
-	- You can unlock the bootloader using [WPInternals](http://www.wpinternals.net)
+- A Lumia 950/XL with **unlocked bootloader** that can correctly enter *Mass Storage Mode*
+	- You can unlock the bootloader using this tool: [WPInternals](http://www.wpinternals.net). You can follow [this guide](https://1drv.ms/w/s!AtXoQFW327DIyMRC9sasEyEYFITT9Q).
 - A USB-C cable to connect the Lumia to your PC
 - A Windows 10 ARM64 Image (.wim). Please, check [this link](GettingWoA.md) to get it.
 
