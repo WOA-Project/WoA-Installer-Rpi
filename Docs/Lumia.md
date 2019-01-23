@@ -20,7 +20,7 @@ Find them below.
 
 ## 1. WoA Installer
 
-Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/1.3-gpu/WoA.Installer.for.Lumia.zip)**
+Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/1.3.1/WoA.Installer.for.Lumia.zip)**
 
 ## 2. Core Package
 
