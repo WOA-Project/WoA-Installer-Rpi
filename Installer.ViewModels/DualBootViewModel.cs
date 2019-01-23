@@ -42,7 +42,7 @@ namespace Installer.Lumia.ViewModels
                         .Merge(canChangeDualBoot)), dialogService);
             EnableDualBootWrapper.Command.Subscribe(async _ =>
             {
-                await dialogService.ShowAlert(this, "Done", "Dual Bool Enabled!");
+                await dialogService.ShowAlert(this, "Done", "Dual Boot Enabled!");
                 IsEnabled = !IsEnabled;
             });
 
