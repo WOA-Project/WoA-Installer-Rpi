@@ -17,6 +17,7 @@ Please, notice the WoA Installer is only a tool with helps you with the deployme
 Find them below.
 
 # Downloads
+You need 2 files: **WoA Installer** and the **Core Package**. Find them below. Please, remember that in order to work you have to install the Core Package. Instructions are also below.
 
 ## 1. WoA Installer
 
@@ -24,7 +25,7 @@ Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releas
 
 ## 2. Core Package
 
-- Download the latest version **[here](https://1drv.ms/u/s!AtXoQFW327DIyd1_FvtyAMTQvjbh5w)**.
+Download the latest version **[here](https://1drv.ms/u/s!AtXoQFW327DIyd1_FvtyAMTQvjbh5w)**. It contains all the binaries that WoA Installer needs to deploy Windows 10 ARM64 to your device.
 
 ## Installing the Core Package
 Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy Windows.
