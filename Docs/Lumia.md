@@ -1,5 +1,12 @@
 ﻿# WoA Installer for Lumia 950/XL
-Lumia 950 Series run Windows 10 ARM quite well, specially the XL. 
+ 
+Did you know that Lumia 950 Series run Windows 10 ARM quite well, **specially the XL**. 
+
+Now you can install it in a few clicks with WoA Installer. 
+**Super easy to use. No hassle.**
+
+Please keep reading.
+
 ![image](https://user-images.githubusercontent.com/3109851/43066098-05c1f41c-8e64-11e8-935c-92748f36ecfd.png)
 
 ## Dual Boot
