@@ -1,22 +1,22 @@
-﻿# WoA Installer for Lumia 950/XL
- 
-Did you know that Lumia 950 Series run Windows 10 ARM quite well, **specially the XL**. 
-
-Now you can install it in a few clicks with WoA Installer. 
-**Super easy to use. No hassle.**
-
-Please keep reading.
+# WoA Installer for Lumia 950/XL
+The application to install Full Windows 10 into your phone!
 
 ![image](https://user-images.githubusercontent.com/3109851/43066098-05c1f41c-8e64-11e8-935c-92748f36ecfd.png)
+ 
+Did you know that Lumia 950 Series run Windows 10 ARM quite well? (**specially the XL**)Now you can install it in a few clicks with WoA Installer. 
 
-## Dual Boot
-You don't have to ditch Windows 10 Phone 😃 You can **keep it!**! Using this tool, you can enable Dual Boot in literally 2 clicks. Please, check [this video](https://www.youtube.com/watch?v=3j2rWL4hHGc) to see a demonstration of the feature.
+# **Super easy to use. No-hassle.**
+
+Please keep reading.
 
 # Requirements
 - A Lumia 950/XL with **unlocked bootloader** that can correctly enter *Mass Storage Mode*
 	- You can unlock the bootloader using this tool: [WPInternals](http://www.wpinternals.net). You can follow [this guide](https://1drv.ms/w/s!AtXoQFW327DIyMRC9sasEyEYFITT9Q).
 - A USB-C cable to connect the Lumia to your PC
 - A Windows 10 ARM64 Image (.wim). Please, check [this link](GettingWoA.md) to get it.
+
+## It allow Dual Booting Windows 10 Mobile
+You don't have to ditch Windows 10 Phone 😃 You can **keep it!**! Using this tool, you can enable Dual Boot in literally 2 clicks. Please, check [this video](https://www.youtube.com/watch?v=3j2rWL4hHGc) to see a demonstration of the feature.
 
 # About Core Packages
 Please, notice the WoA Installer is only a tool with helps you with the deployment. WoA Installer needs a set of binaries, AKA the **Core Packages**, to do its job. **These binaries are not not mine** and are bundled and offered just for convenience to make your life easier, since this tool is focused on simplicity. 
