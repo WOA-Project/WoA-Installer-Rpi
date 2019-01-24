@@ -50,6 +50,3 @@ They are the real heros: The Dev-Team.
 - **Googulator** => https://www.paypal.me/Googulator
 - **HeathCliff** (René) => https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VY8N7BCBT9CS4
 - **ADeltaX** (Abdel) => https://paypal.me/hiimabdel
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/cQwFxwY7pGc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
