@@ -36,7 +36,7 @@ I'm SuperJMN, the creator of the tool. If you find this useful, feel free to [do
 ## But hey! I'm not alone
 They are the real heros: The Dev-Team.
 
-*Please, guys, consider donating the them.* **They made this possible.** It's one of the best ways to keep them motivated, along with respect to their work. Any amount is fine. Thanks!
+*Please, guys, consider donating to them.* **They made this possible.** It's one of the best ways to keep them motivated, along with respect to their work. Any amount is fine. Thanks!
 
 - **Gustave Monce** (gus33000) => https://www.paypal.me/gus33000
 - **Ben Imbushuo** => https://www.paypal.me/imbushuo
