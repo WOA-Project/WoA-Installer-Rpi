@@ -11,7 +11,7 @@ Please keep reading carefully. All you need is here.
 
 # Requirements
 - A Lumia 950/XL with **unlocked bootloader** that can correctly enter *Mass Storage Mode*
-	- You can unlock the bootloader using this tool: [WPInternals](http://www.wpinternals.net). You can follow [this guide](https://1drv.ms/w/s!AtXoQFW327DIyMRC9sasEyEYFITT9Q).
+	- You can unlock the bootloader using this tool: [WPInternals](http://www.wpinternals.net). You can follow [this guide](https://1drv.ms/w/s!AtXoQFW327DIyd4XabdpcztOVGGANA).
 - A USB-C cable to connect the Lumia to your PC
 - A Windows 10 ARM64 Image (.wim). Please, check [this link](GettingWoA.md) to get it.
 
