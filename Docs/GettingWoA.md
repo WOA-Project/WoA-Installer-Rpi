@@ -1,7 +1,7 @@
 ﻿# Getting Windows 10 ARM
 1. Go to this site: https://uup.rg-adguard.net/
 2. Enter these options:
-![image](https://user-images.githubusercontent.com/3109851/45571654-3b401d80-b867-11e8-99ee-d81b6b6ebe58.png)
+![image](https://user-images.githubusercontent.com/3109851/51803240-f5528780-2252-11e9-92e8-2d80169e1131.png)
 	* Please, notice the we selected the **ARM64** architecture (not to confuse with AMD64)
     * You can select a newer build if you wish. Take into account, however, that each build can have some issues. It's recommended to select builds from the R5+ branch. Build numbers like 18XXX are usually OK.
 3. Click the link on the right. It will appear when you've done selecting the options. It will download a .zip file.
