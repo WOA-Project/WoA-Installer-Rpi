@@ -52,7 +52,7 @@
                     <DockPanel>
                         <TextBlock Padding="10" MinWidth="80" Text="{Binding SizeReservedForWindows}"
                                    DockPanel.Dock="Right" />
-                        <Slider Minimum="15" Maximum="24" SmallChange="0.5" LargeChange="1" TickFrequency="1" Value="{Binding GbsReservedForWindows, Mode=TwoWay}"
+                        <Slider Minimum="10" Maximum="24" SmallChange="0.5" LargeChange="1" TickFrequency="1" Value="{Binding GbsReservedForWindows, Mode=TwoWay}"
                                 Height="30" />
                     </DockPanel>
                 </HeaderedContentControl>
