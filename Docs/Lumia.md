@@ -41,7 +41,7 @@ Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Pac
 I'm SuperJMN, the creator of the tool. If you find this useful, feel free to [donate](http://paypal.me/superjmn) any amount. Maybe enough for a coffee? 😊 It encourages me to keep it up-to-date and improve it. Thanks in advance!!
 
 ## But hey! I'm not alone
-They are the real heros: The Dev-Team.
+They are the real heros: The (core) Dev-Team.
 
 *Please, guys, consider donating to them.* **They made this possible.** It's one of the best ways to keep them motivated, along with respect to their work. Any amount is fine. Thanks!
 
