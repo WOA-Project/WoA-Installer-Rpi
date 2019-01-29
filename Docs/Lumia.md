@@ -28,7 +28,7 @@ You need 2 files: **WoA Installer** and the **Core Package**. Find them below. P
 
 ## 1. WoA Installer
 
-Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/1.3.1/WoA.Installer.for.Lumia.zip)**
+Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/1.4/WoA.Installer.for.Lumia.zip)**
 
 ## 2. Core Package
 
