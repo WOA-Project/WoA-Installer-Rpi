@@ -27,7 +27,7 @@ This WoA Installer is possible because the great community behind it. I would li
 - René ([Heathcliff74XDA](http://www.twitter.com/Heathcliff74XDA)) for WPInternals. With you started everthing :)
 - Ard Bisheuvel for initial ATF and UEFI ports
 - Bas Timmer ([NTAuthority](https://github.com/nta)) for the Windows USB driver
-- [Andrei Warkentin](https://github.com/Googulator) for the 64-bit Pi UEFI, UEFI Pi (HDMI, USB, SD/MMC) drivers, improved ATF and Windows boot/runtime support.
+- [Andrei Warkentin](https://github.com/andreiw) for the 64-bit Pi UEFI, UEFI Pi (HDMI, USB, SD/MMC) drivers, improved ATF and Windows boot/runtime support.
 - [Googulator](https://github.com/Googulator) for his method to install WoA in the Raspberry Pi
 - Mario Bălănică for his [awesome tool](https://www.worproject.ml), and for tips and support :)
 	- daveb77
