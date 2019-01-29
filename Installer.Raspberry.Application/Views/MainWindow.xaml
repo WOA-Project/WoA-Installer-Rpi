@@ -11,7 +11,7 @@
                  WindowStartupLocation="CenterScreen"
                  mc:Ignorable="d"
                  Icon="/Assets/appicon.png"
-                 Title="Windows On ARM Installer for Raspberry Pi" Width="720" Height="480"
+                 Title="{Binding Title}" Width="720" Height="480"
                  d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
                  mah:DialogParticipation.Register="{Binding}">
     <i:Interaction.Triggers>

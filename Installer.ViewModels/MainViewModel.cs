@@ -355,6 +355,8 @@ namespace Installer.Lumia.ViewModels
 
         public DualBootViewModel DualBootViewModel { get; }
 
+        public string Title => "WoA Installer for Lumia v" + Assembly.GetEntryAssembly().GetName().Version; 
+
         public double GbsReservedForWindows
         {
             get => settingsService.SizeReservedForWindows;

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,8 +48,6 @@ namespace Installer.Raspberry.ViewModels
         public MainViewModel(IObservable<LogEvent> events, IDeployer<RaspberryPi> deployer, IPackageImporterFactory importerFactory, DiskService diskService,
             UIServices uiServices, ISettingsService settingsService)
         {
-           
-
             this.deployer = deployer;
             this.importerFactory = importerFactory;
             this.uiServices = uiServices;
@@ -196,6 +195,8 @@ namespace Installer.Raspberry.ViewModels
         public double Progress => progressHelper.Value;
 
         public bool IsProgressVisible => isProgressVisibleHelper.Value;
+
+        public string Title => "WoA Installer for Raspberry Pi 3 v" + Assembly.GetEntryAssembly().GetName().Version; 
 
         private async Task DeployUefiAndWindows()
         {

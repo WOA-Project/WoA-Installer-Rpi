@@ -147,20 +147,26 @@ namespace Installer.Lumia.Core
             }
         }
 
-        private async Task TakeSpaceFromDataPartition(Phone phone, ByteSize space)
+        private async Task TakeSpaceFromDataPartition(Phone phone, ByteSize spaceNeeded)
         {
-            Log.Information("Shrinking Data partition...");
+            Log.Verbose("Shrinking Data partition...");
 
             var dataVolume = await phone.GetDataVolume();
+            var phoneDisk = phone.Disk;
+            var data = dataVolume.Size;
+            var allocated = phoneDisk.AllocatedSize;
+            var available = phoneDisk.Size - allocated;
+            var newData =  data - (spaceNeeded - available);
 
-            var dataSize = dataVolume.Size;
-
-            Log.Verbose("Data partition is reported to have a size of {Size}", dataSize);
+            Log.Verbose("Total size allocated: {Size}", allocated);
+            Log.Verbose("Space available: {Size}", available);
+            Log.Verbose("Space needed: {Size}", spaceNeeded);
+            Log.Verbose("'Data' size: {Size}", data);
+            Log.Verbose("Calculated new size for the 'Data' partition: {Size}", newData);
             
-            var finalSize = dataSize - space;
-            Log.Verbose("Resizing Data to {Size}", finalSize);
+            Log.Verbose("Resizing 'Data' to {Size}", newData);
 
-            await dataVolume.Partition.Resize(finalSize);
+            await dataVolume.Partition.Resize(newData);
         }
 
         public async Task InjectPostOobeDrivers(Phone phone)

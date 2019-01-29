@@ -11,8 +11,7 @@
                  WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
         Icon="/Assets/appicon.png"
-        
-        Title="Windows On ARM Installer for Lumia 950/XL" Width="920" Height="720"
+        Title="{Binding Title}" Width="920" Height="720"
                  d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
         mah:DialogParticipation.Register="{Binding}">
     <i:Interaction.Triggers>
