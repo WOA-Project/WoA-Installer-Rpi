@@ -1,7 +1,8 @@
 # WoA Installer for Raspberry Pi 3
-![image](https://user-images.githubusercontent.com/3109851/43066047-e7134552-8e63-11e8-8ac7-895e601b60e3.png)
 
 The application to install Full Windows 10 into your Raspberry Pi!
+
+![image](https://user-images.githubusercontent.com/3109851/43066047-e7134552-8e63-11e8-8ac7-895e601b60e3.png)
 
 # **Super easy to use. No-hassle.**
 
