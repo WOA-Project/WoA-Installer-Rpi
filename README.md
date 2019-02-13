@@ -6,7 +6,7 @@ This is **WoA Installer**, a Windows 10 ARM64 Installer for Lumia 950/XL and Ras
 WoA Installer comes with 2 different flavors. Please, click on each one for more info:
 
 * [WoA Installer for Raspberry Pi 3](Docs/Raspberry.md) (compatible with Raspberry Pi 3 Model B/B+) 
-* [WoA Installer for Lumia](Docs/Lumia.md) (compatible with **Lumia 950** and **Lumia 950 XL**)
+* [WoA Installer for Lumia](https://github.com/WOA-project/WOA-Deployer) (compatible with **Lumia 950** and **Lumia 950 XL**)
 
 Each one is a different application. Download them separately 😊
 
