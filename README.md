@@ -6,7 +6,7 @@ This is **WoA Installer**, a Windows 10 ARM64 Installer for Lumia 950/XL and Ras
 WoA Installer comes with 2 different flavors. Please, click on each one for more info:
 
 * [WoA Installer for Raspberry Pi 3](Docs/Raspberry.md) (compatible with Raspberry Pi 3 Model B/B+) 
-* [WoA Installer for Lumia](Docs/Lumia.md) (compatible with **Lumia 950** and **Lumia 950 XL**)
+* [WoA Installer for Lumia](https://github.com/WOA-project/WOA-Deployer) (compatible with **Lumia 950** and **Lumia 950 XL**)
 
 Each one is a different application. Download them separately 😊
 
@@ -20,14 +20,14 @@ If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjm
 
 # Credits and Acknowledgements
 
-This WoA Installer is possible because the great community behind it. I would like to thank the brilliant minds behind this technicall wonder. If you think you should be listed, please, contact me using the e-mail address on my profile.
+This WoA Installer is possible because the great community behind it. I would like to thank the brilliant minds behind this technical wonder. If you think you should be listed, please, contact me using the e-mail address on my profile.
 
 - [Ben Imbushuo](https://github.com/imbushuo) for Lumia's UEFI and misc stuff
 - [Gustave M.](https://twitter.com/gus33000) for drivers, for support, for testing...
-- René ([Heathcliff74XDA](http://www.twitter.com/Heathcliff74XDA)) for WPInternals. With you started everthing :)
+- René ([Heathcliff74XDA](http://www.twitter.com/Heathcliff74XDA)) for WPInternals. With you started everything :)
 - Ard Bisheuvel for initial ATF and UEFI ports
 - Bas Timmer ([NTAuthority](https://github.com/nta)) for the Windows USB driver
-- [Andrei Warkentin](https://github.com/Googulator) for the 64-bit Pi UEFI, UEFI Pi (HDMI, USB, SD/MMC) drivers, improved ATF and Windows boot/runtime support.
+- [Andrei Warkentin](https://github.com/andreiw) for the 64-bit Pi UEFI, UEFI Pi (HDMI, USB, SD/MMC) drivers, improved ATF and Windows boot/runtime support.
 - [Googulator](https://github.com/Googulator) for his method to install WoA in the Raspberry Pi
 - Mario Bălănică for his [awesome tool](https://www.worproject.ml), and for tips and support :)
 	- daveb77
