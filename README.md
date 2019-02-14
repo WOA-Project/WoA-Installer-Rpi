@@ -77,8 +77,7 @@ In addition to:
 - [ReactiveUI](https://reactiveui.net)
 - [Adam Hathcock](https://github.com/adamhathcock) for [SharpCompress](https://github.com/adamhathcock/sharpcompress)
 
-And our wonderful groups at Telegram for their testing and support!
-- [LumiaWOA](https://t.me/joinchat/Ey6mehEPg0Fe4utQNZ9yjA)
+And our wonderful group at Telegram for their testing and support!
 - [RaspberryPiWOA](https://t.me/raspberrypiwoa)
 
 ## Related projects
