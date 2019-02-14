@@ -100,10 +100,6 @@
       <Project>{D15DB86E-52F8-48A6-9F46-276E34BD22AB}</Project>
       <Name>Installer.UI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Installer.ViewModels\Installer.Lumia.ViewModels.csproj">
-      <Project>{52070C21-5F3B-438D-BC84-F54C4B47C993}</Project>
-      <Name>Installer.Lumia.ViewModels</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

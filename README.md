@@ -1,33 +1,61 @@
-﻿# WoA Installer 
-This is **WoA Installer**, a Windows 10 ARM64 Installer for Lumia 950/XL and Raspberry Pi 3. It's is a very simple tool that will help you install Windows ARM64 (Windows On ARM) with ease.
+﻿# WoA Installer for Raspberry Pi 3
 
-# Flavors
+The application to install Full Windows 10 into your Raspberry Pi!
 
-WoA Installer comes with 2 different flavors. Please, click on each one for more info:
+![image](https://user-images.githubusercontent.com/3109851/43066047-e7134552-8e63-11e8-8ac7-895e601b60e3.png)
 
-* [WoA Installer for Raspberry Pi 3](Docs/Raspberry.md) (compatible with Raspberry Pi 3 Model B/B+) 
-* [WoA Installer for Lumia](https://github.com/WOA-project/WOA-Deployer) (compatible with **Lumia 950** and **Lumia 950 XL**)
+# **Super easy to use. No-hassle.**
 
-Each one is a different application. Download them separately 😊
+Please keep reading carefully. All you need is here.
 
-# Getting Help
-Please, **join our Telegram groups** for help and guidance. You can get updates on the projects and ask our members! Moreover, we're really nice 😉
-* For Lumia 950/XL: [LumiaWOA](https://t.me/joinchat/Ey6mehEPg0Fe4utQNZ9yjA)
-* For Raspberry Pi 3: [RaspberryPiWOA](https://t.me/raspberrypiwoa)
+# Requirements for WOA
+- Raspberry Pi 3 Model B (or B+)
+- MicroSD card. Recommended with A1 rating.
+- A Windows 10 ARM64 Image (.wim). Please, check [this link](Docs/GettingWoA.md) to get it.
+
+## Requirements for running this application
+- A recent version of Windows 10 (please, use the latest to ensure it'll run correctly, don't open issues otherwise)
+- .NET Framework 4.6.1 (should come included in recent versions of Windows 10)
+
+# About Core Packages
+Please, notice the WoA Installer is only a tool with helps you with the deployment. WoA Installer needs a set of binaries, AKA the **Core Package**, to do its job. **These binaries are not not mine** and are bundled and offered just for convenience to make your life easier, since this tool is focused on simplicity. 
+
+Find them below.
+
+# Downloads
+
+## 1. WoA Installer
+
+Download the **[latest version](https://github.com/SuperJMN/WoA-Installer/releases/download/v1.2/WoA.Installer.for.Raspberry.Pi.zip)** 
+
+## 2. Core Package
+
+Download it from **[here](https://1drv.ms/f/s!AtXoQFW327DIyMxxCDU_uUM6o6dn2A)**.
+
+## Installing the Core Package
+Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Package]` and select the package directly. Don't attempt to uncompress it. After the import operation, you will be able to use deploy Windows.
 
 # Donations are welcome!
-If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjmn). Thanks in advance!!
+
+If you find this useful, feel free to [buy me a coffee ☕](http://paypal.me/superjmn). Thanks in advance!!
+
+## Donate to the contributors of this project
+Please, don't forget that the RaspberryPi WOA Project is supported by other individuals (see the credits and acknowledgements section).
+ - Donate to MCCI. Why? [Read this 🗒](Docs/mcci_donate.md) 
+
+# Need help?
+Then visit our projects website at https://pi64.win, the one-stop solution for all your questions 😊
 
 # Credits and Acknowledgements
 
 This WoA Installer is possible because the great community behind it. I would like to thank the brilliant minds behind this technical wonder. If you think you should be listed, please, contact me using the e-mail address on my profile.
 
-- [Ben Imbushuo](https://github.com/imbushuo) for Lumia's UEFI and misc stuff
-- [Gustave M.](https://twitter.com/gus33000) for drivers, for support, for testing...
-- René ([Heathcliff74XDA](http://www.twitter.com/Heathcliff74XDA)) for WPInternals. With you started everything :)
+- [Andrei Warkentin](https://github.com/andreiw) for the **64-bit Pi UEFI**, UEFI Pi (HDMI, USB, SD/MMC) drivers, improved ATF and Windows boot/runtime support.
+- [MCCI](https://mcci.com/) for their great contribution to the RaspberryPI WOA project:
+  - for porting their **TrueTask USB stack** to Windows 10 ARM64, and allowing non-commercial use with this project ([see license](Docs/mcci_license.md))
+  - for funding the site of the project http://pi64.win and the discourse site http://discourse.pi64.win
+  - Special thanks to Terry Moore for all the great support and commitment, and for setting up the online presence for the project and its insfrastructure.
 - Ard Bisheuvel for initial ATF and UEFI ports
-- Bas Timmer ([NTAuthority](https://github.com/nta)) for the Windows USB driver
-- [Andrei Warkentin](https://github.com/andreiw) for the 64-bit Pi UEFI, UEFI Pi (HDMI, USB, SD/MMC) drivers, improved ATF and Windows boot/runtime support.
 - [Googulator](https://github.com/Googulator) for his method to install WoA in the Raspberry Pi
 - Mario Bălănică for his [awesome tool](https://www.worproject.ml), and for tips and support :)
 	- daveb77
@@ -56,9 +84,6 @@ And our wonderful groups at Telegram for their testing and support!
 ## Related projects
 These are the related projects. The Core Packages comes from them. Big thanks!
 
-### Microsoft Lumia
-- [Lumia950XLPkg](https://github.com/imbushuo/Lumia950XLPkg)
-### Raspberry Pi
 - [RaspberryPiPkg](https://github.com/andreiw/RaspberryPiPkg)
 - [Microsoft IoT-BSP](https://github.com/ms-iot/bsp)
 - [Raspberry Pi ATF](https://github.com/andreiw/raspberry-pi3-atf)
