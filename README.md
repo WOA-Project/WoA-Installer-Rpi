@@ -40,7 +40,7 @@ Run WoA Installer and go to the **Advanced** section. Click on `[Import Core Pac
 If you find this useful, feel free to [buy me a coffee ☕](http://paypal.me/superjmn). Thanks in advance!!
 
 ## Donate to the contributors of this project
-Please, don't forget that the RaspberryPi WOA Project is supported by other individuals (see the credits and acknowledgements section).
+Please, don't forget that the RaspberryPi WOA Project is supported by other individuals and companies (see the [credits and acknowledgements section](#credits-and-acknowledgements)).
  - Donate to MCCI. Why? [Read this 🗒](Docs/mcci_donate.md) 
 
 # Need help?
