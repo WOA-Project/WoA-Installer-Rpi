@@ -20,11 +20,11 @@ If you find this useful, feel free to [buy me a coffee](http://paypal.me/superjm
 
 # Credits and Acknowledgements
 
-This WoA Installer is possible because the great community behind it. I would like to thank the brilliant minds behind this technicall wonder. If you think you should be listed, please, contact me using the e-mail address on my profile.
+This WoA Installer is possible because the great community behind it. I would like to thank the brilliant minds behind this technical wonder. If you think you should be listed, please, contact me using the e-mail address on my profile.
 
 - [Ben Imbushuo](https://github.com/imbushuo) for Lumia's UEFI and misc stuff
 - [Gustave M.](https://twitter.com/gus33000) for drivers, for support, for testing...
-- René ([Heathcliff74XDA](http://www.twitter.com/Heathcliff74XDA)) for WPInternals. With you started everthing :)
+- René ([Heathcliff74XDA](http://www.twitter.com/Heathcliff74XDA)) for WPInternals. With you started everything :)
 - Ard Bisheuvel for initial ATF and UEFI ports
 - Bas Timmer ([NTAuthority](https://github.com/nta)) for the Windows USB driver
 - [Andrei Warkentin](https://github.com/andreiw) for the 64-bit Pi UEFI, UEFI Pi (HDMI, USB, SD/MMC) drivers, improved ATF and Windows boot/runtime support.
