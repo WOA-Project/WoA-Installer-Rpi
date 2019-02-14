@@ -130,13 +130,16 @@ namespace Installer.Raspberry.ViewModels {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Done!
-        ///Now, please, **eject the drive safely** to avoid data corruption issues and insert it into your Raspberry Pi.
+        ///   Looks up a localized string similar to # Done!
+        ///Now, please, **eject the SD Card safely** to avoid data corruption issues and insert it into your Raspberry Pi.
         ///
-        ///After some minutes, the W10 Setup should start.
-        ///
-        ///Remberber, to avoid problems: Don&apos;t plug USB devices until the Setup starts.
-        ///Enjoy!.
+        ///- Turn it on and wait for the UEFI console to load. 
+        ///- Type &quot;exit&quot; + press [ENTER] and you will be presented with the **UEFI interface**
+        ///- Go to the &apos;Boot Maintenance Manager&apos; menu and select &apos;Boot Options&apos;. Choose &apos;Change Boor Order&apos;
+        ///- Select &apos;Change the order&apos;
+        ///- Put the **&apos;SD/MMC on Broadcom SDHOST&apos;** as the first element.
+        ///- **Save the changes**
+        ///- Go back to the **Main Menu** a [rest of string was truncated]&quot;;.
         /// </summary>
         public static string WindowsDeployedSuccessfully {
             get {

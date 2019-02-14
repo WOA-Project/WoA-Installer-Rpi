@@ -207,8 +207,9 @@ namespace Installer.Raspberry.ViewModels
 
             var raspberryPi = new RaspberryPi(SelectedDisk.Disk);
             await deployer.DeployCoreAndWindows(installOptions, raspberryPi, progressSubject);
-            await uiServices.DialogService.ShowAlert(this, Resources.Finished,
-                Resources.WindowsDeployedSuccessfully);
+
+            var messageViewModel = new MessageViewModel("Manual steps", Resources.WindowsDeployedSuccessfully);
+            uiServices.ViewService.Show("MarkdownViewer", messageViewModel);
         }
 
         private void SetupPickWimCommand()

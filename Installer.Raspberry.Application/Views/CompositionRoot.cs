@@ -2,6 +2,7 @@
 using Installer.Core;
 using Installer.Core.FullFx;
 using Installer.Core.Services;
+using Installer.Raspberry.Application.Views.Parts;
 using Installer.Raspberry.Core;
 using Installer.Raspberry.ViewModels;
 using Installer.UI;
@@ -19,7 +20,9 @@ namespace Installer.Raspberry.Application.Views
             ServiceFactory.Current = new DefaultServiceFactory();
 
             var deployer = new RaspberryPiDeployer(new ImageFlasher(), new RaspberryPiWindowsDeployer(ServiceFactory.Current.ImageService, new DeploymentPaths(@"Files")));
-            var uiServices = new UIServices(new FilePicker(), new ViewService(), new DialogService(DialogCoordinator.Instance));
+            var viewService = new ViewService();
+            var uiServices = new UIServices(new FilePicker(), viewService, new DialogService(DialogCoordinator.Instance));
+            viewService.Register("MarkdownViewer", typeof(MarkdownViewerWindow));
             return new MainViewModel(logEvents, deployer, new PackageImporterFactory(), ServiceFactory.Current.DiskService, uiServices, new SettingsService());
         }
     }

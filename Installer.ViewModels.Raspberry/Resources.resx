@@ -118,13 +118,22 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="WindowsDeployedSuccessfully" xml:space="preserve">
-    <value>Done!
-Now, please, **eject the drive safely** to avoid data corruption issues and insert it into your Raspberry Pi.
+    <value># Done!
+Now, please, **eject the SD Card safely** to avoid data corruption issues and insert it into your Raspberry Pi.
 
-After some minutes, the W10 Setup should start.
+- Turn it on and wait for the UEFI console to load. 
+- Type "exit" + press [ENTER] and you will be presented with the **UEFI interface**
+- Go to the 'Boot Maintenance Manager' menu and select 'Boot Options'. Choose 'Change Boor Order'
+- Select 'Change the order'
+- Put the **'SD/MMC on Broadcom SDHOST'** as the first element.
+- **Save the changes**
+- Go back to the **Main Menu** and choose **'Boot Manager'**.
+- Select **'SD/MMC on Broadcom SDHOST'** and Windows will boot.
 
-Remberber, to avoid problems: Don't plug USB devices until the Setup starts.
-Enjoy!</value>
+After some minutes, Windows Setup will start.
+
+Enjoy!
+</value>
   </data>
   <data name="WarningNotice" xml:space="preserve">
     <value>- This tool comes with no warranty. 
