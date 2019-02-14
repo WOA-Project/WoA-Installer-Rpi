@@ -14,8 +14,8 @@ Please keep reading carefully. All you need is here.
 - A Windows 10 ARM64 Image (.wim). Please, check [this link](GettingWoA.md) to get it.
 
 ## Requirements for running this application
-- A recent version of Windows 10 (please, use the latest to ensure it'll run correctly)
-- .NET Framework 4.6.1 (shoudl come included in recent versions of Windows 10)
+- A recent version of Windows 10 (please, use the latest to ensure it'll run correctly, don't open issues otherwise)
+- .NET Framework 4.6.1 (should come included in recent versions of Windows 10)
 
 # About Core Packages
 Please, notice the WoA Installer is only a tool with helps you with the deployment. WoA Installer needs a set of binaries, AKA the **Core Package**, to do its job. **These binaries are not not mine** and are bundled and offered just for convenience to make your life easier, since this tool is focused on simplicity. 
