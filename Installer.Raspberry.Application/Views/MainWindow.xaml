@@ -8,12 +8,33 @@
                  xmlns:viewModels="clr-namespace:Installer.Raspberry.ViewModels;assembly=Installer.Raspberry.ViewModels"
                  xmlns:sections="clr-namespace:Installer.Raspberry.Application.Views.Parts.Sections"
                  xmlns:parts="clr-namespace:Installer.Raspberry.Application.Views.Parts"
+                 xmlns:Converters="http://metro.mahapps.com/winfx/xaml/shared"
                  WindowStartupLocation="CenterScreen"
                  mc:Ignorable="d"
                  Icon="/Assets/appicon.png"
                  Title="{Binding Title}" Width="720" Height="480"
                  d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
                  mah:DialogParticipation.Register="{Binding}">
+    <mah:MetroWindow.Resources>
+        <Style x:Key="DonateButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
+            <Setter Property="TextElement.Foreground">
+                <Setter.Value>
+
+                    <MultiBinding Converter="{x:Static Converters:BackgroundToForegroundConverter.Instance}">
+                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                        <Binding Mode="OneWay"
+                                 Path="Background"
+                                 RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Mode="OneWay"
+                                 Path="(mah:GroupBoxHelper.HeaderForeground)"
+                                 RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </mah:MetroWindow.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:EventTrigger.Actions>
@@ -52,6 +73,17 @@
                 </ScrollViewer>
             </TabItem>
         </TabControl>
+
+        <Button Command="{Binding DonateCommand}" ToolTip="Please, support this tool. Thanks in advance :)" Grid.Row="1" Margin="0,0,20,20" Padding="10,5,10,5" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                Style="{StaticResource DonateButtonStyle}">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Image Height="16" VerticalAlignment="Center" Source="/Assets/heart.png" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" Text="Donate" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
+
         <Expander Grid.Row="2" Header="Log" IsExpanded="False" MaxHeight="400">
             <parts:LogPart  />
         </Expander>

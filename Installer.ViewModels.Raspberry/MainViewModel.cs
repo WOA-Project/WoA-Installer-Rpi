@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -27,6 +28,8 @@ namespace Installer.Raspberry.ViewModels
 {
     public class MainViewModel : ReactiveObject, IDisposable
     {
+        private const string DonationLink = "https://github.com/WOA-Project/WoA-Installer-Rpi/blob/master/Docs/Donations.md";
+
         private readonly IDeployer<RaspberryPi> deployer;
         private readonly IPackageImporterFactory importerFactory;
         private readonly ObservableAsPropertyHelper<IEnumerable<DiskViewModel>> disksHelper;
@@ -94,7 +97,11 @@ namespace Installer.Raspberry.ViewModels
 
             hasWimHelper = this.WhenAnyValue(model => model.WimMetadata, (WimMetadataViewModel x) => x != null)
                 .ToProperty(this, x => x.HasWim);
+
+            DonateCommand = ReactiveCommand.Create(() => { Process.Start(DonationLink); });
         }
+
+        public ReactiveCommand<Unit, Unit> DonateCommand { get; }
 
         public CommandWrapper<Unit, Unit> ImportDriverPackageWrapper { get; set; }
 

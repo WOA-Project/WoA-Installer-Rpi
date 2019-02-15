@@ -208,12 +208,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\950.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\950xl.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Assets\disabledual.png" />
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +239,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\appicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\heart.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
