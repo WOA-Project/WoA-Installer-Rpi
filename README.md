@@ -42,7 +42,7 @@ If you find this useful, feel free to [buy me a coffee ☕](http://paypal.me/sup
 ## Donate to the contributors of this project
 Please, don't forget that the RaspberryPi WOA Project is supported by other individuals and companies (see the [credits and acknowledgements section](#credits-and-acknowledgements
 )).
- - Donate to MCCI. Why? [Read this 🗒](Docs/mcci_donate.md) 
+ - Donate to [MCCI](https://mcci.com/). Why? [Read this 🗒](Docs/mcci_donate.md) 
 
 # Need help?
 Then visit our projects website at https://pi64.win, the one-stop solution for all your questions 😊
