@@ -11,7 +11,7 @@ Please keep reading carefully. All you need is here.
 # Requirements for WOA
 - Raspberry Pi 3 Model B (or B+)
 - MicroSD card. Recommended with A1 rating.
-- A Windows 10 ARM64 Image (.wim). Please, check [this link](Docs/GettingWoA.md) to get it.
+- A Windows 10 ARM64 Image (.wim). Please, check [this link](https://github.com/WOA-Project/guides/blob/master/GettingWOA.md) to get it.
 
 ## Requirements for running this application
 - A recent version of Windows 10 (please, use the latest to ensure it'll run correctly, don't open issues otherwise)
